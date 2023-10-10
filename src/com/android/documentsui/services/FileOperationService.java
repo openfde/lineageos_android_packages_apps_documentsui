@@ -34,6 +34,8 @@ import android.util.Log;
 
 import com.android.documentsui.R;
 import com.android.documentsui.base.Features;
+import com.android.documentsui.files.FilesActivity;
+
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -184,6 +186,9 @@ public class FileOperationService extends Service implements Job.Listener {
         if (DEBUG) {
             Log.d(TAG, "Shutting down executor.");
         }
+        Intent intentBroadcastReceiver = new Intent();
+        intentBroadcastReceiver.setAction(FilesActivity.ACTION_UPDATE);
+        sendBroadcast(intentBroadcastReceiver);
 
         List<Runnable> unfinishedCopies = executor.shutdownNow();
         List<Runnable> unfinishedDeletions = deletionExecutor.shutdownNow();

@@ -28,6 +28,11 @@ import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import com.android.documentsui.dirlist.AnimationView;
+
 
 import androidx.annotation.CallSuper;
 import androidx.fragment.app.FragmentManager;
@@ -72,6 +77,9 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
 
     private static final String TAG = "FilesActivity";
     static final String PREFERENCES_SCOPE = "files";
+
+    public static final String ACTION_UPDATE = "action.update";
+    public ServiceUpdateUiBroadcastReceiver broadcastReceiver;
 
     private Injector<ActionHandler<FilesActivity>> mInjector;
     private ActivityInputHandler mActivityInputHandler;
@@ -273,6 +281,11 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     public void onResume() {
         super.onResume();
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_UPDATE);
+        broadcastReceiver = new ServiceUpdateUiBroadcastReceiver();
+        registerReceiver(broadcastReceiver, filter);
+
         final RootInfo root = getCurrentRoot();
 
         // If we're browsing a specific root, and that root went away, then we
@@ -282,6 +295,12 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
         if (mProviders.getRootBlocking(root.userId, root.authority, root.rootId) == null) {
             finish();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -405,5 +424,12 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     @Override
     public Injector<ActionHandler<FilesActivity>> getInjector() {
         return mInjector;
+    }
+
+    private class ServiceUpdateUiBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            refreshDirectory(AnimationView.ANIM_NONE);
+        }
     }
 }
