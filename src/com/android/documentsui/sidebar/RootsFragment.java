@@ -77,6 +77,7 @@ import com.android.documentsui.roots.ProvidersAccess;
 import com.android.documentsui.roots.ProvidersCache;
 import com.android.documentsui.roots.RootsLoader;
 import com.android.documentsui.util.CrossProfileUtils;
+import com.android.documentsui.FusionVolumeProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -184,8 +185,8 @@ public class RootsFragment extends Fragment {
                             });
                         }
                         return false;
-            }
-        });
+                    }
+                });
         mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         mList.setSelector(new ColorDrawable(Color.TRANSPARENT));
         return view;
@@ -296,6 +297,20 @@ public class RootsFragment extends Fragment {
                 // Disable drawer if only one root
                 activity.setRootsDrawerLocked(sortedItems.size() <= 1);
 
+                int spaceIndexEnd = 0;
+                int documentIndex = 0;
+                for(int i = 0 ; i < sortedItems.size(); i++){
+                    Item item = sortedItems.get(i);
+                    if(item instanceof SpacerItem){
+                        spaceIndexEnd = i;
+                    }
+                    if(item.title.equals(FusionVolumeProvider.VOLUME_TITLE)){
+                        documentIndex = i;
+                    }
+                }
+                Item fusionItem = sortedItems.remove(documentIndex);
+                sortedItems.add(spaceIndexEnd + 1, fusionItem);
+                sortedItems.add(spaceIndexEnd + 2, new SpacerItem());
                 // Get the first visible position and offset
                 final int firstPosition = mList.getFirstVisiblePosition();
                 View firstChild = mList.getChildAt(0);
@@ -438,9 +453,9 @@ public class RootsFragment extends Fragment {
      * the providers and apps are the same package name, combine them as RootAndAppItems.
      */
     private void includeHandlerApps(State state,
-            Intent handlerAppIntent, @Nullable String excludePackage, List<Item> rootList,
-            List<Item> rootListOtherUser, List<RootItem> otherProviders, List<UserId> userIds,
-            boolean maybeShowBadge) {
+                                    Intent handlerAppIntent, @Nullable String excludePackage, List<Item> rootList,
+                                    List<Item> rootListOtherUser, List<RootItem> otherProviders, List<UserId> userIds,
+                                    boolean maybeShowBadge) {
         if (VERBOSE) Log.v(TAG, "Adding handler apps for intent: " + handlerAppIntent);
 
         Context context = getContext();
