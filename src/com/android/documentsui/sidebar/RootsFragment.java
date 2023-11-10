@@ -309,8 +309,12 @@ public class RootsFragment extends Fragment {
                     }
                 }
                 Item fusionItem = sortedItems.remove(documentIndex);
-                sortedItems.add(spaceIndexEnd + 1, fusionItem);
-                sortedItems.add(spaceIndexEnd + 2, new SpacerItem());
+                if(sortedItems.size() > 1){
+                    sortedItems.add(spaceIndexEnd + 1, fusionItem);
+                }
+                if(sortedItems.size() > 2){
+                    sortedItems.add(spaceIndexEnd + 2, new SpacerItem());
+                }
                 // Get the first visible position and offset
                 final int firstPosition = mList.getFirstVisiblePosition();
                 View firstChild = mList.getChildAt(0);
