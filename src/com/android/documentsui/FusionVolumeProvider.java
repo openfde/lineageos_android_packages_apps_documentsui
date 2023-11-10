@@ -168,7 +168,7 @@ public class FusionVolumeProvider extends DocumentsProvider {
     protected File getFileForDocId(String documentId)
             throws FileNotFoundException {
 //        if (DOC_ID_ROOT.equals(documentId)) {
-        return new File(DIR_ID_ROOT);
+        return new File(documentId);
 //        }
 //        return new File(getAbsoluteFilePath(documentId));
     }
