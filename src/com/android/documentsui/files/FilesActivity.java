@@ -33,7 +33,6 @@ import android.content.Context;
 import android.content.IntentFilter;
 import com.android.documentsui.dirlist.AnimationView;
 
-
 import androidx.annotation.CallSuper;
 import androidx.fragment.app.FragmentManager;
 
@@ -70,6 +69,8 @@ import com.android.documentsui.ui.MessageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.os.Build;
+
 /**
  * Standalone file management activity.
  */
@@ -86,17 +87,33 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     private SharedInputHandler mSharedInputHandler;
     private final ProfileTabsAddons mProfileTabsAddonsStub = new DummyProfileTabsAddons();
 
+    public static final String[] permissions = {
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.READ_EXTERNAL_STORAGE" };
+
     public FilesActivity() {
         super(R.layout.files_activity, TAG);
     }
 
-    // make these methods visible in this package to work around compiler bug http://b/62218600
-    @Override protected boolean focusSidebar() { return super.focusSidebar(); }
-    @Override protected boolean popDir() { return super.popDir(); }
+    // make these methods visible in this package to work around compiler bug
+    // http://b/62218600
+    @Override
+    protected boolean focusSidebar() {
+        return super.focusSidebar();
+    }
+
+    @Override
+    protected boolean popDir() {
+        return super.popDir();
+    }
 
     @Override
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            requestPermissions(permissions, 1);
+        }
 
         MessageBuilder messages = new MessageBuilder(this);
         Features features = Features.create(this);
@@ -158,7 +175,8 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
 
         mInjector.searchManager = mSearchManager;
 
-        // No profile tabs will be shown on FilesActivity. Use a dummy to avoid unnecessary
+        // No profile tabs will be shown on FilesActivity. Use a dummy to avoid
+        // unnecessary
         // operations.
         mInjector.profileTabsController = new ProfileTabsController(
                 mInjector.selectionMgr,
@@ -168,17 +186,15 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
                 mUserIdManager);
         mInjector.appsRowManager = mAppsRowManager;
 
-        mActivityInputHandler =
-                new ActivityInputHandler(mInjector.actions::showDeleteDialog);
-        mSharedInputHandler =
-                new SharedInputHandler(
-                        mInjector.focusManager,
-                        mInjector.selectionMgr,
-                        mInjector.searchManager::cancelSearch,
-                        this::popDir,
-                        mInjector.features,
-                        mDrawer,
-                        mInjector.searchManager::onSearchBarClicked);
+        mActivityInputHandler = new ActivityInputHandler(mInjector.actions::showDeleteDialog);
+        mSharedInputHandler = new SharedInputHandler(
+                mInjector.focusManager,
+                mInjector.selectionMgr,
+                mInjector.searchManager::cancelSearch,
+                this::popDir,
+                mInjector.features,
+                mDrawer,
+                mInjector.searchManager::onSearchBarClicked);
 
         RootsFragment.show(getSupportFragmentManager(), /* includeApps= */ false,
                 /* intent= */ null);
@@ -214,11 +230,11 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     // called Downloads, which is also not the desired behavior.
     private void updateTaskDescription(final Intent intent) {
         int labelRes = intent.getIntExtra(LauncherActivity.TASK_LABEL_RES, -1);
-        assert(labelRes > -1);
+        assert (labelRes > -1);
         String label = getResources().getString(labelRes);
 
         int iconRes = intent.getIntExtra(LauncherActivity.TASK_ICON_RES, -1);
-        assert(iconRes > -1);
+        assert (iconRes > -1);
 
         setTaskDescription(new TaskDescription(label, iconRes));
     }
@@ -232,10 +248,9 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
             final int opType = intent.getIntExtra(
                     FileOperationService.EXTRA_OPERATION_TYPE,
                     FileOperationService.OPERATION_COPY);
-            final ArrayList<DocumentInfo> docList =
-                    intent.getParcelableArrayListExtra(FileOperationService.EXTRA_FAILED_DOCS);
-            final ArrayList<Uri> uriList =
-                    intent.getParcelableArrayListExtra(FileOperationService.EXTRA_FAILED_URIS);
+            final ArrayList<DocumentInfo> docList = intent
+                    .getParcelableArrayListExtra(FileOperationService.EXTRA_FAILED_DOCS);
+            final ArrayList<Uri> uriList = intent.getParcelableArrayListExtra(FileOperationService.EXTRA_FAILED_URIS);
             OperationDialogFragment.show(
                     getSupportFragmentManager(),
                     dialogType,
@@ -250,15 +265,17 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     public void includeState(State state) {
         final Intent intent = getIntent();
 
-        // This is a remnant of old logic where we used to initialize accept MIME types in
-        // BaseActivity. ProvidersAccess still rely on this being correctly initialized so we still have
+        // This is a remnant of old logic where we used to initialize accept MIME types
+        // in
+        // BaseActivity. ProvidersAccess still rely on this being correctly initialized
+        // so we still have
         // to initialize it in FilesActivity.
         state.initAcceptMimes(intent, "*/*");
         state.action = State.ACTION_BROWSE;
         state.allowMultiple = true;
 
         // Options specific to the DocumentsActivity.
-        assert(!intent.hasExtra(Intent.EXTRA_LOCAL_ONLY));
+        assert (!intent.hasExtra(Intent.EXTRA_LOCAL_ONLY));
     }
 
     @Override
@@ -323,7 +340,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
         DirectoryFragment dir;
         switch (item.getItemId()) {
             case R.id.option_menu_create_dir:
-                assert(canCreateDirectory());
+                assert (canCreateDirectory());
                 mInjector.actions.showCreateDirectoryDialog();
                 break;
             case R.id.option_menu_new_window:
@@ -356,7 +373,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
-        assert(!mSearchManager.isSearching());
+        assert (!mSearchManager.isSearching());
 
         if (mState.stack.isRecents()) {
             DirectoryFragment.showRecentsOpen(fm, anim);
@@ -378,7 +395,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
 
     @Override
     public void onDirectoryCreated(DocumentInfo doc) {
-        assert(doc.isDirectory());
+        assert (doc.isDirectory());
         mInjector.focusManager.focusDocument(doc.documentId);
     }
 

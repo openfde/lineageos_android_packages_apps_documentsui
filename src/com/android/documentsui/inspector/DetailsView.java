@@ -47,14 +47,14 @@ public class DetailsView extends TableView implements DetailsDisplay {
 
         putTitle(displayName, false);
 
-        Lookup<String, String> fileTypeLookup =
-                DocumentsApplication.getFileTypeLookup(getContext());
+        Lookup<String, String> fileTypeLookup = DocumentsApplication.getFileTypeLookup(getContext());
 
         String mimeType = fileTypeLookup.lookup(doc.mimeType);
 
         put(R.string.sort_dimension_file_type, mimeType);
 
-        // TODO: Each of these rows need to be removed if the condition is false and previously
+        // TODO: Each of these rows need to be removed if the condition is false and
+        // previously
         // set.
         if (doc.size >= 0 && !doc.isDirectory()) {
             put(R.string.sort_dimension_size, Formatter.formatFileSize(getContext(), doc.size));
@@ -70,7 +70,8 @@ public class DetailsView extends TableView implements DetailsDisplay {
         // after a download is completed DownloadsProvider include the orig filename
         // in the summary field. This is confusing to folks in-and-if-itself, but
         // after the file is renamed, it creates even more confusion (since it still
-        // shows the original). For that reason, and others. We only display on partial files.
+        // shows the original). For that reason, and others. We only display on partial
+        // files.
         if (doc.isPartial() && doc.summary != null) {
             put(R.string.sort_dimension_summary, doc.summary);
         }

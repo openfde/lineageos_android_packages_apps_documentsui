@@ -38,6 +38,9 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
+import android.util.Log;
 
 /**
  * Organizes and Displays the debug information about a file. This view
@@ -115,7 +118,7 @@ public class MediaView extends TableView implements MediaDisplay {
             Bundle tags,
             @Nullable Runnable geoClickListener) {
 
-        addDimensionsRow(table, resources, tags);
+        addDimensionsRow(table, resources, tags, doc.documentId);
 
         if (MetadataUtils.hasVideoCoordinates(tags)) {
             float[] coords = MetadataUtils.getVideoCoords(tags);
@@ -137,7 +140,7 @@ public class MediaView extends TableView implements MediaDisplay {
             @Nullable Runnable geoClickListener,
             Consumer<float[]> geoAddressFetcher) {
 
-        addDimensionsRow(table, resources, tags);
+        addDimensionsRow(table, resources, tags, doc.documentId);
 
         if (tags.containsKey(ExifInterface.TAG_DATETIME)) {
             String date = tags.getString(ExifInterface.TAG_DATETIME);
@@ -150,13 +153,13 @@ public class MediaView extends TableView implements MediaDisplay {
         }
 
         if (tags.containsKey(ExifInterface.TAG_MAKE) || tags.containsKey(ExifInterface.TAG_MODEL)) {
-                String make = tags.getString(ExifInterface.TAG_MAKE);
-                String model = tags.getString(ExifInterface.TAG_MODEL);
-                make = make != null ? make : "";
-                model = model != null ? model : "";
-                table.put(
-                        R.string.metadata_camera,
-                        resources.getString(R.string.metadata_camera_format, make, model));
+            String make = tags.getString(ExifInterface.TAG_MAKE);
+            String model = tags.getString(ExifInterface.TAG_MODEL);
+            make = make != null ? make : "";
+            model = model != null ? model : "";
+            table.put(
+                    R.string.metadata_camera,
+                    resources.getString(R.string.metadata_camera_format, make, model));
         }
 
         if (tags.containsKey(ExifInterface.TAG_APERTURE)) {
@@ -203,15 +206,16 @@ public class MediaView extends TableView implements MediaDisplay {
                     value,
                     view -> {
                         geoClickListener.run();
-                    }
-            );
+                    });
         } else {
             table.put(R.string.metadata_coordinates, value);
         }
     }
 
     /**
-     * Attempts to retrieve an approximate address and displays the address if it can find one.
+     * Attempts to retrieve an approximate address and displays the address if it
+     * can find one.
+     * 
      * @param coords the coordinates that gets an address.
      */
     private void getAddress(float[] coords) {
@@ -230,6 +234,7 @@ public class MediaView extends TableView implements MediaDisplay {
                     return null;
                 }
             }
+
             @Override
             protected void onPostExecute(@Nullable Address address) {
                 if (address != null) {
@@ -255,16 +260,19 @@ public class MediaView extends TableView implements MediaDisplay {
                         table.put(R.string.metadata_address, address.getAdminArea());
                     } else if (address.getCountryName() != null) {
                         table.put(R.string.metadata_address, address.getCountryName());
-                    }                }
+                    }
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, coords[0], coords[1]);
     }
 
     /**
      * @param speed a value n, where shutter speed equals 1/(2^n)
-     * @return a String containing either a fraction that displays 1 over a positive integer, or a
-     * double rounded to one decimal, depending on if 1/(2^n) is less than or greater than 1,
-     * respectively.
+     * @return a String containing either a fraction that displays 1 over a positive
+     *         integer, or a
+     *         double rounded to one decimal, depending on if 1/(2^n) is less than
+     *         or greater than 1,
+     *         respectively.
      */
     private static String formatShutterSpeed(double speed) {
         if (speed <= 0) {
@@ -278,16 +286,44 @@ public class MediaView extends TableView implements MediaDisplay {
         }
     }
 
+    public static int getSize(String filePath, String type) {
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(filePath, options);
+            if (type.equals("width")) {
+                return options.outWidth;
+            } else {
+                return options.outHeight;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     /**
      * @param table
      * @param resources
      * @param tags
      */
-    private static void addDimensionsRow(TableDisplay table, Resources resources, Bundle tags) {
+    private static void addDimensionsRow(TableDisplay table, Resources resources, Bundle tags, String documentId) {
         if (tags.containsKey(ExifInterface.TAG_IMAGE_WIDTH)
-            && tags.containsKey(ExifInterface.TAG_IMAGE_LENGTH)) {
+                && tags.containsKey(ExifInterface.TAG_IMAGE_LENGTH)) {
             int width = tags.getInt(ExifInterface.TAG_IMAGE_WIDTH);
             int height = tags.getInt(ExifInterface.TAG_IMAGE_LENGTH);
+            if (width == 0) {
+                try {
+                    String[] path = documentId.split(":");
+                    if (path != null && path.length > 1) {
+                        String pa = "/storage/emulated/0/" + path[1];
+                        width = getSize(pa, "width");
+                        height = getSize(pa, "height");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             float megaPixels = height * width / 1000000f;
             table.put(R.string.metadata_dimensions,
                     resources.getString(
