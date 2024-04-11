@@ -19,6 +19,14 @@ import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.IOException;
+import android.util.Log;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FusionVolumeProvider extends DocumentsProvider {
 
@@ -30,15 +38,15 @@ public class FusionVolumeProvider extends DocumentsProvider {
     /**
      * 默认root需要查询的项
      */
-    private final static String[] DEFAULT_ROOT_PROJECTION = new String[]{Root.COLUMN_ROOT_ID, Root.COLUMN_SUMMARY,
+    private final static String[] DEFAULT_ROOT_PROJECTION = new String[] { Root.COLUMN_ROOT_ID, Root.COLUMN_SUMMARY,
             Root.COLUMN_FLAGS, Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_ICON,
-            Root.COLUMN_AVAILABLE_BYTES};
+            Root.COLUMN_AVAILABLE_BYTES };
     /**
      * 默认Document需要查询的项
      */
-    private final static String[] DEFAULT_DOCUMENT_PROJECTION = new String[]{Document.COLUMN_DOCUMENT_ID,
+    private final static String[] DEFAULT_DOCUMENT_PROJECTION = new String[] { Document.COLUMN_DOCUMENT_ID,
             Document.COLUMN_DISPLAY_NAME, Document.COLUMN_FLAGS, Document.COLUMN_MIME_TYPE, Document.COLUMN_SIZE,
-            Document.COLUMN_LAST_MODIFIED};
+            Document.COLUMN_LAST_MODIFIED };
 
     protected static final String SUPPORTED_QUERY_ARGS = joinNewline(
             DocumentsContract.QUERY_ARG_DISPLAY_NAME,
@@ -49,6 +57,7 @@ public class FusionVolumeProvider extends DocumentsProvider {
     private static String joinNewline(String... args) {
         return TextUtils.join("\n", args);
     }
+
     /**
      * 进行读写权限检查
      */
@@ -95,17 +104,19 @@ public class FusionVolumeProvider extends DocumentsProvider {
 
     @Override
     public Cursor queryChildDocuments(final String parentDocumentId, final String[] projection,
-                                      final String sortOrder) throws FileNotFoundException {
+            final String sortOrder) throws FileNotFoundException {
         // 判断是否缺少权限
-//        if (FusionDocumentProvider.isMissingPermission(getContext())) {
-//            return null;
-//        }
+        // if (FusionDocumentProvider.isMissingPermission(getContext())) {
+        // return null;
+        // }
         // 创建一个查询cursor, 来设置需要查询的项, 如果"projection"为空, 那么使用默认项
         final MatrixCursor result = new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
         final File parent = new File(parentDocumentId);
         for (File file : parent.listFiles()) {
             // 不显示隐藏的文件或文件夹
-            if (!file.getName().startsWith(".")) {
+            if (parentDocumentId.contains("volumes")) {
+                includeVolumesFile(result, file);
+            } else if (!file.getName().startsWith(".")) {
                 // 添加文件的名字, 类型, 大小等属性
                 includeFile(result, file);
             }
@@ -113,11 +124,43 @@ public class FusionVolumeProvider extends DocumentsProvider {
         return result;
     }
 
+    public String readFile() {
+        String filePath = "/volumes/.fde_path_key";
+        String content = "";
+        try {
+            content = new String(Files.readAllBytes(Paths.get(filePath)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return content;
+    }
+
+    public String parseFile(String filePath) {
+        String result = null;
+        try {
+            String jsonString = readFile();
+            JSONArray jsonArray = new JSONArray(jsonString);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String uuid = jsonObject.getString("UUID");
+                String path = jsonObject.getString("Path");
+                if (filePath.equals(uuid)) {
+                    result = path;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     @Override
     public Cursor queryDocument(final String documentId, final String[] projection) throws FileNotFoundException {
-//        if (FusionVolumeProvider.isMissingPermission(getContext())) {
-//            return null;
-//        }
+        // if (FusionVolumeProvider.isMissingPermission(getContext())) {
+        // return null;
+        // }
         // 创建一个查询cursor, 来设置需要查询的项, 如果"projection"为空, 那么使用默认项
         final MatrixCursor result = new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
         includeFile(result, new File(documentId));
@@ -132,7 +175,31 @@ public class FusionVolumeProvider extends DocumentsProvider {
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
         int flags = file.canWrite()
                 ? Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_WRITE | Document.FLAG_SUPPORTS_RENAME
-                | (mimeType.equals(Document.MIME_TYPE_DIR) ? Document.FLAG_DIR_SUPPORTS_CREATE : 0) : 0;
+                        | (mimeType.equals(Document.MIME_TYPE_DIR) ? Document.FLAG_DIR_SUPPORTS_CREATE : 0)
+                : 0;
+        if (mimeType.startsWith("image/"))
+            flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
+        row.add(Document.COLUMN_FLAGS, flags);
+        row.add(Document.COLUMN_SIZE, file.length());
+        row.add(Document.COLUMN_LAST_MODIFIED, file.lastModified());
+    }
+
+    private void includeVolumesFile(final MatrixCursor result, final File file) throws FileNotFoundException {
+        String fileName = file.getName();
+        String uuid = parseFile(fileName);
+        if (uuid != null) {
+            fileName = uuid;
+        }
+        Log.i("bella", "includeVolumesFile uuid " + uuid + ",fileName " + fileName);
+        final MatrixCursor.RowBuilder row = result.newRow();
+        row.add(Document.COLUMN_DOCUMENT_ID, file.getAbsolutePath());
+        row.add(Document.COLUMN_DISPLAY_NAME, fileName);
+        String mimeType = getDocumentType(file.getAbsolutePath());
+        row.add(Document.COLUMN_MIME_TYPE, mimeType);
+        int flags = file.canWrite()
+                ? Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_WRITE | Document.FLAG_SUPPORTS_RENAME
+                        | (mimeType.equals(Document.MIME_TYPE_DIR) ? Document.FLAG_DIR_SUPPORTS_CREATE : 0)
+                : 0;
         if (mimeType.startsWith("image/"))
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         row.add(Document.COLUMN_FLAGS, flags);
@@ -142,9 +209,9 @@ public class FusionVolumeProvider extends DocumentsProvider {
 
     @Override
     public String getDocumentType(final String documentId) throws FileNotFoundException {
-//        if (FusionVolumeProvider.isMissingPermission(getContext())) {
-//            return null;
-//        }
+        // if (FusionVolumeProvider.isMissingPermission(getContext())) {
+        // return null;
+        // }
         File file = new File(documentId);
         if (file.isDirectory())
             return Document.MIME_TYPE_DIR;
@@ -160,17 +227,18 @@ public class FusionVolumeProvider extends DocumentsProvider {
     }
 
     @Override
-    public ParcelFileDescriptor openDocument(String documentId, String mode, @Nullable CancellationSignal signal) throws FileNotFoundException {
+    public ParcelFileDescriptor openDocument(String documentId, String mode, @Nullable CancellationSignal signal)
+            throws FileNotFoundException {
         return ParcelFileDescriptor.open(getFileForDocId(documentId),
                 ParcelFileDescriptor.MODE_READ_ONLY);
     }
 
     protected File getFileForDocId(String documentId)
             throws FileNotFoundException {
-//        if (DOC_ID_ROOT.equals(documentId)) {
+        // if (DOC_ID_ROOT.equals(documentId)) {
         return new File(documentId);
-//        }
-//        return new File(getAbsoluteFilePath(documentId));
+        // }
+        // return new File(getAbsoluteFilePath(documentId));
     }
 
     public static String getAbsoluteFilePath(String rawDocumentId) {
@@ -179,6 +247,6 @@ public class FusionVolumeProvider extends DocumentsProvider {
 
     @Override
     public boolean onCreate() {
-        return true;  // 这里需要返回true
+        return true; // 这里需要返回true
     }
 }
