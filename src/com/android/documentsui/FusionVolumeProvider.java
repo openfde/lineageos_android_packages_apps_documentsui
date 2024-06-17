@@ -230,7 +230,7 @@ public class FusionVolumeProvider extends DocumentsProvider {
     public ParcelFileDescriptor openDocument(String documentId, String mode, @Nullable CancellationSignal signal)
             throws FileNotFoundException {
         return ParcelFileDescriptor.open(getFileForDocId(documentId),
-                ParcelFileDescriptor.MODE_READ_ONLY);
+                ParcelFileDescriptor.MODE_READ_WRITE);
     }
 
     protected File getFileForDocId(String documentId)
