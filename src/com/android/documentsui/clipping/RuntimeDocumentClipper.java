@@ -267,6 +267,10 @@ final class RuntimeDocumentClipper implements DocumentClipper {
         }
 
         PersistableBundle bundle = clipData.getDescription().getExtras();
+        if ( bundle == null ){
+            Log.i(TAG, "Received null bundle . Ignoring.");
+            return;
+        }
         @OpType int opType = getOpType(bundle);
         try {
             if (!canCopy(dstStack.peek())) {
