@@ -1,4 +1,4 @@
-package com.android.documentsui;
+package com.android.documentsui.provider;
 
 import android.Manifest;
 import android.content.Context;
@@ -18,15 +18,21 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.android.documentsui.R;
 
 public class FusionVolumeProvider extends DocumentsProvider {
 
@@ -231,6 +237,150 @@ public class FusionVolumeProvider extends DocumentsProvider {
             throws FileNotFoundException {
         return ParcelFileDescriptor.open(getFileForDocId(documentId),
                 ParcelFileDescriptor.MODE_READ_WRITE);
+    }
+
+    @Override
+    public String renameDocument(String documentId, String displayName)
+            throws FileNotFoundException {
+
+        if (displayName == null) {
+            throw new FileNotFoundException("Failed to rename document, new name is null");
+        }
+
+        // Create the destination file in the same directory as the source file
+        File sourceFile = getFileForDocId(documentId);
+        File sourceParentFile = sourceFile.getParentFile();
+        if (sourceParentFile == null) {
+            throw new FileNotFoundException("Failed to rename document. File has no parent.");
+        }
+        File destFile = new File(sourceParentFile.getPath(), displayName);
+
+        // Try to do the rename
+        try {
+            boolean renameSucceeded = sourceFile.renameTo(destFile);
+            if (!renameSucceeded) {
+                throw new FileNotFoundException("Failed to rename document. Renamed failed.");
+            }
+        } catch (Exception e) {
+            throw new FileNotFoundException("Failed to rename document. Error: " + e.getMessage());
+        }
+
+        return getDocIdForFile(destFile);
+    }
+
+    public String copyDocument(String sourceDocumentId, String sourceParentDocumentId,
+            String targetParentDocumentId) throws FileNotFoundException {
+        if (!isChildDocument(sourceParentDocumentId, sourceDocumentId)) {
+            throw new FileNotFoundException("Failed to copy document with id " +
+                    sourceDocumentId + ". Parent is not: " + sourceParentDocumentId);
+        }
+        return copyDocument(sourceDocumentId, targetParentDocumentId);
+    }
+
+    @Override
+    public String copyDocument(String sourceDocumentId, String targetParentDocumentId)
+            throws FileNotFoundException {
+
+        File parent = getFileForDocId(targetParentDocumentId);
+        File oldFile = getFileForDocId(sourceDocumentId);
+        File newFile = new File(parent.getPath(), oldFile.getName());
+
+        try {
+            // Create the new File to copy into
+            boolean wasNewFileCreated = false;
+            if (newFile.createNewFile()) {
+                if (newFile.setWritable(true) && newFile.setReadable(true)) {
+                    wasNewFileCreated = true;
+                }
+            }
+
+            if (!wasNewFileCreated) {
+                throw new FileNotFoundException("Failed to copy document " + sourceDocumentId +
+                        ". Could not create new file.");
+            }
+
+            // Copy the bytes into the new file
+            try (InputStream inStream = new FileInputStream(oldFile)) {
+                try (OutputStream outStream = new FileOutputStream(newFile)) {
+                    // Transfer bytes from in to out
+                    byte[] buf = new byte[4096]; // ideal range for network: 2-8k, disk: 8-64k
+                    int len;
+                    while ((len = inStream.read(buf)) > 0) {
+                        outStream.write(buf, 0, len);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new FileNotFoundException("Failed to copy document: " + sourceDocumentId +
+                    ". " + e.getMessage());
+        }
+        return getDocIdForFile(newFile);
+    }
+
+    private String getDocIdForFile(File file) {
+        String path = file.getAbsolutePath();
+
+        final String rootPath = DIR_ID_ROOT; // mBaseDir.getPath();
+        if (rootPath.equals(path)) {
+            path = "";
+        } else if (rootPath.endsWith("/")) {
+            path = path.substring(rootPath.length());
+        } else {
+            path = path.substring(rootPath.length() + 1);
+        }
+
+        return "root" + ':' + path;
+    }
+
+    @Override
+    public void deleteDocument(String documentId) throws FileNotFoundException {
+        File file = getFileForDocId(documentId);
+        if (file.delete()) {
+        } else {
+            throw new FileNotFoundException("Failed to delete document with id " + documentId);
+        }
+    }
+
+    @Override
+    public String createDocument(
+            String documentId, String mimeType, String displayName)
+            throws FileNotFoundException {
+        Log.i("bella", "createDocument documentId " + documentId);
+        File file = createFile(documentId, mimeType, displayName);
+
+        getContext().getContentResolver().notifyChange(
+                DocumentsContract.buildDocumentUri(AUTHORITY, documentId),
+                null, false);
+
+        return file.getPath();
+    }
+
+    private File createFile(String documentId, String mimeType, String displayName)
+            throws FileNotFoundException {
+
+        final File file = new File(documentId, displayName);
+        if (file.exists()) {
+            throw new FileNotFoundException(
+                    "Duplicate file names not supported for " + file);
+        }
+
+        if (mimeType.equals(Document.MIME_TYPE_DIR)) {
+            if (!file.mkdirs()) {
+                throw new FileNotFoundException("Failed to create directory(s): " + file);
+            }
+        } else {
+            boolean created = false;
+            try {
+                created = file.createNewFile();
+            } catch (IOException e) {
+                // We'll throw an FNF exception later :)
+                Log.e("bella", "createNewFile operation failed for file: " + file, e);
+            }
+            if (!created) {
+                throw new FileNotFoundException("createNewFile operation failed for: " + file);
+            }
+        }
+        return file;
     }
 
     protected File getFileForDocId(String documentId)
