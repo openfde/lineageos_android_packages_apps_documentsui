@@ -87,6 +87,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import android.provider.Settings;
+
 
 /**
  * Display list of known storage backend roots.
@@ -392,6 +394,10 @@ public class RootsFragment extends Fragment {
                 //librariesBuilder.add(item);
             } else if (root.isStorage()) {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
+				if (item.title.equals(
+                        Settings.Global.getString(getContext().getContentResolver(), Settings.Global.DEVICE_NAME))) {
+                    item.title = getContext().getString(R.string.fde_user_dir);
+                }
                 storageProvidersBuilder.add(item);
             } else {
                 item = new RootItem(root, mActionHandler,

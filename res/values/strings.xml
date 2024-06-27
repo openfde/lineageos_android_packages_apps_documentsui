@@ -488,6 +488,8 @@
     <string name="chip_title_videos">Videos</string>
     <!-- Title for image chip. [CHAR_LIMIT=25] -->
     <string name="chip_title_documents">Documents</string>
+    <string name="fde_file_system" >"File System"</string>
+    <string name="fde_user_dir" >"User"</string>
     <!-- Title for large file chip. [CHAR_LIMIT=25] -->
     <string name="chip_title_large_files">Large files</string>
     <!-- Title for from this week chip. [CHAR_LIMIT=25] -->

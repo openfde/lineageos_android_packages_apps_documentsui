@@ -31,13 +31,14 @@ import com.android.documentsui.R;
 import com.android.documentsui.base.UserId;
 
 /**
- * Describes a root navigation point of documents. Each one of them is presented as an item in the
+ * Describes a root navigation point of documents. Each one of them is presented
+ * as an item in the
  * sidebar
  */
 public abstract class Item {
     private final @LayoutRes int mLayoutId;
 
-    public final String title;
+    public String title;
     public final UserId userId;
     final String stringId;
 
@@ -91,5 +92,6 @@ public abstract class Item {
         return false;
     }
 
-    void createContextMenu(Menu menu, MenuInflater inflater, MenuManager menuManager) {}
+    void createContextMenu(Menu menu, MenuInflater inflater, MenuManager menuManager) {
+    }
 }
