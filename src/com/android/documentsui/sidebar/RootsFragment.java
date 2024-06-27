@@ -77,7 +77,7 @@ import com.android.documentsui.roots.ProvidersAccess;
 import com.android.documentsui.roots.ProvidersCache;
 import com.android.documentsui.roots.RootsLoader;
 import com.android.documentsui.util.CrossProfileUtils;
-import com.android.documentsui.FusionVolumeProvider;
+import com.android.documentsui.provider.FusionVolumeProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -389,7 +389,7 @@ public class RootsFragment extends Fragment {
                 continue;
             } else if (root.isLibrary() || root.isDownloads()) {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
-                librariesBuilder.add(item);
+                //librariesBuilder.add(item);
             } else if (root.isStorage()) {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
                 storageProvidersBuilder.add(item);
@@ -426,10 +426,14 @@ public class RootsFragment extends Fragment {
                     otherProviders, userIds, maybeShowBadge);
         } else {
             // Only add providers
-            Collections.sort(otherProviders, comp);
+            //Collections.sort(otherProviders, comp);
             for (RootItem item : otherProviders) {
                 if (UserId.CURRENT_USER.equals(item.userId)) {
-                    rootList.add(item);
+					 if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
+                        // remove
+                    } else {
+                        rootList.add(item);
+                    }
                 } else {
                     rootListOtherUser.add(item);
                 }
