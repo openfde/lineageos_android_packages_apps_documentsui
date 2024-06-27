@@ -38,7 +38,7 @@ import com.android.documentsui.provider.StubProvider.StubDocument;
 public class MusicProvider extends DocumentsProvider {
     public static final String AUTHORITY = "com.android.documentsui.music";
     public static final String DOC_ID_ROOT = "/";
-    public static final String DIR_ID_ROOT = "/mnt/sdcard/Music";
+    public static final String DIR_ID_ROOT = "/mnt/sdcard/Music/";
     public static final String VOLUME_TITLE = "Music";
     public static final String FUSION_PREFIX = "fusion:";
     private static final String TAG = "MusicProvider";
