@@ -37,7 +37,7 @@ import com.android.documentsui.R;
 public class VideoProvider extends DocumentsProvider {
     public static final String AUTHORITY = "com.android.documentsui.video";
     public static final String DOC_ID_ROOT = "/";
-    public static final String DIR_ID_ROOT = "/mnt/sdcard/Movies";
+    public static final String DIR_ID_ROOT = "/mnt/sdcard/Movies/";
     public static final String VOLUME_TITLE = "Video";
     public static final String FUSION_PREFIX = "fusion:";
 

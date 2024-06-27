@@ -92,7 +92,7 @@ public class FusionVolumeProvider extends DocumentsProvider {
         row.add(Root.COLUMN_ROOT_ID, DOC_ID_ROOT);
         row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_RECENTS
                 | Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_SEARCH);
-        row.add(Root.COLUMN_ICON, R.mipmap.ic_launcher);
+        row.add(Root.COLUMN_ICON, R.mipmap.icon_pc);
         row.add(Root.COLUMN_TITLE, VOLUME_TITLE);
         row.add(Root.COLUMN_DOCUMENT_ID, DIR_ID_ROOT);
         row.add(Root.COLUMN_QUERY_ARGS, SUPPORTED_QUERY_ARGS);
