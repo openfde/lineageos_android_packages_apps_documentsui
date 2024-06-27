@@ -191,7 +191,7 @@ public class MusicProvider extends DocumentsProvider {
     public String renameDocument(String documentId, String displayName)
             throws FileNotFoundException {
 
-        Log.v(TAG, "renameDocument");
+        Log.i(TAG, "bella renameDocument documentId " + documentId + " , displayName " + displayName);
         if (displayName == null) {
             throw new FileNotFoundException("Failed to rename document, new name is null");
         }
@@ -211,10 +211,9 @@ public class MusicProvider extends DocumentsProvider {
                 throw new FileNotFoundException("Failed to rename document. Renamed failed.");
             }
         } catch (Exception e) {
-            Log.w(TAG, "Rename exception : " + e.getLocalizedMessage() + e.getCause());
+            Log.w(TAG, "bella Rename exception : " + e.getLocalizedMessage() + e.getCause());
             throw new FileNotFoundException("Failed to rename document. Error: " + e.getMessage());
         }
-
         return getDocIdForFile(destFile);
     }
 
@@ -226,6 +225,14 @@ public class MusicProvider extends DocumentsProvider {
                     sourceDocumentId + ". Parent is not: " + sourceParentDocumentId);
         }
         return copyDocument(sourceDocumentId, targetParentDocumentId);
+    }
+
+    @Override
+    public Cursor queryRecentDocuments(String rootId, String[] projection)
+            throws FileNotFoundException {
+        final MatrixCursor result = new MatrixCursor(projection != null ? projection
+                : DEFAULT_DOCUMENT_PROJECTION);
+        return result;
     }
 
     @Override
@@ -274,18 +281,21 @@ public class MusicProvider extends DocumentsProvider {
 
     private String getDocIdForFile(File file) {
         String path = file.getAbsolutePath();
-
         // Start at first char of path under root
-        final String rootPath = DIR_ID_ROOT; // mBaseDir.getPath();
-        if (rootPath.equals(path)) {
-            path = "";
-        } else if (rootPath.endsWith("/")) {
-            path = path.substring(rootPath.length());
-        } else {
-            path = path.substring(rootPath.length() + 1);
-        }
+        // final String rootPath = DIR_ID_ROOT; // mBaseDir.getPath();
+        // if (rootPath.equals(path)) {
+        // path = "";
+        // } else if (rootPath.endsWith("/")) {
+        // path = path.substring(rootPath.length());
+        // } else {
+        // path = path.substring(rootPath.length() + 1);
+        // }
+        getContext().getContentResolver().notifyChange(
+                DocumentsContract.buildDocumentUri(AUTHORITY, file.getParent()),
+                null, false);
 
-        return "root" + ':' + path;
+        return path;
+        // return file.getParent() + "/" + path;
     }
 
     @Override
@@ -304,12 +314,7 @@ public class MusicProvider extends DocumentsProvider {
             String documentId, String mimeType, String displayName)
             throws FileNotFoundException {
         Log.i("bella", "createDocument " + documentId);
-        File file = createFile(mimeType, displayName);
-        if (file.exists()) {
-            Log.i("bella", "createDocument 111111111111" + documentId);
-        } else {
-            Log.i("bella", "createDocument 00000000" + documentId);
-        }
+        File file = createFile(documentId, mimeType, displayName);
         getContext().getContentResolver().notifyChange(
                 DocumentsContract.buildDocumentUri(AUTHORITY, documentId),
                 null, false);
@@ -317,10 +322,10 @@ public class MusicProvider extends DocumentsProvider {
         return file.getPath();
     }
 
-    private File createFile(String mimeType, String displayName)
+    private File createFile(String documentId, String mimeType, String displayName)
             throws FileNotFoundException {
 
-        final File file = new File(DIR_ID_ROOT, displayName);
+        final File file = new File(documentId, displayName);
         if (file.exists()) {
             throw new FileNotFoundException(
                     "Duplicate file names not supported for " + file);

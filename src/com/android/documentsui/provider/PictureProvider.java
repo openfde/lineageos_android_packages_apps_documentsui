@@ -291,7 +291,7 @@ public class PictureProvider extends DocumentsProvider {
     public String createDocument(
             String documentId, String mimeType, String displayName)
             throws FileNotFoundException {
-        File file = createFile(mimeType, displayName);
+        File file = createFile(documentId, mimeType, displayName);
 
         getContext().getContentResolver().notifyChange(
                 DocumentsContract.buildDocumentUri(AUTHORITY, documentId),
@@ -300,10 +300,10 @@ public class PictureProvider extends DocumentsProvider {
         return file.getPath();
     }
 
-    private File createFile(String mimeType, String displayName)
+    private File createFile(String documentId, String mimeType, String displayName)
             throws FileNotFoundException {
 
-        final File file = new File(DIR_ID_ROOT, displayName);
+        final File file = new File(documentId, displayName);
         if (file.exists()) {
             throw new FileNotFoundException(
                     "Duplicate file names not supported for " + file);
