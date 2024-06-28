@@ -268,12 +268,29 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         }
     };
 
+    private final BroadcastReceiver mProviderBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("bella","mProviderBroadcastReceiver " );
+            onRefresh();
+        }
+    };
+
+    
+
     private IntentFilter getSdCardStateChangeFilter() {
         IntentFilter sdCardStateChangeFilter = new IntentFilter();
         sdCardStateChangeFilter.addAction(ACTION_MEDIA_REMOVED);
         sdCardStateChangeFilter.addAction(ACTION_MEDIA_MOUNTED);
         sdCardStateChangeFilter.addAction(ACTION_MEDIA_EJECT);
         sdCardStateChangeFilter.addDataScheme("file");
+        return sdCardStateChangeFilter;
+    }
+
+
+    private IntentFilter getproviderFilter() {
+        IntentFilter sdCardStateChangeFilter = new IntentFilter();
+        sdCardStateChangeFilter.addAction("android.intent.action.FDE_PROVIDER");
         return sdCardStateChangeFilter;
     }
 
@@ -411,6 +428,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             }
         }
         getContext().unregisterReceiver(mSdCardBroadcastReceiver);
+        getContext().unregisterReceiver(mProviderBroadcastReceiver);
 
         // Cancel any outstanding thumbnail requests
         final int count = mRecView.getChildCount();
@@ -577,6 +595,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             LocalBroadcastManager.getInstance(mActivity).registerReceiver(mReceiver, filter);
         }
         getContext().registerReceiver(mSdCardBroadcastReceiver, getSdCardStateChangeFilter());
+
+        getContext().registerReceiver(mProviderBroadcastReceiver,  getproviderFilter());
+       
     }
 
     @Override
