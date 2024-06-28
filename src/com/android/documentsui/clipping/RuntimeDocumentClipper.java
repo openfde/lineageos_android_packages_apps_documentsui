@@ -69,7 +69,9 @@ final class RuntimeDocumentClipper implements DocumentClipper {
     public boolean hasItemsToPaste() {
         if (mClipboard.hasPrimaryClip()) {
             ClipData clipData = mClipboard.getPrimaryClip();
-
+	    if (clipData == null ){
+		    return false;
+	    }
             int count = clipData.getItemCount();
             if (count > 0) {
                 for (int i = 0; i < count; ++i) {
