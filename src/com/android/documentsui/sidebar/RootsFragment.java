@@ -77,7 +77,7 @@ import com.android.documentsui.roots.ProvidersAccess;
 import com.android.documentsui.roots.ProvidersCache;
 import com.android.documentsui.roots.RootsLoader;
 import com.android.documentsui.util.CrossProfileUtils;
-import com.android.documentsui.provider.FusionVolumeProvider;
+import com.android.documentsui.provider.LinuxRootProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -99,6 +99,8 @@ public class RootsFragment extends Fragment {
     private static final String EXTRA_INCLUDE_APPS = "includeApps";
     private static final String EXTRA_INCLUDE_APPS_INTENT = "includeAppsIntent";
     private static final int CONTEXT_MENU_ITEM_TIMEOUT = 500;
+    private static final String LINUX = "linux";
+    private static final String ANDROID = "android";
 
     private final OnItemClickListener mItemListener = new OnItemClickListener() {
         @Override
@@ -286,6 +288,7 @@ public class RootsFragment extends Fragment {
                         DocumentsApplication.getUserIdManager(getContext()).getUserIds(),
                         maybeShowBadge);
 
+
                 // This will be removed when feature flag is removed.
                 if (crossProfileResolveInfo != null && !Features.CROSS_PROFILE_TABS) {
                     // Add profile item if we don't support cross-profile tab.
@@ -299,24 +302,24 @@ public class RootsFragment extends Fragment {
                 // Disable drawer if only one root
                 activity.setRootsDrawerLocked(sortedItems.size() <= 1);
 
-                int spaceIndexEnd = 0;
-                int documentIndex = 0;
-                for(int i = 0 ; i < sortedItems.size(); i++){
-                    Item item = sortedItems.get(i);
-                    if(item instanceof SpacerItem){
-                        spaceIndexEnd = i;
-                    }
-                    if(item.title.equals(FusionVolumeProvider.VOLUME_TITLE)){
-                        documentIndex = i;
-                    }
-                }
-                Item fusionItem = sortedItems.remove(documentIndex);
-                if(sortedItems.size() > 1){
-                    sortedItems.add(spaceIndexEnd + 1, fusionItem);
-                }
-                if(sortedItems.size() > 2){
-                    sortedItems.add(spaceIndexEnd + 2, new SpacerItem());
-                }
+                // int spaceIndexEnd = 0;
+                // int documentIndex = 0;
+                // for(int i = 0 ; i < sortedItems.size(); i++){
+                //     Item item = sortedItems.get(i);
+                //     if(item instanceof SpacerItem){
+                //         spaceIndexEnd = i;
+                //     }
+                //     // if(item.title.equals(LinuxRootProvider.VOLUME_TITLE)){
+                //     //     documentIndex = i;
+                //     // }
+                // }
+                // Item fusionItem = sortedItems.remove(documentIndex);
+                // if(sortedItems.size() > 1){
+                //     sortedItems.add(spaceIndexEnd + 1, fusionItem);
+                // }
+                // if(sortedItems.size() > 6){
+                //     sortedItems.add(spaceIndexEnd + 2, new SpacerItem());
+                // }
                 // Get the first visible position and offset
                 final int firstPosition = mList.getFirstVisiblePosition();
                 View firstChild = mList.getChildAt(0);
@@ -398,6 +401,7 @@ public class RootsFragment extends Fragment {
                         Settings.Global.getString(getContext().getContentResolver(), Settings.Global.DEVICE_NAME))) {
                     item.title = getContext().getString(R.string.fde_user_dir);
                 }
+                item.root.summary = ANDROID;
                 storageProvidersBuilder.add(item);
             } else {
                 item = new RootItem(root, mActionHandler,
@@ -414,15 +418,15 @@ public class RootsFragment extends Fragment {
         Collections.sort(libraries, comp);
         Collections.sort(storageProviders, comp);
 
-        if (VERBOSE) Log.v(TAG, "Adding library roots: " + libraries);
+        if (VERBOSE) Log.i(TAG, "bella Adding library roots: " + libraries);
         result.addAll(libraries);
 
         // Only add the spacer if it is actually separating something.
-        if (!result.isEmpty() && !storageProviders.isEmpty()) {
-            result.add(new SpacerItem());
-        }
-        if (VERBOSE) Log.v(TAG, "Adding storage roots: " + storageProviders);
-        result.addAll(storageProviders);
+        // if (!result.isEmpty() && !storageProviders.isEmpty()) {
+        //     result.add(new SpacerItem());
+        // }
+        if (VERBOSE) Log.i(TAG, "bella Adding storage roots: " + storageProviders);
+        // result.addAll(storageProviders);
 
         final List<Item> rootList = new ArrayList<>();
         final List<Item> rootListOtherUser = new ArrayList<>();
@@ -433,18 +437,44 @@ public class RootsFragment extends Fragment {
         } else {
             // Only add providers
             //Collections.sort(otherProviders, comp);
+             ArrayList<Item> rootAndroidList = new ArrayList<>();
+             ArrayList<Item> rootLinuxList = new ArrayList<>();
+             ArrayList<Item> rootOtherList = new ArrayList<>();
+            rootLinuxList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
+            rootAndroidList.add(new TitleItem(R.layout.item_android_header,"Android"));
+            rootAndroidList.addAll(storageProviders);
             for (RootItem item : otherProviders) {
                 if (UserId.CURRENT_USER.equals(item.userId)) {
 					 if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
                         // remove
                     } else {
-                        rootList.add(item);
+                        // Log.i("bella","otherProviders title: "+item.root.title + " ,authority: "+item.root.authority);
+                        if( item.root.authority.contains("fusionvolume")){
+                            item.root.summary = "";
+                            rootOtherList.add(new SpacerItem());
+                            rootOtherList.add(item);
+                        }else  if(item.root.authority.contains(LINUX)){
+                            item.root.summary = LINUX;
+                            rootLinuxList.add(item);
+                        }else{
+                            item.root.summary = ANDROID;
+                            rootAndroidList.add(item);
+                        }
                     }
                 } else {
                     rootListOtherUser.add(item);
                 }
                 mApplicationItemList.add(item);
             }
+            
+            
+            // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
+            rootList.addAll(rootLinuxList);
+            // rootList.add(new SpacerItem());
+            // rootList.add(new TitleItem(R.layout.item_android_header,"Android"));
+            
+            rootList.addAll(rootAndroidList);
+            rootList.addAll(rootOtherList);  
         }
 
         List<Item> presentableList = new UserItemsCombiner(resources, state)
@@ -456,9 +486,10 @@ public class RootsFragment extends Fragment {
     }
 
     private void addListToResult(List<Item> result, List<Item> rootList) {
-        if (!result.isEmpty() && !rootList.isEmpty()) {
-            result.add(new SpacerItem());
-        }
+        // if (!result.isEmpty() && !rootList.isEmpty()) {
+        //     result.add(new SpacerItem());
+        // }
+        // if (VERBOSE) Log.i(TAG, "bella Adding rootList roots: " + rootList);
         result.addAll(rootList);
     }
 
@@ -542,7 +573,7 @@ public class RootsFragment extends Fragment {
         final String preferredRootPackage = getResources().getString(
                 R.string.preferred_root_package, "");
         final ItemComparator comp = new ItemComparator(preferredRootPackage);
-        Collections.sort(rootList, comp);
+        // Collections.sort(rootList, comp);
         Collections.sort(rootListOtherUser, comp);
 
         if (state.supportsCrossProfile() && state.canShareAcrossProfile) {

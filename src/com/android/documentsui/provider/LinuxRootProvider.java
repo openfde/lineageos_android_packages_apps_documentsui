@@ -36,12 +36,12 @@ import com.android.documentsui.R;
 import android.os.Bundle;
 import android.content.Intent;
 
-public class FusionVolumeProvider extends DocumentsProvider {
+public class LinuxRootProvider extends DocumentsProvider {
 
     public static final String AUTHORITY = "com.android.documentsui.fusionvolume";
     public static final String DOC_ID_ROOT = "linux";
     public static final String DIR_ID_ROOT = "/volumes";
-    public static final String VOLUME_TITLE = "Linux Volume";
+    public static final String VOLUME_TITLE = "Linux volumes";
 
     @Override
     public Cursor queryRoots(final String[] projection) throws FileNotFoundException {
@@ -145,6 +145,7 @@ public class FusionVolumeProvider extends DocumentsProvider {
 
     @Override
     public boolean onCreate() {
+        Log.i("bella","onCreate........... ");
         return true; // 
     }
 

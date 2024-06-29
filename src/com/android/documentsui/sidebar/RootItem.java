@@ -27,6 +27,8 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.graphics.Color;
+
 
 import androidx.annotation.Nullable;
 
@@ -100,6 +102,18 @@ public class RootItem extends Item {
         final View verticalDivider = view.findViewById(R.id.vertical_divider);
         final View actionIconArea = view.findViewById(R.id.action_icon_area);
 
+        final RootItemView rootView = (RootItemView) view.findViewById(R.id.rootView);
+        String summaryText = root.summary;
+        if(summaryText !=null){
+            if(summaryText.equals("linux") ){
+                rootView.setBackgroundColor(Color.parseColor("#f2f2f2"));
+            }else if(summaryText.equals("android")){
+                rootView.setBackgroundColor(Color.parseColor("#ebf0e0"));
+            }else{
+                rootView.setBackgroundColor(Color.parseColor("#ffffff"));
+            }
+        }
+       
         verticalDivider.setVisibility(visibility);
         actionIconArea.setVisibility(visibility);
         actionIconArea.setOnClickListener(visibility == View.VISIBLE ? this::onActionClick : null);
@@ -124,7 +138,7 @@ public class RootItem extends Item {
     protected void bindSummary(View view, String summary) {
         final TextView summaryView = (TextView) view.findViewById(android.R.id.summary);
         summaryView.setText(summary);
-        summaryView.setVisibility(TextUtils.isEmpty(summary) ? View.GONE : View.VISIBLE);
+        summaryView.setVisibility((TextUtils.isEmpty(summary) || summary.equals("linux") ||summary.equals("android") ) ? View.GONE : View.VISIBLE);
     }
 
     private void bindIcon(View view, Drawable drawable) {

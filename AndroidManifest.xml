@@ -158,8 +158,75 @@
             android:exported="false"/>
 
         <provider
-            android:name=".provider.FusionVolumeProvider"
+            android:name=".provider.LinuxRootProvider"
             android:authorities="com.android.documentsui.fusionvolume"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name=".provider.LinuxUserProvider"
+            android:authorities="com.android.documentsui.linux.user"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name=".provider.LinuxMusicProvider"
+            android:authorities="com.android.documentsui.linux.music"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name=".provider.LinuxVideoProvider"
+            android:authorities="com.android.documentsui.linux.video"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+
+        <provider
+            android:name=".provider.LinuxPictureProvider"
+            android:authorities="com.android.documentsui.linux.picture"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name=".provider.LinuxDocumentProvider"
+            android:authorities="com.android.documentsui.linux.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name=".provider.LinuxDownLoadProvider"
+            android:authorities="com.android.documentsui.linux.download"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS">

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import android.os.SystemProperties;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -209,7 +210,7 @@ public class FileUtils {
         if (uuid != null) {
             fileName = uuid;
         }
-        Log.i("bella", "includeVolumesFile uuid " + uuid + ",fileName " + fileName);
+        // Log.i("bella", "includeVolumesFile uuid " + uuid + ",fileName " + fileName);
         final MatrixCursor.RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, file.getAbsolutePath());
         row.add(Document.COLUMN_DISPLAY_NAME, fileName);
@@ -265,6 +266,69 @@ public class FileUtils {
         }
 
         return content;
+    }
+
+    public static String getLinuxUUID(){
+        String result = null;
+        try {
+            String jsonString = readFile();
+            JSONArray jsonArray = new JSONArray(jsonString);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String uuid = jsonObject.getString("UUID");
+                String path = jsonObject.getString("Path");
+                if ("/".equals(path)) {
+                    result = uuid;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static int findNthSlashIndex(String str, int n) {
+        int index = -1;
+        int count = 0;
+
+        // 从头开始查找斜杠
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '/') {
+                count++;
+                if (count == n) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        return index;
+    }
+
+    public static String findFileDir(String findPath){
+        String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir();
+        final File parent = new File(rootPath);
+        String resPath = "" ;
+        for (File file : parent.listFiles()) {
+            if(file.getPath().contains(findPath)){
+                resPath = findPath;
+                break;
+            }
+        }
+        return resPath;
+    }
+
+    public static String getLinuxHomeDir(){
+       try {
+            String propertyValue = SystemProperties.get("waydroid.host_data_path");
+            int len = findNthSlashIndex(propertyValue,3);
+            String subPath = propertyValue.substring(0,len);
+            Log.i("bella","propertyValue "+propertyValue +",subPath "+subPath);
+            return subPath;
+       } catch (Exception e) {
+         e.printStackTrace();
+       }
+       return "/";
     }
 
     public static  String parseFile(String filePath) {

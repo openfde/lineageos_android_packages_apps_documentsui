@@ -30,8 +30,8 @@ public final class SharedMinimal {
 
     public static final String TAG = "Documents";
 
-    public static final boolean DEBUG = !"user".equals(Build.TYPE);
-    public static final boolean VERBOSE = DEBUG && Log.isLoggable(TAG, Log.VERBOSE);
+    public static final boolean DEBUG = true;//!"user".equals(Build.TYPE);
+    public static final boolean VERBOSE = true;//DEBUG && Log.isLoggable(TAG, Log.VERBOSE);
 
     private SharedMinimal() {
         throw new UnsupportedOperationException("provides static fields only");

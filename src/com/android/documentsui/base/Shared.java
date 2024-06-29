@@ -337,7 +337,7 @@ public final class Shared {
     public static String getDeviceName(ContentResolver resolver) {
         // We match the value supplied by ExternalStorageProvider for
         // the internal storage root.
-        return Settings.Global.getString(resolver, Settings.Global.DEVICE_NAME);
+        return "user";//Settings.Global.getString(resolver, Settings.Global.DEVICE_NAME);
     }
 
     public static void checkMainLoop() {
