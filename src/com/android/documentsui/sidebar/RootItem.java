@@ -113,6 +113,13 @@ public class RootItem extends Item {
                 rootView.setBackgroundColor(Color.parseColor("#ffffff"));
             }
         }
+
+        if(title.equals(view.getContext().getString(R.string.fde_user_dir))||title.equals(view.getContext().getString(R.string.fde_music))||
+            title.equals(view.getContext().getString(R.string.fde_images))||title.equals(view.getContext().getString(R.string.fde_audio))|| 
+            title.equals(view.getContext().getString(R.string.fde_documents)) || title.equals(view.getContext().getString(R.string.fde_downloads)) || 
+            title.equals(view.getContext().getString(R.string.fde_videos)) || title.equals(view.getContext().getString(R.string.fde_pictures))){
+                  rootView.setPadding(40,0,0,0);
+        }
        
         verticalDivider.setVisibility(visibility);
         actionIconArea.setVisibility(visibility);
