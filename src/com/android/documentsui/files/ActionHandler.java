@@ -319,6 +319,7 @@ public class ActionHandler<T extends FragmentActivity & AbstractActionHandler.Co
 
         List<Uri> uris = new ArrayList<>(docs.size());
         for (DocumentInfo doc : docs) {
+            Log.i("bella","deleteSelectedDocuments documentId: "+doc.documentId + ",authority: "+doc.authority);
             uris.add(doc.derivedUri);
         }
 

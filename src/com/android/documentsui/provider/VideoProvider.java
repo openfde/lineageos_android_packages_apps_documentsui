@@ -35,6 +35,8 @@ import org.json.JSONObject;
 import com.android.documentsui.R;
 import android.os.Bundle;
 import android.content.Intent;
+import android.provider.MediaStore;
+import android.content.ContentValues;
 
 public class VideoProvider extends DocumentsProvider {
     public static final String AUTHORITY = "com.android.documentsui.video";
@@ -122,6 +124,12 @@ public class VideoProvider extends DocumentsProvider {
         } else {
             throw new FileNotFoundException("Failed to delete document with id " + documentId);
         }
+        String selection = MediaStore.Images.Media.DATA + "=?";
+        String[] selectionArgs = new String[]{documentId};
+        getContext().getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection, selectionArgs );
+        getContext().getContentResolver().notifyChange(
+                DocumentsContract.buildDocumentUri(AUTHORITY, documentId),
+                null, false);
     }
 
     @Override
@@ -130,6 +138,12 @@ public class VideoProvider extends DocumentsProvider {
             throws FileNotFoundException {
         File file = FileUtils.createFile(documentId, mimeType, displayName);
 
+        ContentValues values  =  new ContentValues();
+        values.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "video/mp4");
+        values.put(MediaStore.Images.Media.SIZE, 100);
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, displayName);
+        getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values );
         getContext().getContentResolver().notifyChange(
                 DocumentsContract.buildDocumentUri(AUTHORITY, documentId),
                 null, false);

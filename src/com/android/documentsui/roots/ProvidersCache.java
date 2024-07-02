@@ -63,6 +63,7 @@ import com.android.documentsui.base.UserId;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -352,11 +353,14 @@ public class ProvidersCache implements ProvidersAccess, LookupApplicationName {
         ContentProviderClient client = null;
         Cursor cursor = null;
         try {
+            Log.w(TAG, "acquireUnstableProviderOrThrow " + authority + " , rootsUri "+rootsUri.toString() );
             client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, authority);
             cursor = client.query(rootsUri, null, null, null, null);
-            while (cursor.moveToNext()) {
-                final RootInfo root = RootInfo.fromRootsCursor(userId, authority, cursor);
-                roots.add(root);
+            if(cursor != null){
+                while (cursor.moveToNext()) {
+                    final RootInfo root = RootInfo.fromRootsCursor(userId, authority, cursor);
+                    roots.add(root);
+                }
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + authority, e);

@@ -473,6 +473,7 @@ public abstract class BaseActivity
                 root.isRecents() || root.isDownloads() ? View.VISIBLE : View.INVISIBLE);
 
         // Clear entire backstack and start in new root
+        Log.d("DocumentStack", "onRootPicked changed to: " + root);
         mState.stack.changeRoot(root);
 
         // Recents is always in memory, so we just load it directly.
@@ -787,7 +788,6 @@ public abstract class BaseActivity
     }
 
     private String getHeaderDefaultTitle(String rootTitle, String summary) {
-        Log.i("bella","getHeaderDefaultTitle "+rootTitle + " ,summary  "+summary);
         if (TextUtils.isEmpty(summary)) {
             final int resId = mState.isPhotoPicking()
                     ? R.string.root_info_header_image_app : R.string.root_info_header_app;

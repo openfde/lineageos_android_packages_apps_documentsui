@@ -36,8 +36,9 @@ import org.json.JSONObject;
 import com.android.documentsui.R;
 import android.os.Bundle;
 import android.content.Intent;
-import android.content.Context;
-
+import android.provider.MediaStore;
+import android.content.ContentResolver;
+import android.net.Uri;
 public class FileUtils {
    /**
      * 默认root需要查询的项
@@ -142,6 +143,9 @@ public class FileUtils {
                     while ((len = inStream.read(buf)) > 0) {
                         outStream.write(buf, 0, len);
                     }
+                    outStream.flush();
+                    outStream.close();
+                    inStream.close();
                 }
             }
         } catch (IOException e) {

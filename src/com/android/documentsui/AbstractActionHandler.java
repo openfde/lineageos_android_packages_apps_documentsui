@@ -834,6 +834,7 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
     }
 
     protected final void loadRecent() {
+        Log.d("DocumentStack", "loadRecent changed to: defaultRoot " );
         mState.stack.changeRoot(mProviders.getRecentsRoot(UserId.DEFAULT_USER));
         mActivity.refreshCurrentRootAndDirectory(AnimationView.ANIM_NONE);
     }

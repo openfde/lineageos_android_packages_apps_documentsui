@@ -145,7 +145,6 @@ public class LinuxRootProvider extends DocumentsProvider {
 
     @Override
     public boolean onCreate() {
-        Log.i("bella","onCreate........... ");
         return true; // 
     }
 

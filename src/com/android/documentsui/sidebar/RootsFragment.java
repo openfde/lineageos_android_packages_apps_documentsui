@@ -387,6 +387,13 @@ public class RootsFragment extends Fragment {
                 userIds);
         final List<RootItem> otherProviders = new ArrayList<>();
 
+        RootInfo documentsInfo = null ;
+        RootInfo musicInfo = null ;
+        RootInfo pictureInfo = null ;
+        RootInfo videoInfo = null ;
+        RootInfo downloadInfo = null ;
+
+
         for (final RootInfo root : roots) {
             final RootItem item;
 
@@ -396,6 +403,11 @@ public class RootsFragment extends Fragment {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
                 //librariesBuilder.add(item);
             } else if (root.isStorage()) {
+                documentsInfo = RootInfo.copyRootInfo(root);
+                musicInfo = RootInfo.copyRootInfo(root);
+                pictureInfo = RootInfo.copyRootInfo(root);
+                videoInfo = RootInfo.copyRootInfo(root);
+                downloadInfo = RootInfo.copyRootInfo(root);
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
 				if (item.title.equals(
                         Settings.Global.getString(getContext().getContentResolver(), Settings.Global.DEVICE_NAME))) {
@@ -410,6 +422,35 @@ public class RootsFragment extends Fragment {
                 otherProviders.add(item);
             }
         }
+
+
+
+       
+
+        musicInfo.documentId = musicInfo.rootId = Providers.ROOT_ID_AUDIO_NEW;
+        musicInfo.title = getString(R.string.fde_music);
+        musicInfo.derivedIcon = R.mipmap.icon_audio;
+        otherProviders.add(new RootItem(musicInfo, mActionHandler, maybeShowBadge));
+
+        videoInfo.rootId = videoInfo.documentId = Providers.ROOT_ID_VIDEOS_NEW;
+        videoInfo.title = getString(R.string.fde_videos);
+        videoInfo.derivedIcon = R.mipmap.icon_video;
+        otherProviders.add(new RootItem(videoInfo, mActionHandler, maybeShowBadge));
+        
+        pictureInfo.documentId =  pictureInfo.rootId = Providers.ROOT_ID_IMAGES_NEW;
+        pictureInfo.title = getString(R.string.fde_pictures);
+        pictureInfo.derivedIcon = R.mipmap.icon_picture;
+        otherProviders.add(new RootItem(pictureInfo, mActionHandler, maybeShowBadge));
+
+        documentsInfo.documentId =  documentsInfo.rootId = Providers.ROOT_ID_DOCUMENTS_NEW;
+        documentsInfo.title = getString(R.string.fde_documents);
+        documentsInfo.derivedIcon = R.mipmap.icon_document;
+        otherProviders.add(new RootItem(documentsInfo, mActionHandler, maybeShowBadge));
+
+        downloadInfo.rootId = downloadInfo.documentId = Providers.ROOT_ID_DOWNLOADS_NEW;
+        downloadInfo.title = getString(R.string.fde_downloads);
+        downloadInfo.derivedIcon = R.mipmap.icon_download;
+        otherProviders.add(new RootItem(downloadInfo, mActionHandler, maybeShowBadge));
 
         final List<RootItem> libraries = librariesBuilder.getList();
         final List<RootItem> storageProviders = storageProvidersBuilder.getList();
@@ -448,7 +489,7 @@ public class RootsFragment extends Fragment {
 					 if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
                         // remove
                     } else {
-                        // Log.i("bella","otherProviders title: "+item.root.title + " ,authority: "+item.root.authority);
+                        // Log.i("bella","otherProviders title: "+item.root.title + " ,authority: "+item.root.authority + " ,rootId: "+item.root.rootId);
                         if( item.root.authority.contains("fusionvolume")){
                             item.root.summary = "";
                             rootOtherList.add(new SpacerItem());
@@ -466,7 +507,8 @@ public class RootsFragment extends Fragment {
                 }
                 mApplicationItemList.add(item);
             }
-            
+            if (VERBOSE) Log.i(TAG, "bella Adding rootAndroidList roots: " + rootAndroidList);
+
             
             // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
             rootList.addAll(rootLinuxList);
