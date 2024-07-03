@@ -33,7 +33,7 @@ import com.android.documentsui.roots.RootCursorWrapper;
 
 import java.util.List;
 import java.util.concurrent.Executor;
-
+import android.provider.Settings;
 /*
  * The class to query multiple roots support {@link DocumentsContract.Root#FLAG_LOCAL_ONLY}
  * and {@link DocumentsContract.Root#FLAG_SUPPORTS_SEARCH} from
@@ -42,6 +42,7 @@ import java.util.concurrent.Executor;
 public class GlobalSearchLoader extends MultiRootDocumentsLoader {
     private final Bundle mQueryArgs;
     private final UserId mUserId;
+    Context context;
 
     /*
      * Create the loader to query multiple roots support
@@ -61,6 +62,7 @@ public class GlobalSearchLoader extends MultiRootDocumentsLoader {
             Lookup<String, Executor> executors, Lookup<String, String> fileTypeMap,
             @NonNull Bundle queryArgs, UserId userId) {
         super(context, providers, state, executors, fileTypeMap);
+        this.context = context;
         mQueryArgs = queryArgs;
         mUserId = userId;
     }
@@ -79,6 +81,11 @@ public class GlobalSearchLoader extends MultiRootDocumentsLoader {
             // just filter documents by mime type.
             return true;
         }
+
+        if (root.title.equals(
+                        Settings.Global.getString(context.getContentResolver(), Settings.Global.DEVICE_NAME))) {
+                            root.title = context.getString(R.string.fde_user_dir);
+                }
 
         // To prevent duplicate files on search result, ignore storage root because its almost
         // files include in media root.

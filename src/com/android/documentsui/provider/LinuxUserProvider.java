@@ -36,12 +36,11 @@ import com.android.documentsui.R;
 import android.os.Bundle;
 import android.content.Intent;
 
-public class FusionVolumeProvider extends DocumentsProvider {
+public class LinuxUserProvider extends DocumentsProvider {
 
     public static final String AUTHORITY = "com.android.documentsui.fusionvolume";
     public static final String DOC_ID_ROOT = "linux";
     public static final String DIR_ID_ROOT = "/volumes";
-    public static final String VOLUME_TITLE = "Linux Volume";
 
     @Override
     public Cursor queryRoots(final String[] projection) throws FileNotFoundException {
@@ -50,9 +49,9 @@ public class FusionVolumeProvider extends DocumentsProvider {
         row.add(Root.COLUMN_ROOT_ID, DOC_ID_ROOT);
         row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_RECENTS
                 | Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_SEARCH);
-        row.add(Root.COLUMN_ICON, R.mipmap.icon_pc);
-        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.fde_file_system));
-        row.add(Root.COLUMN_DOCUMENT_ID, DIR_ID_ROOT);
+        row.add(Root.COLUMN_ICON, R.mipmap.icon_home);
+        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.fde_user_dir));
+        row.add(Root.COLUMN_DOCUMENT_ID, DIR_ID_ROOT+"/"+FileUtils.getLinuxUUID()+ FileUtils.getLinuxHomeDir());
         row.add(Root.COLUMN_QUERY_ARGS, FileUtils.SUPPORTED_QUERY_ARGS);
         return result;
     }

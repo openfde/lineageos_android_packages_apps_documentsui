@@ -253,27 +253,27 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         } else if (isSd()) {
             derivedType = TYPE_SD;
             derivedIcon = R.drawable.ic_sd_storage;
-        } else if (isExternalStorage()) {
-            derivedType = TYPE_LOCAL;
-            derivedIcon = R.mipmap.icon_home;
         } else if (isDownloads()) {
             derivedType = TYPE_DOWNLOADS;
-            derivedIcon = R.drawable.ic_root_download;
+            derivedIcon = R.mipmap.icon_download; //R.drawable.ic_root_download;
         } else if (isImages()) {
             derivedType = TYPE_IMAGES;
-            derivedIcon = LOAD_FROM_CONTENT_RESOLVER;
+            derivedIcon = R.mipmap.icon_picture;//LOAD_FROM_CONTENT_RESOLVER;
         } else if (isVideos()) {
             derivedType = TYPE_VIDEO;
-            derivedIcon = LOAD_FROM_CONTENT_RESOLVER;
+            derivedIcon = R.mipmap.icon_video;//LOAD_FROM_CONTENT_RESOLVER;
         } else if (isAudio()) {
             derivedType = TYPE_AUDIO;
-            derivedIcon = LOAD_FROM_CONTENT_RESOLVER;
+            derivedIcon = R.mipmap.icon_audio;//LOAD_FROM_CONTENT_RESOLVER;
         } else if (isDocuments()) {
             derivedType = TYPE_DOCUMENTS;
-            derivedIcon = LOAD_FROM_CONTENT_RESOLVER;
+            derivedIcon = R.mipmap.icon_document;//LOAD_FROM_CONTENT_RESOLVER;
             // The mime type of Documents root from MediaProvider is "*/*" for performance concern.
             // Align the supported mime types with document search chip
             derivedMimeTypes = MimeTypes.getDocumentMimeTypeArray();
+        } else if (isExternalStorage()) {
+            derivedType = TYPE_LOCAL;
+            derivedIcon = R.mipmap.icon_home;
         } else if (isRecents()) {
             derivedType = TYPE_RECENTS;
         } else if (isBugReport()) {
@@ -282,7 +282,6 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         } else {
             derivedType = TYPE_OTHER;
         }
-
         if (VERBOSE) Log.v(TAG, "Derived fields: " + this);
     }
 
@@ -305,35 +304,36 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         // Note that "home" is the expected root id for the auto-created
         // user home directory on external storage. The "home" value should
         // match ExternalStorageProvider.ROOT_ID_HOME.
-        return isExternalStorage() && "home".equals(rootId);
+        return isExternalStorage() ;//&& Providers.ROOT_ID_HOME.equals(rootId);
     }
 
     public boolean isExternalStorage() {
-        return Providers.AUTHORITY_STORAGE.equals(authority);
+    //    return Providers.AUTHORITY_STORAGE.equals(authority);
+       return Providers.ROOT_ID_DEVICE.equals(rootId) || Providers.ROOT_ID_DOCUMENTS_NEW.equals(rootId)  ;
     }
 
     public boolean isDownloads() {
-        return Providers.AUTHORITY_DOWNLOADS.equals(authority);
+        return Providers.AUTHORITY_DOWNLOADS.equals(authority) ||  Providers.ROOT_ID_DOWNLOADS_NEW.equals(rootId);
     }
 
     public boolean isImages() {
-        return Providers.AUTHORITY_MEDIA.equals(authority)
-                && Providers.ROOT_ID_IMAGES.equals(rootId);
+        return (Providers.AUTHORITY_MEDIA.equals(authority)
+        && Providers.ROOT_ID_IMAGES.equals(rootId )) ||  Providers.ROOT_ID_IMAGES_NEW.equals(rootId);
     }
 
     public boolean isVideos() {
-        return Providers.AUTHORITY_MEDIA.equals(authority)
-                && Providers.ROOT_ID_VIDEOS.equals(rootId);
+        return (Providers.AUTHORITY_MEDIA.equals(authority)
+        && Providers.ROOT_ID_VIDEOS.equals(rootId))||Providers.ROOT_ID_VIDEOS_NEW.equals(rootId);
     }
 
     public boolean isAudio() {
-        return Providers.AUTHORITY_MEDIA.equals(authority)
-                && Providers.ROOT_ID_AUDIO.equals(rootId);
+        return (Providers.AUTHORITY_MEDIA.equals(authority)
+        && Providers.ROOT_ID_AUDIO.equals(rootId)) || Providers.ROOT_ID_AUDIO_NEW.equals(rootId);
     }
 
     public boolean isDocuments() {
-        return Providers.AUTHORITY_MEDIA.equals(authority)
-                && Providers.ROOT_ID_DOCUMENTS.equals(rootId);
+        return (Providers.AUTHORITY_MEDIA.equals(authority)
+        && Providers.ROOT_ID_DOCUMENTS.equals(rootId)) || Providers.ROOT_ID_DOCUMENTS_NEW.equals(rootId);
     }
 
     public boolean isMtp() {
@@ -347,6 +347,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         return derivedType == TYPE_IMAGES
                 || derivedType == TYPE_VIDEO
                 || derivedType == TYPE_AUDIO
+                || derivedType == TYPE_DOWNLOADS
                 || derivedType == TYPE_RECENTS
                 || derivedType == TYPE_DOCUMENTS;
     }

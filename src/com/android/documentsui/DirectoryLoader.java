@@ -98,7 +98,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
         mSearchMode = queryArgs != null;
         mQueryArgs = queryArgs;
         mObserver = new LockingContentObserver(lock, this::onContentChanged);
-        mPhotoPicking = state.isPhotoPicking();
+        mPhotoPicking = state.isPhotoPicking();   
     }
 
     @Override
@@ -221,14 +221,24 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
     @Nullable
     private Cursor queryOnUsers(List<UserId> userIds, String authority, Bundle queryArgs)
             throws RemoteException {
+        String strUri = mUri.toString();
+        String strQuery = mUri.getQueryParameter("query");
+        String strUri2 = strUri ;
+
+        if(!strUri.contains("children") && (strUri.contains("Music")  || strUri.contains("Movies")  || strUri.contains("Pictures")  || strUri.contains("Documents") || strUri.contains("Download") ) ){
+            strUri2 = "content://com.android.externalstorage.documents/root/primary/search?query="+strQuery+"&manage=true";//strUri.replace("%3AMusic", "");  
+        }  
+       
+        Uri newUri = Uri.parse(strUri2);  
+
         final List<Cursor> cursors = new ArrayList<>(userIds.size());
         for (UserId userId : userIds) {
             try (ContentProviderClient userClient =
                          DocumentsApplication.acquireUnstableProviderOrThrow(
                                  userId.getContentResolver(getContext()), authority)) {
-                Cursor c = userClient.query(mUri, /* projection= */null, queryArgs, mSignal);
+                Cursor c = userClient.query(newUri, /* projection= */null, queryArgs, mSignal);
                 if (c != null) {
-                    cursors.add(new RootCursorWrapper(userId, mUri.getAuthority(), mRoot.rootId,
+                    cursors.add(new RootCursorWrapper(userId, newUri.getAuthority(), mRoot.rootId,
                             c, /* maxCount= */-1));
                 }
             } catch (RemoteException e) {

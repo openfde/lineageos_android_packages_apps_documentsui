@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -129,11 +130,13 @@ final class RootsMonitor<T extends Activity & CommonAddons> {
 
         @Override
         protected void finish(RootInfo defaultRoot) {
-            if (defaultRoot == null) {
+            if (defaultRoot == null || "com.android.providers.downloads.documents".equals(defaultRoot.authority)) {
+                Log.d("DocumentStack", "finish changed to: no download " );
                 return;
-            }
+            }else{
+                Log.d("DocumentStack", "finish changed to: authority " + defaultRoot.authority);
 
-            // If the activity has been launched for the specific root and it is removed, finish the
+           // If the activity has been launched for the specific root and it is removed, finish the
             // activity.
             final Uri uri = mOwner.getIntent().getData();
             if (uri != null && uri.equals(mCurrentRoot.getUri())) {
@@ -145,6 +148,7 @@ final class RootsMonitor<T extends Activity & CommonAddons> {
             mActionModeFinisher.run();
 
             // Clear entire backstack and start in new root.
+            Log.d("DocumentStack", "finish changed to: defaultRoot " + defaultRoot);
             mState.stack.changeRoot(defaultRoot);
             mSearchMgr.update(mState.stack);
 
@@ -153,6 +157,7 @@ final class RootsMonitor<T extends Activity & CommonAddons> {
             } else {
                 mActions.openContainerDocument(mDefaultRootDocument);
             }
+            }           
         }
     }
 }

@@ -52,4 +52,8 @@
 
     <color name="doc_list_item_subtitle_enabled">#5F6368</color> <!-- Gray 700 -->
     <color name="doc_list_item_subtitle_disabled">#613c4043</color> <!-- 38% Grey800 -->
+
+
+    <color name="light_grep">#f2f2f2</color>
+    <color name="light_green">#ebf0e0</color>
 </resources>

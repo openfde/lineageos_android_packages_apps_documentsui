@@ -473,6 +473,7 @@ public abstract class BaseActivity
                 root.isRecents() || root.isDownloads() ? View.VISIBLE : View.INVISIBLE);
 
         // Clear entire backstack and start in new root
+        Log.d("DocumentStack", "onRootPicked changed to: " + root);
         mState.stack.changeRoot(root);
 
         // Recents is always in memory, so we just load it directly.

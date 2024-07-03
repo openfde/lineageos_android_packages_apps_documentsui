@@ -542,4 +542,12 @@
     <!-- Snackbar shown when users drag and drop files from another app
     to DocumentsUI. [CHAR_LIMIT=100] -->
     <string name="drag_from_another_app">You can\u2019t move files from another app.</string>
+
+    <string name="fde_music">Music</string>
+    <string name="fde_documents">Documents</string>
+    <string name="fde_downloads">Downloads</string>
+    <string name="fde_videos">Videos</string>
+    <string name="fde_pictures">Pictures</string>
+    <string name="fde_images">Images</string>
+    <string name="fde_audio">Audio</string>
 </resources>
