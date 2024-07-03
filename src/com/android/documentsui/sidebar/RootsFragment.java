@@ -411,7 +411,7 @@ public class RootsFragment extends Fragment {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
 				if (item.title.equals(
                         Settings.Global.getString(getContext().getContentResolver(), Settings.Global.DEVICE_NAME))) {
-                    item.title = getContext().getString(R.string.fde_user_dir);
+                    item.title = getContext().getString(R.string.fde_fde_dir);
                 }
                 item.root.summary = ANDROID;
                 storageProvidersBuilder.add(item);
@@ -484,6 +484,7 @@ public class RootsFragment extends Fragment {
             // rootLinuxList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
             // rootAndroidList.add(new TitleItem(R.layout.item_android_header,"Android"));
             rootAndroidList.addAll(storageProviders);
+
             for (RootItem item : otherProviders) {
                 if (UserId.CURRENT_USER.equals(item.userId)) {
 					 if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
@@ -492,11 +493,10 @@ public class RootsFragment extends Fragment {
                         // Log.i("bella","otherProviders title: "+item.root.title + " ,authority: "+item.root.authority + " ,rootId: "+item.root.rootId);
                         if( item.root.authority.contains("fusionvolume")){
                             item.root.summary = "";
-                            rootOtherList.add(new SpacerItem());
                             rootOtherList.add(item);
-                        }else  if(item.root.authority.contains(LINUX)){
-                            item.root.summary = LINUX;
-                            rootLinuxList.add(item);
+                        }else if(item.root.authority.contains(LINUX)){
+                            item.root.summary = "";
+                            rootOtherList.add(item);
                         }else{
                             // item.root.summary = ANDROID;
                             rootAndroidList.add(item);
@@ -507,9 +507,9 @@ public class RootsFragment extends Fragment {
                 }
                 mApplicationItemList.add(item);
             }
+            rootOtherList.add(new SpacerItem());
+            Collections.reverse(rootOtherList);
             if (VERBOSE) Log.i(TAG, "bella Adding rootAndroidList roots: " + rootAndroidList);
-
-            
             // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
             rootList.addAll(rootLinuxList);
             // rootList.add(new SpacerItem());

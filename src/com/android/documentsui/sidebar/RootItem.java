@@ -105,13 +105,13 @@ public class RootItem extends Item {
         final RootItemView rootView = (RootItemView) view.findViewById(R.id.rootView);
         String summaryText = root.summary;
         if(summaryText !=null){
-            if(summaryText.equals("linux") ){
-                rootView.setBackgroundColor(Color.parseColor("#f2f2f2"));
-            }else if(summaryText.equals("android")){
-                rootView.setBackgroundColor(Color.parseColor("#ebf0e0"));
-            }else{
-                rootView.setBackgroundColor(Color.parseColor("#ffffff"));
-            }
+            // if(summaryText.equals("linux") ){
+            //     rootView.setBackgroundColor(Color.parseColor("#f2f2f2"));
+            // }else if(summaryText.equals("android")){
+            //     rootView.setBackgroundColor(Color.parseColor("#ebf0e0"));
+            // }else{
+            //     rootView.setBackgroundColor(Color.parseColor("#ffffff"));
+            // }
         }
 
         // if(title.equals(view.getContext().getString(R.string.fde_user_dir))||title.equals(view.getContext().getString(R.string.fde_music))||
@@ -145,8 +145,8 @@ public class RootItem extends Item {
     protected void bindSummary(View view, String summary) {
         final TextView summaryView = (TextView) view.findViewById(android.R.id.summary);
         summaryView.setText(summary);
-        // summaryView.setVisibility((TextUtils.isEmpty(summary) || summary.equals("linux") ||summary.equals("android") ) ? View.GONE : View.VISIBLE);
-        summaryView.setVisibility((TextUtils.isEmpty(summary) ) ? View.GONE : View.VISIBLE);
+        summaryView.setVisibility((TextUtils.isEmpty(summary) || summary.equals("linux") ||summary.equals("android") ) ? View.GONE : View.VISIBLE);
+        // summaryView.setVisibility((TextUtils.isEmpty(summary) ) ? View.GONE : View.VISIBLE);
 
     }
 

@@ -550,4 +550,6 @@
     <string name="fde_pictures">Pictures</string>
     <string name="fde_images">Images</string>
     <string name="fde_audio">Audio</string>
+    <string name="fde_fde_dir" >"Home Directory"</string>
+    <string name="fde_linux_dir" >"Linux Home Directory"</string>
 </resources>
