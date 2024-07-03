@@ -157,16 +157,20 @@ public class DocumentStack implements Durable, Parcelable {
         if (DEBUG) {
             Log.d(TAG, "Root changed to: " + root);
         }
+        if(root.authority !=null && root.authority.equals("com.android.providers.downloads.documents")){
+            Log.d(TAG, "Root not to  changed downloads: " +root.isRecents());
+            return ;
+        }
         reset();
         mRoot = root;
 
         // Add this for keep stack size is 1 on recent root.
-        if (root.isRecents()) {
-            DocumentInfo rootRecent = new DocumentInfo();
-            rootRecent.userId = root.userId;
-            rootRecent.deriveFields();
-            push(rootRecent);
-        }
+        // if (root.isRecents()) {
+        //     DocumentInfo rootRecent = new DocumentInfo();
+        //     rootRecent.userId = root.userId;
+        //     rootRecent.deriveFields();
+        //     push(rootRecent);
+        // }
     }
 
     /** This will return true even when the initial location is set.
