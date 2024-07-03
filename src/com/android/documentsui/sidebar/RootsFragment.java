@@ -396,9 +396,9 @@ public class RootsFragment extends Fragment {
 
         for (final RootInfo root : roots) {
             final RootItem item;
-
-            if (root.isExternalStorageHome()) {
-                continue;
+            //if (root.isExternalStorageHome()) {
+            if (Providers.ROOT_ID_HOME.equals(root.rootId)) {  
+               continue;
             } else if (root.isLibrary() || root.isDownloads()) {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
                 //librariesBuilder.add(item);

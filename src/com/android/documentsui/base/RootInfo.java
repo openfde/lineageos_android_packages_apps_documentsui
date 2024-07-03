@@ -304,12 +304,12 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         // Note that "home" is the expected root id for the auto-created
         // user home directory on external storage. The "home" value should
         // match ExternalStorageProvider.ROOT_ID_HOME.
-        return isExternalStorage() && Providers.ROOT_ID_HOME.equals(rootId);
+        return isExternalStorage() ;//&& Providers.ROOT_ID_HOME.equals(rootId);
     }
 
     public boolean isExternalStorage() {
-       // return Providers.AUTHORITY_STORAGE.equals(authority);
-       return Providers.ROOT_ID_DEVICE.equals(rootId);
+    //    return Providers.AUTHORITY_STORAGE.equals(authority);
+       return Providers.ROOT_ID_DEVICE.equals(rootId) || Providers.ROOT_ID_DOCUMENTS_NEW.equals(rootId)  ;
     }
 
     public boolean isDownloads() {
