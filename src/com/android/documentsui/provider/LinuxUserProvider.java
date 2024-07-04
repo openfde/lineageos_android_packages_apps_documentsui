@@ -50,7 +50,7 @@ public class LinuxUserProvider extends DocumentsProvider {
         row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_RECENTS
                 | Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_SEARCH);
         row.add(Root.COLUMN_ICON, R.mipmap.icon_home);
-        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.fde_user_dir));
+        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.fde_linux_dir));
         row.add(Root.COLUMN_DOCUMENT_ID, DIR_ID_ROOT+"/"+FileUtils.getLinuxUUID()+ FileUtils.getLinuxHomeDir());
         row.add(Root.COLUMN_QUERY_ARGS, FileUtils.SUPPORTED_QUERY_ARGS);
         return result;

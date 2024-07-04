@@ -286,4 +286,6 @@
     <string name="fde_downloads">下载</string>
     <string name="fde_videos">视频</string>
     <string name="fde_pictures">图片</string>
+    <string name="fde_fde_dir" >"主目录"</string>
+    <string name="fde_linux_dir" >"Linux主目录"</string>
 </resources>

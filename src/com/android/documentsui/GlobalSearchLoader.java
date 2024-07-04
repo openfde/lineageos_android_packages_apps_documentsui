@@ -84,7 +84,7 @@ public class GlobalSearchLoader extends MultiRootDocumentsLoader {
 
         if (root.title.equals(
                         Settings.Global.getString(context.getContentResolver(), Settings.Global.DEVICE_NAME))) {
-                            root.title = context.getString(R.string.fde_user_dir);
+                            root.title = context.getString(R.string.fde_fde_dir);
                 }
 
         // To prevent duplicate files on search result, ignore storage root because its almost
