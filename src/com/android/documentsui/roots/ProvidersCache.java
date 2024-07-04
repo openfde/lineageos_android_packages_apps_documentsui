@@ -416,7 +416,7 @@ public class ProvidersCache implements ProvidersAccess, LookupApplicationName {
 
     private RootInfo getRootLocked(UserAuthority userAuthority, String rootId) {
         for (RootInfo root : mRoots.get(userAuthority)) {
-            if (Objects.equals(root.rootId, rootId)) {
+            if (Objects.equals(root.rootId, rootId)|| rootId.contains("primary:")) {
                 return root;
             }
         }
