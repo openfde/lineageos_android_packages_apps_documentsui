@@ -39,6 +39,10 @@ import android.content.Intent;
 import android.provider.MediaStore;
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
+
 public class FileUtils {
    /**
      * 默认root需要查询的项
@@ -356,5 +360,31 @@ public class FileUtils {
     }
 
 
+    /**
+     * get file type
+     * @param filePath
+     * @return
+     */
+    public static String getFileTyle (String filePath){
+        try {
+            File file = new File(filePath);
+            String fileName = file.getName();
+            int dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                String extension = fileName.substring(dotIndex + 1);
+                return  extension;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static  Bitmap getThumbnail(String imagePath, int width, int height) {
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+        return ThumbnailUtils.extractThumbnail(bitmap, width, height);
+    }
     
 }

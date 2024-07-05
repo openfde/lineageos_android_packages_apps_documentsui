@@ -46,7 +46,9 @@ import com.android.documentsui.base.MimeTypes;
 import com.android.documentsui.base.State;
 import com.android.documentsui.base.State.ViewMode;
 import com.android.documentsui.base.UserId;
+import com.android.documentsui.provider.FileUtils;
 
+import java.io.File;
 import java.util.function.BiConsumer;
 
 /**
@@ -221,6 +223,15 @@ public class IconHelper {
                             if (bitmap != null) {
                                 iconThumb.setImageBitmap(bitmap);
                                 animator.accept(iconMime, iconThumb);
+                            }else{
+                                String path = uri.getPath();
+                                path = path.replace("/document//","/");
+                                File file = new File(path);
+                                if(file.exists()){
+                                    Bitmap bMap = FileUtils.getThumbnail(path,100,100);
+                                    iconThumb.setImageBitmap(bMap);
+                                    animator.accept(iconMime, iconThumb);
+                                }
                             }
                         }, true /* addToCache */);
 
