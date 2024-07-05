@@ -419,7 +419,11 @@ public class RootsFragment extends Fragment {
                 item = new RootItem(root, mActionHandler,
                         providersAccess.getPackageName(root.userId, root.authority),
                         maybeShowBadge);
-                otherProviders.add(item);
+                if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
+                    // remove
+                } else {
+                    otherProviders.add(item);
+                }
             }
         }
 
@@ -473,6 +477,7 @@ public class RootsFragment extends Fragment {
         final List<Item> rootListOtherUser = new ArrayList<>();
         mApplicationItemList = new ArrayList<>();
         if (handlerAppIntent != null) {
+            rootList.addAll(storageProviders);
             includeHandlerApps(state, handlerAppIntent, excludePackage, rootList, rootListOtherUser,
                     otherProviders, userIds, maybeShowBadge);
         } else {
@@ -544,7 +549,8 @@ public class RootsFragment extends Fragment {
                                     List<Item> rootListOtherUser, List<RootItem> otherProviders, List<UserId> userIds,
                                     boolean maybeShowBadge) {
         if (VERBOSE) Log.v(TAG, "Adding handler apps for intent: " + handlerAppIntent);
-
+        List<Item> linuxList = new ArrayList<>();
+        List<Item> androidList = new ArrayList<>();
         Context context = getContext();
         final Map<UserPackage, ResolveInfo> appsMapping = new HashMap<>();
         final Map<UserPackage, Item> appItems = new HashMap<>();
@@ -597,7 +603,13 @@ public class RootsFragment extends Fragment {
 
             if (UserId.CURRENT_USER.equals(item.userId)) {
                 if (VERBOSE) Log.v(TAG, "Adding provider : " + item);
-                rootList.add(item);
+                if (rootItem.root.rootId.contains(LINUX)) {
+                    linuxList.add(rootItem);
+                } else if (rootItem.root.authority.contains("externalstorage.documents")) {
+                    androidList.add(rootItem);
+                } else {
+                    rootList.add(rootItem);
+                }
             } else {
                 if (VERBOSE) Log.v(TAG, "Adding provider to other users : " + item);
                 rootListOtherUser.add(item);
@@ -611,7 +623,10 @@ public class RootsFragment extends Fragment {
                 rootListOtherUser.add(item);
             }
         }
-
+        Collections.reverse(linuxList);
+        rootList.addAll(androidList);
+//        rootList.add(new SpacerItem());
+        rootList.addAll(linuxList);
         final String preferredRootPackage = getResources().getString(
                 R.string.preferred_root_package, "");
         final ItemComparator comp = new ItemComparator(preferredRootPackage);
