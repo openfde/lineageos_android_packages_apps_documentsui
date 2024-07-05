@@ -20,9 +20,25 @@
     android:layout_height="wrap_content"
     android:overScrollMode="never"
     android:scrollbars="none">
+
     <LinearLayout
-        android:id="@+id/search_chip_group"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/search_chip_spacing"/>
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/fde_file_type_filter"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:id="@+id/txtTypeFilter"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:id="@+id/search_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/search_chip_spacing"
+            android:orientation="horizontal" />
+    </LinearLayout>
 </HorizontalScrollView>

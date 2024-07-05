@@ -281,7 +281,7 @@
     <string name="a11y_work" msgid="7504431382825242153">"工作"</string>
     <string name="drag_from_another_app" msgid="8310249276199969905">"您无法移动其他应用中的文件。"</string>
 
-     <string name="fde_music">音频</string>
+    <string name="fde_music">音频</string>
     <string name="fde_documents">文档</string>
     <string name="fde_downloads">下载</string>
     <string name="fde_videos">视频</string>
@@ -289,5 +289,7 @@
     <string name="fde_fde_dir" >"主目录"</string>
     <string name="fde_linux_dir" >"Linux主目录"</string>
     <string name="fde_file" >"文件"</string>
+    <string name="fde_file_type_filter" >"按类型筛选 "</string>
+
 
 </resources>
