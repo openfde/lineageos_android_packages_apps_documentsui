@@ -35,7 +35,6 @@ public class IpcService extends Service {
                 String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
                 Uri uri = Uri.parse(path);
                 String mimeType = FileUtils.getMimeType(new File(Providers.PATH_ID_DESKTOP+params));
-                Log.i("bella","basicIpcMethon.....path1........ "+path + " ,mimeType "+mimeType );
                 if(mimeType.contains("image")){
                     intent.setDataAndType(uri, "image/*");
                 }else if(mimeType.contains("text")){
@@ -51,7 +50,6 @@ public class IpcService extends Service {
                 context.startActivity(intent);
             }else if("OPEN_DIR".equals(method)){
                 String uriPath = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+"primary:%2fDesktop%2f"+params +"%2f";
-                Log.i("bella","basicIpcMethon.....uriPath........ "+uriPath);
                 Uri uri = Uri.parse(uriPath);
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -62,6 +60,8 @@ public class IpcService extends Service {
                 flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
                 intent.setFlags(flags);
                 context.startActivity(intent);
+            }else if("DELETE_FILE".equals(method)){
+                FileUtils.deleteFiles(params);
             }
             return "this is document ui app";
         }

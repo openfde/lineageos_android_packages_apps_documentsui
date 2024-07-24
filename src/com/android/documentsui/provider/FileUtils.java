@@ -194,6 +194,19 @@ public class FileUtils {
         }
     }
 
+    public static void deleteFiles(String path){
+      try {
+        File file  = new File(path);
+        if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                deleteFiles(child.getAbsolutePath());
+            }
+        }
+        file.delete();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     public static void includeFile(final MatrixCursor result, final File file) throws FileNotFoundException {
         final MatrixCursor.RowBuilder row = result.newRow();
