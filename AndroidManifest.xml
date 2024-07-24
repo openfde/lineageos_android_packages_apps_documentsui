@@ -69,6 +69,11 @@
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAInBA8ued0O_ZyYUsVhwinUF-x50NIe9K0GzBW4A" />
 
+        <service
+            android:name=".IpcService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".picker.PickActivity"
             android:exported="true"

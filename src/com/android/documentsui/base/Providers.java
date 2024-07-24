@@ -41,11 +41,14 @@ public final class Providers {
     public static final String ROOT_ID_AUDIO = "audio_root";
     public static final String ROOT_ID_DOCUMENTS = "documents_root";
 
+    public static final String PATH_ID_DESKTOP = "/mnt/sdcard/Desktop/";
+
     public static final String ROOT_ID_IMAGES_NEW = "primary:Pictures";
     public static final String ROOT_ID_VIDEOS_NEW = "primary:Movies";
     public static final String ROOT_ID_AUDIO_NEW = "primary:Music";
     public static final String ROOT_ID_DOCUMENTS_NEW = "primary:Documents";
     public static final String ROOT_ID_DOWNLOADS_NEW = "primary:Download";
+    public static final String ROOT_ID_DESKTOP = "primary:Desktop";
 
     public static final String AUTHORITY_MTP = "com.android.mtp.documents";
     public static final String AUTHORITY_BUGREPORT = "com.android.shell.documents";

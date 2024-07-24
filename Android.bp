@@ -57,6 +57,7 @@ filegroup {
     name: "DocumentsUI-srcs",
     srcs: [
         "src/**/*.java",
+		"src/**/*.aidl",
 	":statslog-docsui-java-gen",
     ],
 }
@@ -66,6 +67,7 @@ java_library {
     srcs: [
         ":statslog-docsui-java-gen",
     ],
+
 }
 
 genrule {
@@ -74,6 +76,7 @@ genrule {
     cmd: "$(location stats-log-api-gen) --java $(out) --module docsui --javaPackage com.android.documentsui --javaClass DocumentsStatsLog --supportQ",
     out: ["com/android/documentsui/DocumentsStatsLog.java"],
 }
+
 
 android_library {
     name: "DocumentsUI-res-lib",

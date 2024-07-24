@@ -261,7 +261,7 @@ public class FileUtils {
                 return mime;
             }
         }
-        return "application/octet-stream";
+        return "vnd.android.document/directory";
     }
 
     public static  String readFile() {
@@ -385,6 +385,15 @@ public class FileUtils {
     public static  Bitmap getThumbnail(String imagePath, int width, int height) {
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
         return ThumbnailUtils.extractThumbnail(bitmap, width, height);
+    }
+
+    public static String getMimeType(File file) {
+        String mimeType = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
+        if (extension != null) {
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return mimeType;
     }
     
 }
