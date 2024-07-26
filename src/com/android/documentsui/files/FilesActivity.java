@@ -65,7 +65,8 @@ import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.ui.DialogController;
 import com.android.documentsui.ui.MessageBuilder;
-
+import android.provider.DocumentsContract;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,6 +87,8 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     private ActivityInputHandler mActivityInputHandler;
     private SharedInputHandler mSharedInputHandler;
     private final ProfileTabsAddons mProfileTabsAddonsStub = new DummyProfileTabsAddons();
+    
+    String getPath;
 
     public static final String[] permissions = {
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -110,6 +113,8 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     @Override
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
+
+        getPath = getIntent().getStringExtra("getPath");
 
         if (Build.VERSION.SDK_INT >= 23) {
             requestPermissions(permissions, 1);
@@ -379,7 +384,21 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
             DirectoryFragment.showRecentsOpen(fm, anim);
         } else {
             // Normal boring directory
-            DirectoryFragment.showDirectory(fm, root, cwd, anim);
+            // 
+            if(getPath !=null){
+                final DocumentInfo documentInfo = cwd;
+                String childPath = getIntent().getStringExtra("childPath");
+                Log.i("bella","getPath "+getPath + ",childPath "+childPath);
+                root.documentId = documentInfo.documentId = "primary:Desktop/"+childPath;
+                root.title  = documentInfo.displayName = childPath;
+                root.authority = documentInfo.authority = "com.android.externalstorage.documents";
+                documentInfo.mimeType = "vnd.android.document/directory";
+                documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary%3ADesktop%2"+childPath);
+                DirectoryFragment.showDirectory(fm, root, documentInfo, AnimationView.ANIM_NONE);
+                getPath = null;
+            }else{
+                DirectoryFragment.showDirectory(fm, root, cwd, anim);
+            }
         }
     }
 

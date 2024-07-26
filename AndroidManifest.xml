@@ -152,6 +152,19 @@
             </intent-filter>
         </activity>
 
+         <activity
+            android:name=".files.DocEditViewActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="false" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="content" />
+                <data android:mimeType="text/plain"/>/>
+            </intent-filter>
+
+        </activity>
+
         <activity-alias android:name=".ViewDownloadsActivity"
                         android:targetActivity=".files.FilesActivity"
                         android:exported="true"

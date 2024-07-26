@@ -3,6 +3,7 @@ package com.android.documentsui;
 import java.io.File;
 
 import com.android.documentsui.base.Providers;
+import com.android.documentsui.files.FilesActivity;
 import com.android.documentsui.provider.FileUtils;
 
 import android.app.Service;
@@ -13,6 +14,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.provider.DocumentsContract;
+import android.content.ComponentName;
 
 
 public class IpcService extends Service {
@@ -42,26 +44,29 @@ public class IpcService extends Service {
                 }else{
                     intent.setDataAndType(uri, "application/*");
                 }
-               
+                intent.putExtra("docTitle",params);
                 int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
                 flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
                 flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
                 intent.setFlags(flags);
                 context.startActivity(intent);
             }else if("OPEN_DIR".equals(method)){
-                String uriPath = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+"primary:%2fDesktop%2f"+params +"%2f";
-                Uri uri = Uri.parse(uriPath);
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
-                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
-                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
-                flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
-                intent.setFlags(flags);
-                context.startActivity(intent);
+                  Intent intent = new Intent();
+                  ComponentName componentName = new ComponentName( "com.android.documentsui", "com.android.documentsui.files.FilesActivity"  );
+                  intent.setComponent(componentName);
+                  intent.putExtra("getPath", "/mnt/sdcard/Desktop/");
+                  intent.putExtra("childPath",params);
+                  int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                    flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                    flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                    intent.setFlags(flags);
+                  startActivity(intent);
             }else if("DELETE_FILE".equals(method)){
                 FileUtils.deleteFiles(params);
+            }else if("NEW_FILE".equals(method)){
+                FileUtils.newFile();
+            }else if("NEW_DIR".equals(method)){
+                FileUtils.newDir();
             }
             return "this is document ui app";
         }

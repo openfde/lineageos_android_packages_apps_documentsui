@@ -24,9 +24,12 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import android.os.SystemProperties;
 import android.util.Log;
@@ -42,8 +45,12 @@ import android.net.Uri;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
+import android.widget.Toast;
 
 public class FileUtils {
+
+    public static final String PATH_ID_DESKTOP = "/mnt/sdcard/Desktop/";
+
    /**
      * 默认root需要查询的项
      */
@@ -408,5 +415,139 @@ public class FileUtils {
         }
         return mimeType;
     }
+
+
+      public static String readTextFromUri(Uri uri,Context context) {
+        StringBuilder text = new StringBuilder();
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                text.append(line).append("\n");
+            }
+            bufferedReader.close();
+            inputStreamReader.close();
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return text.toString();
+    }
+
+    public static String readTextFromPath(String docPath) {
+        try {
+            File file = new File(docPath);
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            fis.close();
+            return sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
+    public static void writeTextToUri(Uri uri, String text,Context context) {
+        try (OutputStream outputStream = context.getContentResolver().openOutputStream(uri);
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)) {
+            bufferedWriter.write(text);
+            bufferedWriter.close();
+            outputStreamWriter.close();
+            outputStream.close();
+            Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeTextToPath(String docPath, String fileContents,Context context) {
+        File file = new File(docPath);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            fos.write(fileContents.getBytes());
+            Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void clearFileContent(Uri uri,int contentBytesLen,Context context) {
+        try (OutputStream outputStream = context.getContentResolver().openOutputStream(uri)) {
+            if (outputStream != null) {
+                // Write an empty byte array to clear the content
+                outputStream.write(new byte[contentBytesLen]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static boolean newDir() {     
+        String documentId = PATH_ID_DESKTOP; 
+        File folder = new File(documentId);   
+        String newDirName = "NewDir"; 
+        if (!folder.exists()) {
+            boolean result = folder.mkdirs();
+            if (result) {
+                Log.i("bella", "Folder created: " + folder.getAbsolutePath());
+            } else {
+                Log.e("bella", "Failed to create folder");
+            }
+        } else {
+            Log.i("bella", "Folder already exists");
+            newDirName =  getUniqueFileName(documentId,newDirName);
+        }
+        folder = new File(documentId,newDirName);
+        folder.mkdirs();
+        return true;
+    }
+
+public static boolean newFile() {      
+    try{
+        String documentId = PATH_ID_DESKTOP;
+        File folder = new File(documentId);  
+        String newDocName = "NewDir.txt";  
+        if (!folder.exists()) {
+            boolean result = folder.mkdirs();
+            if (result) {
+                Log.i("bella", "Folder created: " + folder.getAbsolutePath());
+            } else {
+                Log.e("bella", "Failed to create folder");
+            }
+        } else {
+            Log.i("bella", "Folder already exists");
+            newDocName =  getUniqueFileName(documentId,newDocName);
+        }
+        folder = new File(documentId,newDocName);
+        folder.createNewFile();
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+    return true;
+}
+
     
 }
