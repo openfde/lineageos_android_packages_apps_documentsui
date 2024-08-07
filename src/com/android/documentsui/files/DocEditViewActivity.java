@@ -73,11 +73,9 @@ public class DocEditViewActivity extends AppCompatActivity {
             Uri uri = getIntent().getData();
             String fileContent = FileUtils.readTextFromUri(uri,context);
             contentBytesLen = fileContent.getBytes().length;
-            Log.i("bella", "fileContent1   ----- > " + fileContent);
             editText.setText(fileContent);
         } else {
             String fileContent = FileUtils.readTextFromPath(docPath);
-            Log.i("bella", "fileContent2   ----- > " + fileContent);
             editText.setText(fileContent);
         }
     }
@@ -86,7 +84,6 @@ public class DocEditViewActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Log.i("bella", "onBackPressed............");
     }
 
 

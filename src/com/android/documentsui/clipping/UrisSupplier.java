@@ -16,6 +16,7 @@
 
 package com.android.documentsui.clipping;
 
+import static com.android.documentsui.base.State.CREATOR;
 import static com.android.documentsui.clipping.DocumentClipper.OP_JUMBO_SELECTION_SIZE;
 import static com.android.documentsui.clipping.DocumentClipper.OP_JUMBO_SELECTION_TAG;
 
@@ -32,6 +33,7 @@ import androidx.recyclerview.selection.Selection;
 
 import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.base.Shared;
+import com.android.documentsui.clipping.UrisSupplier.StandardUrisSupplier;
 import com.android.documentsui.services.FileOperation;
 
 import java.io.File;
@@ -73,7 +75,9 @@ public abstract class UrisSupplier implements Parcelable {
     public static UrisSupplier create(ClipData clipData, ClipStore storage) throws IOException {
         UrisSupplier uris;
         PersistableBundle bundle = clipData.getDescription().getExtras();
-        if (bundle.containsKey(OP_JUMBO_SELECTION_TAG)) {
+        if(bundle == null){
+            uris = new StandardUrisSupplier(clipData);
+        }else if (bundle.containsKey(OP_JUMBO_SELECTION_TAG)) {
             uris = new JumboUrisSupplier(clipData, storage);
         } else {
             uris = new StandardUrisSupplier(clipData);

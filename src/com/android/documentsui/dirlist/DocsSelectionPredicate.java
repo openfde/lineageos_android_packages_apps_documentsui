@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.documentsui.ActivityConfig;
 import com.android.documentsui.Model;
 import com.android.documentsui.base.State;
+import com.android.documentsui.provider.FileUtils;
 
 /**
  * Class embodying the logic as to whether an item (specified by id or position)
@@ -59,6 +60,17 @@ final class DocsSelectionPredicate extends SelectionPredicate<String> {
 
     @Override
     public boolean canSetStateForKey(String id, boolean nextState) {
+        // Log.w(DirectoryFragment.TAG, "canSetStateForKey: " + id + " , mModel doc : " + mModel.doc + " , mModel: " + mModel.toString() + ", mimeType: " + mModel.doc.mimeType);
+        if (id.contains("Desktop")) {
+            String mimeType = "text/plain"; 
+            // try {
+            //     mimeType =  FileUtils.getDocumentType(mModel.doc.documentId);
+            // } catch (Exception e) {
+            //     e.printStackTrace();
+            // }
+            // Log.w(DirectoryFragment.TAG, "canSetStateForKey mimeType: " + mimeType);
+            return mConfig.canSelectType(mimeType, 326, mState);
+        }
         if (nextState) {
             // Check if an item can be selected
             final Cursor cursor = mModel.getItem(id);

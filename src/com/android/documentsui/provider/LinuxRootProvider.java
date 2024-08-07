@@ -123,6 +123,7 @@ public class LinuxRootProvider extends DocumentsProvider {
 
     @Override
     public void deleteDocument(String documentId) throws FileNotFoundException {
+        Log.i("bella","deleteDocument  documentId: "+documentId);
         File file = new File(documentId);
         if (file.delete()) {
         } else {

@@ -44,6 +44,7 @@ import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.DummyProfileTabsAddons;
 import com.android.documentsui.FocusManager;
 import com.android.documentsui.Injector;
+import com.android.documentsui.IpcService;
 import com.android.documentsui.MenuManager.DirectoryDetails;
 import com.android.documentsui.OperationDialogFragment;
 import com.android.documentsui.OperationDialogFragment.DialogType;
@@ -69,6 +70,7 @@ import android.provider.DocumentsContract;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
+import androidx.recyclerview.selection.MutableSelection;
 
 import android.os.Build;
 
@@ -91,6 +93,9 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     String getPath;
 
     public static final String[] permissions = {
+            "android.permission.READ_CLIPBOARD_IN_BACKGROUND",
+            "android.permission.READ_CLIPBOARD",
+            "android.permission.WRITE_CLIPBOARD",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE" };
 
@@ -220,6 +225,64 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
         saveContainer.setBackgroundColor(Color.TRANSPARENT);
 
         presentFileErrors(icicle, intent);
+
+        IntentFilter filter = new IntentFilter(IpcService.ACTION_UPDATE_FILE);
+        registerReceiver(receiver, filter);
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (IpcService.ACTION_UPDATE_FILE.equals(intent.getAction())) {
+                String fileName = intent.getStringExtra("EXTRA_DATA");
+                int type = intent.getIntExtra("EXTRA_TYPE",1);
+                Log.i("bella","BroadcastReceiver............... "+fileName + ",type "+type);
+                if (type == 3) {
+                    parseFile();
+                    DocumentClipper mClipper = DocumentsApplication.getDocumentClipper(context);
+                }else if(type == 5) {
+                    if (mInjector.pickResult != null) {
+                        mInjector.pickResult.increaseActionCount();
+                    }
+                    MutableSelection<String> selection = new MutableSelection<>();
+                    mInjector.selectionMgr.copySelection(selection);
+                    mInjector.actions.openSelectedInNewWindow();
+                } else {
+                    copyFile(fileName, type);
+                }
+            }
+        }
+    };
+
+    public void parseFile() {
+        if (mInjector.pickResult != null) {
+            mInjector.pickResult.increaseActionCount();
+        }
+        DocumentInfo documentInfo = mInjector.getModel().doc;
+        mInjector.getModel().doc.documentId = "primary:Desktop";
+        mInjector.getModel().doc.displayName = "Desktop";
+        mInjector.getModel().doc.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Desktop");
+        DirectoryFragment dir = getDirectoryFragment();
+        if (dir != null) {
+            dir.pasteFromClipboard();
+        }
+    }
+
+    public void copyFile(String fileName,int type) {
+        if (mInjector.pickResult != null) {
+            mInjector.pickResult.increaseActionCount();
+        }
+        DocumentInfo documentInfo = mInjector.getModel().doc;
+
+        mInjector.selectionMgr.clearSelection();
+        List<String> enabled = new ArrayList<>();
+        enabled.add("0|com.android.externalstorage.documents|primary:Desktop/"+fileName);
+        mInjector.selectionMgr.setItemsSelected(enabled, true);
+        if(type == 1){
+            mInjector.actions.copyToClipboard();
+        }else{
+            mInjector.actions.cutToClipboard();
+        }
     }
 
     // This is called in the intent contains label and icon resources.

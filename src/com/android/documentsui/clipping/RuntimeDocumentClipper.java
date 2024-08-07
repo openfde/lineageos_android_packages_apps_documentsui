@@ -101,7 +101,13 @@ final class RuntimeDocumentClipper implements DocumentClipper {
 
         final List<Uri> uris = new ArrayList<>(selection.size());
         for (String id : selection) {
-            uris.add(uriBuilder.apply(id));
+            if(id.contains("Desktop")){
+                String[] strPaths = id.split("\\|");
+                Uri uri = DocumentsContract.buildDocumentUri(strPaths[1], strPaths[2]);
+                uris.add(uri);
+            }else {
+                uris.add(uriBuilder.apply(id));
+            }
         }
         return getClipDataForDocuments(uris, opType);
     }
@@ -281,7 +287,9 @@ final class RuntimeDocumentClipper implements DocumentClipper {
                         FileOperations.Callback.STATUS_ACCEPTED, opType, 0);
                 return;
             }
-
+            if(bundle == null){
+                bundle = new PersistableBundle();
+            }
             String srcParentString = bundle.getString(SRC_PARENT_KEY);
             Uri srcParent = srcParentString == null ? null : Uri.parse(srcParentString);
 
@@ -314,10 +322,16 @@ final class RuntimeDocumentClipper implements DocumentClipper {
 
     private @OpType int getOpType(ClipData data) {
         PersistableBundle bundle = data.getDescription().getExtras();
+        if(bundle == null){
+            return  FileOperationService.OPERATION_COPY;
+        }
         return getOpType(bundle);
     }
 
     private @OpType int getOpType(PersistableBundle bundle) {
+        if(bundle == null){
+            return  FileOperationService.OPERATION_COPY;
+        }
         return bundle.getInt(OP_TYPE_KEY);
     }
 

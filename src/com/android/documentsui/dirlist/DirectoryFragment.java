@@ -104,18 +104,21 @@ import com.android.documentsui.clipping.DocumentClipper;
 import com.android.documentsui.clipping.UrisSupplier;
 import com.android.documentsui.dirlist.AnimationView.AnimationType;
 import com.android.documentsui.picker.PickActivity;
+import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.services.FileOperation;
 import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.services.FileOperationService.OpType;
 import com.android.documentsui.services.FileOperations;
 import com.android.documentsui.sorting.SortDimension;
 import com.android.documentsui.sorting.SortModel;
-
+import com.android.documentsui.util.SPUtils;
 import com.google.common.base.Objects;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
@@ -151,6 +154,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private Model mModel;
     private final EventListener<Model.Update> mModelUpdateListener = new ModelUpdateListener();
     private final DocumentsAdapter.Environment mAdapterEnv = new AdapterEnvironment();
+
+    private Handler handler = new Handler();
+
 
     @Injected
     @ContentScoped
@@ -919,10 +925,12 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 return true;
 
             case R.id.dir_menu_cut_to_clipboard:
+                SPUtils.putDocInfo(getContext(), FileUtils.FILE_OPERATE,FileUtils.OP_CUT );
                 mActions.cutToClipboard();
                 return true;
 
             case R.id.dir_menu_copy_to_clipboard:
+                SPUtils.putDocInfo(getContext(), FileUtils.FILE_OPERATE,FileUtils.OP_COPY );
                 mActions.copyToClipboard();
                 return true;
 
@@ -1157,6 +1165,23 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         return mModel;
     }
 
+    private void deleteOriginFile(){
+        String opStr = SPUtils.getDocInfo(getContext(), FileUtils.FILE_OPERATE);
+        String fileName = SPUtils.getDocInfo(getContext(), FileUtils.FILE_DESKTOP_NAME);
+        if(FileUtils.OP_CUT.equals(opStr)){
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(fileName !=null){
+                        FileUtils.deleteFiles(FileUtils.PATH_ID_DESKTOP+fileName);
+                    }
+                    Log.i(TAG, "IpcService pasteFromClipboard opStr  "+opStr + ",fileName "+fileName);
+                    FileUtils.cleanClipboard(getContext());
+                }
+            }, 1000);
+        }
+    }
+
     /**
      * Paste selection files from the primary clip into the current window.
      */
@@ -1168,6 +1193,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
+        deleteOriginFile();
     }
 
     public void pasteIntoFolder() {
@@ -1188,6 +1214,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
+        deleteOriginFile();
     }
 
     private void setupDragAndDropOnDocumentView(View view, Cursor cursor) {

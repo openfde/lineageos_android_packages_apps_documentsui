@@ -47,9 +47,55 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.widget.Toast;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+
 public class FileUtils {
 
     public static final String PATH_ID_DESKTOP = "/mnt/sdcard/Desktop/";
+
+    public static final String OPEN_DIR = "OPEN_DIR";
+
+    public static final String OPEN_FILE = "OPEN_FILE";
+
+    public static final String DELETE_DIR = "DELETE_DIR";
+
+    public static final String DELETE_FILE = "DELETE_FILE";
+
+    public static final String NEW_DIR = "NEW_DIR";
+
+    public static final String NEW_FILE = "NEW_FILE";
+
+    public static final String COPY_DIR = "COPY_DIR";
+
+    public static final String COPY_FILE = "COPY_FILE";
+
+    public static final String CUT_DIR = "CUT_DIR";
+
+    public static final String CUT_FILE = "CUT_FILE";
+
+    public static final String PASTE_DIR = "PASTE_DIR";
+
+    public static final String PASTE_FILE = "PASTE_FILE";
+
+    public static final String RENAME_DIR = "RENAME_DIR";
+
+    public static final String RENAME_FILE = "RENAME_FILE";
+
+    public static final String DIR_INFO = "DIR_INFO";
+
+    public static final String FILE_INFO = "FILE_INFO";
+
+    public static final String FILE_OPERATE = "FILE_OPERATE";
+
+    public static final String OP_COPY = "OP_COPY";
+
+    public static final String OP_CUT = "OP_CUT";
+
+    public static final String OP_PASTE = "OP_PASTE";
+
+    public static final String FILE_DESKTOP_NAME = "FILE_DESKTOP_NAME";
+
 
    /**
      * 默认root需要查询的项
@@ -102,7 +148,7 @@ public class FileUtils {
         return file;
     }
 
-    private static String getUniqueFileName(String documentId,String fileName ) {
+    public static String getUniqueFileName(String documentId,String fileName ) {
         String name = fileName ;
         String extension = "" ;
         if(fileName.contains(".") && fileName.length() > 0){
@@ -549,5 +595,84 @@ public static boolean newFile() {
     return true;
 }
 
+
+public static void copyFileToClipboard(Context context, Uri uri) {
+    ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+    ClipData clip = ClipData.newUri(context.getContentResolver(), "File", uri);
+    if (clip == null) {
+        Log.i("bella", "copyFileToClipboard........ clip is null ");
+    }
+    clipboard.setPrimaryClip(clip);
+    Log.i("bella", "copyFileToClipboard  File copied to clipboard");
+}
+
+public static Uri pasteFileFromClipboard(Context context) {
+    try {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = clipboard.getPrimaryClip();
+        if (clip == null) {
+            Log.i("bella", "pasteFileFromClipboard........ clip is null ");
+        }
+        ClipData.Item item = clip.getItemAt(0);
+        return item.getUri();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+public static void cleanClipboard(Context context) {
+    try {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(null); 
+            clipboard.clearPrimaryClip();
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public static void copyUriToFile(Context context, Uri uri, File destinationFile) {
+    try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+         FileOutputStream outputStream = new FileOutputStream(destinationFile)) {
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, length);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+public static boolean deleteFileWithUri(Context context, Uri uri) {
+    ContentResolver contentResolver = context.getContentResolver();
+    try {
+        // Use DocumentsContract for document Uris
+        if (DocumentsContract.isDocumentUri(context, uri)) {
+            return DocumentsContract.deleteDocument(contentResolver, uri);
+        }
+        // Handle other Uris (like MediaStore)
+        int rowsDeleted = contentResolver.delete(uri, null, null);
+        return rowsDeleted > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
+
+public static String extractFileName(String path) {
+    if (path == null || path.isEmpty()) {
+        return null;
+    }
+    int lastSlashIndex = path.lastIndexOf('/');
+    if (lastSlashIndex == -1) {
+        return path;
+    }
+    return path.substring(lastSlashIndex + 1);
+}
     
 }
