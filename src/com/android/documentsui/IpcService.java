@@ -93,8 +93,14 @@ public class IpcService extends Service {
                 Uri derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Desktop/"+params);
                 FileUtils.copyFileToClipboard(context,derivedUri);
                 SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, "");
-            }else if(FileUtils.RENAME_FILE.equals(method) ){
-                
+            }else if(FileUtils.RENAME_FILE.equals(method) || FileUtils.RENAME_DIR.equals(method) ){
+                try {
+                    String[] arrFileName = params.split("###");
+                    File file = new File(FileUtils.PATH_ID_DESKTOP+arrFileName[0]);
+                    file.renameTo(new File(FileUtils.PATH_ID_DESKTOP+arrFileName[1]));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }else if(FileUtils.CUT_DIR.equals(method)  || FileUtils.CUT_FILE.equals(method)){
                 // Intent intent = new Intent(ACTION_UPDATE_FILE);
                 // intent.putExtra("EXTRA_DATA", params);

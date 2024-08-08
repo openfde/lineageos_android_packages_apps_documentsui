@@ -214,6 +214,7 @@ public class FileUtils {
 
 
     public static  String renameFile(String documentId, String displayName) throws FileNotFoundException {
+        Log.i("bella", "renameFile   documentId: " + documentId + " , displayName: "+displayName);
         if (displayName == null) {
             throw new FileNotFoundException("Failed to rename document, new name is null");
         }
