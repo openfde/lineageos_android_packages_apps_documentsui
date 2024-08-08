@@ -115,7 +115,6 @@ public class IpcService extends Service {
                 // intent.putExtra("EXTRA_DATA", params);
                 // intent.putExtra("EXTRA_TYPE", 3);
                 // context.sendBroadcast(intent);
-                SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, "");
                 Uri uri = FileUtils.pasteFileFromClipboard(context);
                 if(uri == null){
                     Log.e(TAG, "uri is null ");
@@ -123,11 +122,17 @@ public class IpcService extends Service {
                     Log.i(TAG, "uri "+uri.toString());
                     String fileName = FileUtils.extractFileName(uri.getLastPathSegment()) ;
                     String newFilePath = FileUtils.getUniqueFileName(FileUtils.PATH_ID_DESKTOP,fileName);
-                    Log.i(TAG, "newFilePath "+newFilePath + " , fileName "+fileName + " ,uriPath: "+uri.getPath());
+                    Log.i(TAG, "newFilePath "+newFilePath + " , fileName "+fileName + " ,uriPath: "+uri.getPath() );
                     File destinationFile =  new File(FileUtils.PATH_ID_DESKTOP,newFilePath);
-                    FileUtils.copyUriToFile(context,uri,destinationFile);
-
+                    
                     String opStr = SPUtils.getDocInfo(context, FileUtils.FILE_OPERATE);
+                    if(!fileName.contains(".")){
+                        FileUtils.copyFolder(FileUtils.PATH_ID_DESKTOP+fileName,FileUtils.PATH_ID_DESKTOP+newFilePath);
+                    }else{
+                        FileUtils.copyUriToFile(context,uri,destinationFile);
+                    }
+
+                    SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, "");
                     if(FileUtils.OP_CUT.equals(opStr)){
                         handler.postDelayed(new Runnable() {
                             @Override
@@ -135,6 +140,7 @@ public class IpcService extends Service {
                                 Log.i(TAG, "opStr  "+opStr);
                                 FileUtils.deleteFileWithUri(context,uri);
                                 FileUtils.cleanClipboard(context);
+                                
                             }
                         }, 1000);
                     }

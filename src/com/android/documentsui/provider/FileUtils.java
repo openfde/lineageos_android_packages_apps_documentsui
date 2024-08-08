@@ -49,6 +49,7 @@ import android.widget.Toast;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import androidx.documentfile.provider.DocumentFile;
 
 public class FileUtils {
 
@@ -634,6 +635,45 @@ public static void cleanClipboard(Context context) {
         e.printStackTrace();
     }
 }
+
+public static void copyFolder(String oldPath, String newPath) {
+ 
+    try {
+        File newDir = new File(newPath);
+        if (!newDir.exists()) newDir.mkdirs();  
+        File oldDir = new File(oldPath);
+        String[] file = oldDir.list();
+        File temp = null;
+        for (int i = 0; i < file.length; i++) {
+            if (oldPath.endsWith(File.separator)) {
+                temp = new File(oldPath + file[i]);
+            } else {
+                temp = new File(oldPath + File.separator + file[i]);
+            }
+
+            if (temp.isFile()) {
+                FileInputStream input = new FileInputStream(temp);
+                FileOutputStream output = new FileOutputStream(newPath + "/" +
+                        (temp.getName()).toString());
+                byte[] b = new byte[1024];
+                int len;
+                while ((len = input.read(b)) != -1) {
+                    output.write(b, 0, len);
+                }
+                output.flush();
+                output.close();
+                input.close();
+            }
+            if (temp.isDirectory()) { 
+                copyFolder(oldPath + "/" + file[i], newPath + "/" + file[i]);
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+}
+
 
 public static void copyUriToFile(Context context, Uri uri, File destinationFile) {
     try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
