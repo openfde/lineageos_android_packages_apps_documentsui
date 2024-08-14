@@ -28,6 +28,8 @@ public class IpcService extends Service {
 
     private static final String TAG = "IpcService";
 
+    private IDataChangedCallback dataChangedCallback;
+
     public static final String ACTION_UPDATE_FILE = "com.android.documentsui.UPDATE_FILE";
 
     private Handler handler = new Handler();
@@ -39,6 +41,12 @@ public class IpcService extends Service {
     }
 
     private final IDocAidlInterface.Stub myBinder = new IDocAidlInterface.Stub() {
+
+        @Override
+        public void register( IDataChangedCallback callback){
+             dataChangedCallback = callback;   
+        }
+
         @Override
         public String basicIpcMethon(String method,String params) throws RemoteException {
             Log.i(TAG,"basicIpcMethon.....method........ "+method + ",params "+params);
@@ -110,6 +118,7 @@ public class IpcService extends Service {
                 SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, params);
                 Uri derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Desktop/"+params);
                 FileUtils.copyFileToClipboard(context,derivedUri);
+                // gotoClientApp("CUT_FILE.....");
             }else if(FileUtils.PASTE_DIR.equals(method) || FileUtils.PASTE_FILE.equals(method)){
                 // Intent intent = new Intent(ACTION_UPDATE_FILE);
                 // intent.putExtra("EXTRA_DATA", params);
@@ -150,6 +159,15 @@ public class IpcService extends Service {
             return "1";
         }
     };
+
+
+    public  void gotoClientApp(String params){
+       try {
+        dataChangedCallback.onCallback(params);
+       } catch (Exception e) {
+        e.printStackTrace();
+       }
+    }
 
     @Override
     public IBinder onBind(Intent intent) {

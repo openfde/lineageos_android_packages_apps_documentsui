@@ -1,5 +1,7 @@
-// IMyAidlInterface.aidl
+// IDocAidlInterface.aidl
 package com.android.documentsui;
+
+import com.android.documentsui.IDataChangedCallback;
 
 // Declare any non-default types here with import statements
 
@@ -10,4 +12,7 @@ interface IDocAidlInterface {
      */
 
     String basicIpcMethon(String method,String params);
+
+    oneway void register(IDataChangedCallback callback);
+
 }
