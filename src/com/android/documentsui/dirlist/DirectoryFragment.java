@@ -82,6 +82,7 @@ import com.android.documentsui.FocusManager;
 import com.android.documentsui.Injector;
 import com.android.documentsui.Injector.ContentScoped;
 import com.android.documentsui.Injector.Injected;
+import com.android.documentsui.IpcService;
 import com.android.documentsui.MetricConsts;
 import com.android.documentsui.Metrics;
 import com.android.documentsui.Model;
@@ -372,6 +373,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         mHandler = new Handler(Looper.getMainLooper());
         mActivity = (BaseActivity) getActivity();
         final View view = inflater.inflate(R.layout.fragment_directory, container, false);
+
 
         mProgressBar = view.findViewById(R.id.progressbar);
         assert mProgressBar != null;
@@ -1172,11 +1174,15 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                  try {
                     if(fileName !=null){
                         FileUtils.deleteFiles(FileUtils.PATH_ID_DESKTOP+fileName);
                     }
                     Log.i(TAG, "IpcService pasteFromClipboard opStr  "+opStr + ",fileName "+fileName);
                     FileUtils.cleanClipboard(getContext());
+                  } catch (Exception e) {
+                    e.printStackTrace();
+                  }
                 }
             }, 1000);
         }
@@ -1194,6 +1200,12 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
         deleteOriginFile();
+        IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
+        if(ipcService !=null ){
+            ipcService.gotoClientApp("PASTE");
+        }else {
+            Log.i(TAG,"ipcService is null");
+        }
     }
 
     public void pasteIntoFolder() {

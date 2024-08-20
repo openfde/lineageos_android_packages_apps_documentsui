@@ -38,6 +38,7 @@ public class IpcService extends Service {
     public void onCreate() {
         super.onCreate();
         context = this;
+        DocumentsApplication.getInstance().setIpcService(this);
     }
 
     private final IDocAidlInterface.Stub myBinder = new IDocAidlInterface.Stub() {
@@ -88,10 +89,13 @@ public class IpcService extends Service {
                 //   context.sendBroadcast(intent);
             }else if(FileUtils.DELETE_FILE.equals(method)){
                 FileUtils.deleteFiles(params);
+                // gotoClientApp("DELETE");
             }else if(FileUtils.NEW_FILE.equals(method)){
                 FileUtils.newFile();
+                gotoClientApp("NEW_FILE");
             }else if(FileUtils.NEW_DIR.equals(method)){
                 FileUtils.newDir();
+                gotoClientApp("NEW_DIR");
             }else if(FileUtils.COPY_DIR.equals(method) || FileUtils.COPY_FILE.equals(method)){
                 // Intent intent = new Intent(ACTION_UPDATE_FILE);
                 // intent.putExtra("EXTRA_DATA", params);
@@ -106,6 +110,7 @@ public class IpcService extends Service {
                     String[] arrFileName = params.split("###");
                     File file = new File(FileUtils.PATH_ID_DESKTOP+arrFileName[0]);
                     file.renameTo(new File(FileUtils.PATH_ID_DESKTOP+arrFileName[1]));
+                    gotoClientApp("RENAME");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -118,7 +123,6 @@ public class IpcService extends Service {
                 SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, params);
                 Uri derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Desktop/"+params);
                 FileUtils.copyFileToClipboard(context,derivedUri);
-                // gotoClientApp("CUT_FILE.....");
             }else if(FileUtils.PASTE_DIR.equals(method) || FileUtils.PASTE_FILE.equals(method)){
                 // Intent intent = new Intent(ACTION_UPDATE_FILE);
                 // intent.putExtra("EXTRA_DATA", params);
@@ -153,8 +157,11 @@ public class IpcService extends Service {
                             }
                         }, 1000);
                     }
+                    gotoClientApp("PASTE");
                 }
 
+            }else if(FileUtils.FILE_LIST.equals(method)) {
+            //    return FileUtils.getDesktopFiles();
             }
             return "1";
         }

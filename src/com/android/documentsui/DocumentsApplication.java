@@ -71,6 +71,22 @@ public class DocumentsApplication extends Application {
     private UserIdManager mUserIdManager;
     private Lookup<String, String> mFileTypeLookup;
 
+    private  IpcService ipcService ;
+    private static DocumentsApplication instance;
+
+
+    public IpcService getIpcService() {
+        return ipcService;
+    }
+
+    public void setIpcService(IpcService ipcService) {
+        this.ipcService = ipcService;
+    }
+
+    public static DocumentsApplication getInstance() {
+        return instance;
+    }
+
     public static ProvidersCache getProvidersCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mProviders;
     }
@@ -118,7 +134,7 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        instance = this ;
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final OverlayManager om = getSystemService(OverlayManager.class);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;

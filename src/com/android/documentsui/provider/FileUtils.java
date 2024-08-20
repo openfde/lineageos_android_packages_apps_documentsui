@@ -23,6 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -30,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 
 import android.os.SystemProperties;
 import android.util.Log;
@@ -88,6 +93,8 @@ public class FileUtils {
     public static final String FILE_INFO = "FILE_INFO";
 
     public static final String FILE_OPERATE = "FILE_OPERATE";
+
+    public static final String FILE_LIST = "FILE_LIST";
 
     public static final String OP_COPY = "OP_COPY";
 
@@ -714,6 +721,21 @@ public static String extractFileName(String path) {
         return path;
     }
     return path.substring(lastSlashIndex + 1);
+}
+
+
+public static String getDesktopFiles(){
+  try {
+    String documentId = FileUtils.PATH_ID_DESKTOP; 
+    File parent = new File(documentId);
+    File[] files = parent.listFiles();
+    return Arrays.stream(files)
+                .map(File::getName) 
+                .collect(Collectors.joining("###"));
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+  return null ;
 }
     
 }
