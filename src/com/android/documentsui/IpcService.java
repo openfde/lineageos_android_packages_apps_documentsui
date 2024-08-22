@@ -72,21 +72,23 @@ public class IpcService extends Service {
                 intent.setFlags(flags);
                 context.startActivity(intent);
             }else if(FileUtils.OPEN_DIR.equals(method)){
-                  Intent intent = new Intent();
-                  ComponentName componentName = new ComponentName( "com.android.documentsui", "com.android.documentsui.files.FilesActivity"  );
-                  intent.setComponent(componentName);
-                  intent.putExtra("getPath", FileUtils.PATH_ID_DESKTOP);
-                  intent.putExtra("childPath",params);
-                  int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
-                    flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                    flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
-                    intent.setFlags(flags);
-                  startActivity(intent);
+                //   Intent intent = new Intent();
+                //   ComponentName componentName = new ComponentName( "com.android.documentsui", "com.android.documentsui.files.FilesActivity"  );
+                //   intent.setComponent(componentName);
+                //   intent.putExtra("getPath", FileUtils.PATH_ID_DESKTOP);
+                //   intent.putExtra("childPath",params);
+                //   int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                //     flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                //     flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                //     intent.setFlags(flags);
+                //   startActivity(intent);
 
-                //   Intent intent = new Intent(ACTION_UPDATE_FILE);
-                //   intent.putExtra("EXTRA_DATA", params);
-                //   intent.putExtra("EXTRA_TYPE", 5);
-                //   context.sendBroadcast(intent);
+                  Intent intent = new Intent();
+                  intent.setClass(context, FilesActivity.class);
+                  intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                  intent.putExtra("childPath",params);
+                  SPUtils.putDocInfo(context,"getPath",FileUtils.PATH_ID_DESKTOP);
+                  context.startActivity(intent);
             }else if(FileUtils.DELETE_FILE.equals(method)){
                 FileUtils.deleteFiles(params);
                 // gotoClientApp("DELETE");

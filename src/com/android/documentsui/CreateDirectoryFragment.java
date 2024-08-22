@@ -20,6 +20,8 @@ import static android.content.ContentResolver.wrap;
 
 import static com.android.documentsui.base.SharedMinimal.TAG;
 
+import java.io.File;
+
 import android.app.Dialog;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -48,6 +50,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.android.documentsui.base.DocumentInfo;
 import com.android.documentsui.base.Shared;
+import com.android.documentsui.base.UserId;
 import com.android.documentsui.ui.Snackbars;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -148,10 +151,25 @@ public class CreateDirectoryFragment extends DialogFragment {
             try {
                 client = DocumentsApplication.acquireUnstableProviderOrThrow(
                         resolver, mCwd.derivedUri.getAuthority());
-                final Uri childUri = DocumentsContract.createDocument(
-                        wrap(client), mCwd.derivedUri, Document.MIME_TYPE_DIR, mDisplayName);
-                DocumentInfo doc = DocumentInfo.fromUri(resolver, childUri, mCwd.userId);
-                return doc.isDirectory() ? doc : null;
+                 Uri childUri = DocumentsContract.createDocument(
+                        wrap(client), mCwd.derivedUri, Document.MIME_TYPE_DIR, mDisplayName);   
+                if(childUri == null){
+                    childUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Desktop/"+mDisplayName);
+                    DocumentInfo doc = new DocumentInfo();
+                    doc.userId = UserId.DEFAULT_USER;
+                    doc.authority = "com.android.externalstorage.documents";
+                    doc.documentId = "primary:Desktop/"+mCwd.displayName+"/"+mDisplayName;
+                    doc.mimeType = "vnd.android.document/directory";
+                    doc.derivedUri = childUri;
+                    Log.i(TAG,"DocumentInfo__doc1 : "+doc) ;    
+                    File file = com.android.documentsui.provider.FileUtils.createFile(com.android.documentsui.provider.FileUtils.PATH_ID_DESKTOP+mCwd.displayName+"/", doc.mimeType, mDisplayName);
+                    resolver.notifyChange(DocumentsContract.buildDocumentUri(doc.authority, doc.documentId),null, false);
+                    return doc; 
+                }else{
+                    DocumentInfo doc = DocumentInfo.fromUri(resolver, childUri, mCwd.userId);
+                    Log.i(TAG,"DocumentInfo__doc2 : "+doc) ;    
+                    return doc.isDirectory() ? doc : null;
+                }   
             } catch (Exception e) {
                 Log.w(TAG, "Failed to create directory", e);
                 return null;

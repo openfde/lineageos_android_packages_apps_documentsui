@@ -66,6 +66,8 @@ import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.ui.DialogController;
 import com.android.documentsui.ui.MessageBuilder;
+import com.android.documentsui.util.SPUtils;
+
 import android.provider.DocumentsContract;
 import android.util.Log;
 import java.util.ArrayList;
@@ -90,7 +92,6 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     private SharedInputHandler mSharedInputHandler;
     private final ProfileTabsAddons mProfileTabsAddonsStub = new DummyProfileTabsAddons();
     
-    String getPath;
 
     public static final String[] permissions = {
             "android.permission.READ_CLIPBOARD_IN_BACKGROUND",
@@ -119,7 +120,6 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
 
-        getPath = getIntent().getStringExtra("getPath");
 
         if (Build.VERSION.SDK_INT >= 23) {
             requestPermissions(permissions, 1);
@@ -448,7 +448,8 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
         } else {
             // Normal boring directory
             // 
-            if(getPath !=null){
+            String getPath = SPUtils.getDocInfo(this,"getPath");
+            if (getPath != null && !"".equals(getPath)) {
                 final DocumentInfo documentInfo = cwd;
                 String childPath = getIntent().getStringExtra("childPath");
                 Log.i("bella","getPath "+getPath + ",childPath "+childPath);
@@ -458,7 +459,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
                 documentInfo.mimeType = "vnd.android.document/directory";
                 documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary%3ADesktop%2"+childPath);
                 DirectoryFragment.showDirectory(fm, root, documentInfo, AnimationView.ANIM_NONE);
-                getPath = null;
+                SPUtils.putDocInfo(this,"getPath","");
             }else{
                 DirectoryFragment.showDirectory(fm, root, cwd, anim);
             }
