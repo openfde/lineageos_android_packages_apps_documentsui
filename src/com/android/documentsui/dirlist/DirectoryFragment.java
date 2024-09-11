@@ -241,6 +241,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+            Log.i("bella","BroadcastReceiver  action:  "+action );
             if (isManagedProfileAction(action)) {
                 UserHandle userHandle = intent.getParcelableExtra(Intent.EXTRA_USER);
                 UserId userId = UserId.of(userHandle);
@@ -717,6 +718,8 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private void onDisplayStateChanged() {
+        Log.i("bella","onDisplayStateChanged......" );
+
         updateLayout(mState.derivedMode);
         mRecView.setAdapter(mAdapter);
     }
@@ -1426,6 +1429,17 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             if (DEBUG) {
                 Log.d(TAG, "Received model update. Loading=" + mModel.isLoading());
             }
+
+            // try {
+            //     IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
+            //     if(ipcService !=null ){
+            //         ipcService.gotoClientApp("REFRESH_DESKTOP");
+            //     }else {
+            //         Log.i(TAG,"ipcService is null");
+            //     }
+            // } catch (Exception e) {
+            //     e.printStackTrace();
+            // }
 
             mProgressBar.setVisibility(mModel.isLoading() ? View.VISIBLE : View.GONE);
 

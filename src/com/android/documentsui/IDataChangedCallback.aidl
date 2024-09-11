@@ -10,4 +10,6 @@ interface IDataChangedCallback {
      */
 
     oneway void onCallback(String params);
+
+    oneway void onCallbackString(String method,String params);
 }

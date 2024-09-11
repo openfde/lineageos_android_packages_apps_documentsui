@@ -26,6 +26,7 @@ java_defaults {
         "apache-commons-compress",
         "com.google.android.material_material",
         "guava",
+		"gson-jar",
     ],
 
     libs: [
@@ -141,3 +142,5 @@ android_app {
 
     min_sdk_version: "29",
 }
+
+

@@ -41,6 +41,8 @@
     <uses-permission android:name="android.permission.READ_CLIPBOARD" />
     <uses-permission android:name="android.permission.WRITE_CLIPBOARD" />
     <uses-permission android:name="android.permission.READ_CLIPBOARD_IN_BACKGROUND" />
+      <uses-permission android:name="android.permission.INTERNET" />
+
 
      <queries>
         <intent>
@@ -63,6 +65,7 @@
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:backupAgent=".prefs.BackupAgent"
         android:appCategory="productivity"
         android:fullBackupOnly="false"

@@ -8,6 +8,7 @@ import com.android.documentsui.clipping.DocumentClipper;
 import com.android.documentsui.files.FilesActivity;
 import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.util.SPUtils;
+import com.android.documentsui.util.NetUtils;
 
 import android.app.Service;
 import android.content.Context;
@@ -22,6 +23,8 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.os.Handler;
+import android.os.FileObserver;
+
 
 public class IpcService extends Service {
     Context context ;
@@ -41,6 +44,8 @@ public class IpcService extends Service {
         DocumentsApplication.getInstance().setIpcService(this);
     }
 
+   
+
     private final IDocAidlInterface.Stub myBinder = new IDocAidlInterface.Stub() {
 
         @Override
@@ -51,6 +56,7 @@ public class IpcService extends Service {
         @Override
         public String basicIpcMethon(String method,String params) throws RemoteException {
             Log.i(TAG,"basicIpcMethon.....method........ "+method + ",params "+params);
+
             if(FileUtils.OPEN_FILE.equals(method)){
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
@@ -89,15 +95,26 @@ public class IpcService extends Service {
                   intent.putExtra("childPath",params);
                   SPUtils.putDocInfo(context,"getPath",FileUtils.PATH_ID_DESKTOP);
                   context.startActivity(intent);
+            }else if(FileUtils.OPEN_LINUX_APP.equals(method)){
+                String[] arrParams = params.split("###");
+                String name = arrParams[0].trim().replaceAll("%[FfUu]", "");
+                String exec = arrParams[1].trim().replaceAll("%[FfUu]", "");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        NetUtils.gotoLinuxApp(name,exec);
+                    }
+                }).start();
+
             }else if(FileUtils.DELETE_FILE.equals(method)){
                 FileUtils.deleteFiles(params);
                 // gotoClientApp("DELETE");
             }else if(FileUtils.NEW_FILE.equals(method)){
-                FileUtils.newFile();
-                gotoClientApp("NEW_FILE");
+                String fileName = FileUtils.newFile();
+                gotoClientApp("NEW_FILE",fileName);
             }else if(FileUtils.NEW_DIR.equals(method)){
-                FileUtils.newDir();
-                gotoClientApp("NEW_DIR");
+                String fileName = FileUtils.newDir();
+                gotoClientApp("NEW_DIR",fileName);
             }else if(FileUtils.COPY_DIR.equals(method) || FileUtils.COPY_FILE.equals(method)){
                 // Intent intent = new Intent(ACTION_UPDATE_FILE);
                 // intent.putExtra("EXTRA_DATA", params);
@@ -112,7 +129,7 @@ public class IpcService extends Service {
                     String[] arrFileName = params.split("###");
                     File file = new File(FileUtils.PATH_ID_DESKTOP+arrFileName[0]);
                     file.renameTo(new File(FileUtils.PATH_ID_DESKTOP+arrFileName[1]));
-                    gotoClientApp("RENAME");
+                    gotoClientApp("RENAME",params);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -164,6 +181,24 @@ public class IpcService extends Service {
 
             }else if(FileUtils.FILE_LIST.equals(method)) {
             //    return FileUtils.getDesktopFiles();
+            }else if(FileUtils.OP_INIT.equals(method)) {
+                
+            }else if(FileUtils.OP_CREATE_ANDROID_ICON.equals(method)) {
+                FileUtils.createAllAndroidIconToLinux(context);
+            }else if(FileUtils.OP_CREATE_LINUX_ICON.equals(method)) {
+                File file = new File("/volumes/da9e61df-57e9-4f6c-9550-fcd12b06f0e9/home/xudingqiang/桌面/openfde.desktop");
+                if(file.exists()){
+                    Log.i("bella","doc icon_pic is 1111111111111");
+                }else{
+                    Log.i("bella","doc icon_pic is 000000000000");
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        NetUtils.getLinuxApp();
+                    }
+                }).start();
             }
             return "1";
         }
@@ -177,6 +212,14 @@ public class IpcService extends Service {
         e.printStackTrace();
        }
     }
+
+    public  void gotoClientApp(String method,String params){
+        try {
+         dataChangedCallback.onCallbackString(method,params);
+        } catch (Exception e) {
+         e.printStackTrace();
+        }
+     }
 
     @Override
     public IBinder onBind(Intent intent) {

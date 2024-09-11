@@ -55,6 +55,14 @@ import android.widget.Toast;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import androidx.documentfile.provider.DocumentFile;
+import android.graphics.Canvas;
+import android.content.pm.ApplicationInfo;
+import android.graphics.drawable.Drawable;
+import android.content.pm.LauncherActivityInfo;
+import android.content.pm.LauncherApps;
+import android.os.UserHandle;
+import android.os.UserManager;
+
 
 public class FileUtils {
 
@@ -65,6 +73,8 @@ public class FileUtils {
     public static final String OPEN_FILE = "OPEN_FILE";
 
     public static final String DELETE_DIR = "DELETE_DIR";
+
+    public static final String OPEN_LINUX_APP = "OPEN_LINUX_APP";
 
     public static final String DELETE_FILE = "DELETE_FILE";
 
@@ -101,6 +111,12 @@ public class FileUtils {
     public static final String OP_CUT = "OP_CUT";
 
     public static final String OP_PASTE = "OP_PASTE";
+
+    public static final String OP_INIT = "OP_INIT";
+
+    public static final String OP_CREATE_LINUX_ICON = "OP_CREATE_LINUX_ICON";
+
+    public static final String OP_CREATE_ANDROID_ICON = "OP_CREATE_ANDROID_ICON";
 
     public static final String FILE_DESKTOP_NAME = "FILE_DESKTOP_NAME";
 
@@ -560,7 +576,7 @@ public class FileUtils {
     }
 
 
-    public static boolean newDir() {     
+    public static String newDir() {     
         String documentId = PATH_ID_DESKTOP; 
         File folder = new File(documentId);   
         String newDirName = "NewDir"; 
@@ -577,10 +593,14 @@ public class FileUtils {
         }
         folder = new File(documentId,newDirName);
         folder.mkdirs();
-        return true;
+        return newDirName;
     }
 
-public static boolean newFile() {      
+public static void initFolder(){
+
+}    
+
+public static String newFile() {      
     try{
         String documentId = PATH_ID_DESKTOP;
         File folder = new File(documentId);  
@@ -598,10 +618,11 @@ public static boolean newFile() {
         }
         folder = new File(documentId,newDocName);
         folder.createNewFile();
+        return newDocName;
     }catch(Exception e){
         e.printStackTrace();
     }
-    return true;
+    return null;
 }
 
 
@@ -737,5 +758,85 @@ public static String getDesktopFiles(){
   }
   return null ;
 }
+
+public static void drawableToPng(Drawable drawable, String filePath) {
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        // 将Drawable内容画到Bitmap上
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        // 保存Bitmap到PNG文件
+        File file = new File(filePath);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.flush();
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+}
+
+private static   List<ApplicationInfo>   getAllApp(Context context) {
+    LauncherApps launcherApps = (LauncherApps)context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+    UserManager userManager = (UserManager)context.getSystemService(Context.USER_SERVICE);
+    List<UserHandle> userHandles = userManager.getUserProfiles();
+    List<LauncherActivityInfo> list = new ArrayList<>();
+    for (UserHandle userHandle : userHandles) {
+        list.addAll(launcherApps.getActivityList(null, userHandle));
+    }
+
+    PackageManager packageManager = context.getPackageManager();
+    List<ApplicationInfo>  listApps = new ArrayList<>();
+    Log.i("bella","getAllApp list  size:   " + list.size());
+    for (LauncherActivityInfo li : list){
+        String appName = packageManager.getApplicationLabel(li.getApplicationInfo()).toString();
+        Drawable icon = packageManager.getApplicationIcon(li.getApplicationInfo());
+        String packageName = li.getApplicationInfo().packageName ;
+        // Log.i("bella","getAllApp list  li:  getName: " + li.getName() +"  ,appName: "+appName + ",packageName "+packageName + " ,name : "+li.getApplicationInfo().name);
+        listApps.add(li.getApplicationInfo());
+    }
+    return listApps;
+}
+
+ public static void  createAllAndroidIconToLinux(Context context){
+    PackageManager packageManager = context.getPackageManager();
+    List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
+    String rootPath = "/volumes"+"/"+getLinuxUUID()+"/tmp/";
+
+    apps.addAll(getAllApp(context));
+
+    // Log.i("bella","createAllAndroidIconToLinux rootPath : "+rootPath + ",apps "+apps.size());
+
+    for (ApplicationInfo appInfo : apps) {
+        try {
+            // if(appInfo.name !=null){
+                Drawable icon = packageManager.getApplicationIcon(appInfo);
+                String appName = packageManager.getApplicationLabel(appInfo).toString();
+                String packageName = appInfo.packageName ;
+
+                String path = rootPath+appName+".png";
+                // Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
+                File file = new File(path);
+                if(!file.exists()){
+                    drawableToPng(icon,path);
+                }    
+            // }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+ }
     
 }
