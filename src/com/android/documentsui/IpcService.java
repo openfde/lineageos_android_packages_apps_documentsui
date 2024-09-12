@@ -182,17 +182,10 @@ public class IpcService extends Service {
             }else if(FileUtils.FILE_LIST.equals(method)) {
             //    return FileUtils.getDesktopFiles();
             }else if(FileUtils.OP_INIT.equals(method)) {
-                
+                FileUtils.createDesktopDir();
             }else if(FileUtils.OP_CREATE_ANDROID_ICON.equals(method)) {
                 FileUtils.createAllAndroidIconToLinux(context);
             }else if(FileUtils.OP_CREATE_LINUX_ICON.equals(method)) {
-                File file = new File("/volumes/da9e61df-57e9-4f6c-9550-fcd12b06f0e9/home/xudingqiang/桌面/openfde.desktop");
-                if(file.exists()){
-                    Log.i("bella","doc icon_pic is 1111111111111");
-                }else{
-                    Log.i("bella","doc icon_pic is 000000000000");
-                }
-
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

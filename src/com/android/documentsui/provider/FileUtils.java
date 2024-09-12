@@ -140,6 +140,13 @@ public class FileUtils {
             DocumentsContract.QUERY_ARG_LAST_MODIFIED_AFTER,
             DocumentsContract.QUERY_ARG_MIME_TYPES);
 
+    public static void createDesktopDir(){
+        File file = new File(PATH_ID_DESKTOP);
+        if(!file.exists()){
+            file.mkdirs();
+        }
+    }        
+
     public static String joinNewline(String... args) {
         return TextUtils.join("\n", args);
     }
@@ -618,6 +625,7 @@ public static String newFile() {
         }
         folder = new File(documentId,newDocName);
         folder.createNewFile();
+        folder.setExecutable(true);
         return newDocName;
     }catch(Exception e){
         e.printStackTrace();
