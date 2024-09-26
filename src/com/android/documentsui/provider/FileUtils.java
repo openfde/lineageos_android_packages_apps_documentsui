@@ -820,7 +820,7 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
  public static void  createAllAndroidIconToLinux(Context context){
     PackageManager packageManager = context.getPackageManager();
     List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
-    String rootPath = "/volumes"+"/"+getLinuxUUID()+"/tmp/";
+    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/.openfde/pic/";
 
     apps.addAll(getAllApp(context));
 
@@ -834,9 +834,9 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
                 String packageName = appInfo.packageName ;
 
                 String path = rootPath+appName+".png";
-                // Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
+                Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
                 File file = new File(path);
-                if(!file.exists()){
+                if(!file.exists() && !path.contains(" ") ){
                     drawableToPng(icon,path);
                 }    
             // }
