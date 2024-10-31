@@ -70,7 +70,7 @@
     <string name="sort_dimension_summary" msgid="7724534446881397860">"摘要"</string>
     <string name="sort_dimension_file_type" msgid="5779709622922085381">"类型"</string>
     <string name="sort_dimension_size" msgid="2190547351159472884">"大小"</string>
-    <string name="sort_dimension_date" msgid="4231005651895254033">"上次修改时间"</string>
+    <string name="sort_dimension_date" msgid="4231005651895254033">"修改时间"</string>
     <string name="sort_dimension_name_ascending" msgid="3715725253270614742">"文件名（从 A 到 Z）"</string>
     <string name="sort_dimension_file_type_ascending" msgid="3466973933402894292">"类型（从 A 到 Z）"</string>
     <string name="sort_dimension_size_ascending" msgid="2617359017800057762">"大小（从小到大）"</string>
