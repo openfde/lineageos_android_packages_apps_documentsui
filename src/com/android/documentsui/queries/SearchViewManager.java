@@ -523,11 +523,11 @@ public class SearchViewManager implements
 
         performSearch(newText);
         if (mFragmentManager != null) {
-            if (!newText.isEmpty()) {
-                SearchFragment.dismissFragment(mFragmentManager);
-            } else {
-                SearchFragment.showFragment(mFragmentManager, "");
-            }
+//            if (!newText.isEmpty()) {
+//                SearchFragment.dismissFragment(mFragmentManager);
+//            } else {
+//                SearchFragment.showFragment(mFragmentManager, "");
+//            }
         }
         return true;
     }

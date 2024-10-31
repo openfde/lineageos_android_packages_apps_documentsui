@@ -79,7 +79,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.4"
+                android:layout_weight="0.3"
                 android:layout_marginEnd="12dp"
                 android:orientation="horizontal">
 
@@ -124,7 +124,7 @@
                 android:ellipsize="end"
                 android:minWidth="70dp"
                 android:singleLine="true"
-                android:textAlignment="viewEnd"
+                android:textAlignment="viewStart"
                 android:textAppearance="@android:style/TextAppearance.Material.Body1"
                 android:textColor="?android:attr/textColorSecondary" />
 
@@ -137,7 +137,7 @@
                 android:ellipsize="end"
                 android:minWidth="70dp"
                 android:singleLine="true"
-                android:textAlignment="viewEnd"
+                android:textAlignment="viewStart"
                 android:textAppearance="@android:style/TextAppearance.Material.Body1"
                 android:textColor="?android:attr/textColorSecondary" />
         </LinearLayout>

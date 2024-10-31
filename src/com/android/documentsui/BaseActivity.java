@@ -32,7 +32,9 @@ import android.os.Bundle;
 import android.os.MessageQueue.IdleHandler;
 import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -40,6 +42,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -103,6 +107,7 @@ public abstract class BaseActivity
     protected NavigationViewManager mNavigator;
     protected SortController mSortController;
 
+    ImageView imgSwitch;
     private final List<EventListener> mEventListeners = new ArrayList<>();
     private final String mTag;
 
@@ -165,8 +170,47 @@ public abstract class BaseActivity
         View profileTabsContainer = findViewById(R.id.tabs_container);
         assert (profileTabsContainer != null);
 
+
         mNavigator = new NavigationViewManager(this, mDrawer, mState, this, breadcrumb,
                 profileTabsContainer, DocumentsApplication.getUserIdManager(this));
+
+        ImageView imgSort = findViewById(R.id.imgSort);
+        imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
+
+        ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
+        imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
+
+
+        imgSwitch = findViewById(R.id.imgSwitch);
+        imgSwitch.setOnClickListener(view -> {
+                if(mState.derivedMode == State.MODE_GRID){
+                    setViewMode(State.MODE_LIST);
+//                    imgSwitch.setImageResource(R.drawable.icon_grid);
+                }else {
+                    setViewMode(State.MODE_GRID);
+//                    imgSwitch.setImageResource(R.drawable.icon_list);
+                }
+        });
+
+
+        EditText editSearch = findViewById(R.id.editSearch);
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String strSearch = s.toString();
+                mSearchManager.onQueryTextChange(strSearch);
+
+            }
+        });
+
         SearchManagerListener searchListener = new SearchManagerListener() {
             /**
              * Called when search results changed. Refreshes the content of the directory. It
@@ -272,6 +316,7 @@ public abstract class BaseActivity
                     mState.action);
         }
 
+
         mNavigator.setSearchBarClickListener(v -> {
             mSearchManager.onSearchBarClicked();
             mNavigator.update();
@@ -358,7 +403,7 @@ public abstract class BaseActivity
 
         final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
         // If size is 0, it means the menu has not inflated and it should only do once.
-        if (subMenuView.getMenu().size() == 0) {
+        if (subMenuView != null && subMenuView.getMenu().size() == 0) {
             subMenuView.setOnMenuItemClickListener(this::onOptionsItemSelected);
             getMenuInflater().inflate(R.menu.sub_menu, subMenuView.getMenu());
         }
@@ -372,7 +417,9 @@ public abstract class BaseActivity
         super.onPrepareOptionsMenu(menu);
         mSearchManager.showMenu(mState.stack);
         final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
-        mInjector.menuManager.updateSubMenu(subMenuView.getMenu());
+        if(subMenuView !=null){
+            mInjector.menuManager.updateSubMenu(subMenuView.getMenu());
+        }
         return true;
     }
 
@@ -603,6 +650,12 @@ public abstract class BaseActivity
 
         mState.derivedMode = LocalPreferences.getViewMode(this, mState.stack.getRoot(), MODE_GRID);
 
+        if(mState.derivedMode == MODE_GRID){
+            imgSwitch.setImageResource(R.drawable.icon_list);
+        }else {
+            imgSwitch.setImageResource(R.drawable.icon_grid);
+        }
+
         mNavigator.update();
 
         refreshDirectory(anim);
@@ -680,9 +733,12 @@ public abstract class BaseActivity
     void setViewMode(@ViewMode int mode) {
         if (mode == State.MODE_GRID) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_GRID);
+            imgSwitch.setImageResource(R.drawable.icon_list);
         } else if (mode == State.MODE_LIST) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_LIST);
+            imgSwitch.setImageResource(R.drawable.icon_grid);
         }
+
 
         LocalPreferences.setViewMode(this, getCurrentRoot(), mode);
         mState.derivedMode = mode;
@@ -726,9 +782,9 @@ public abstract class BaseActivity
         String result;
 
         switch (root.derivedType) {
-            case RootInfo.TYPE_RECENTS:
-                result = getHeaderRecentTitle();
-                break;
+//            case RootInfo.TYPE_RECENTS:
+//                result = getHeaderRecentTitle();
+//                break;
             case RootInfo.TYPE_IMAGES:
             case RootInfo.TYPE_VIDEO:
             case RootInfo.TYPE_AUDIO:
@@ -751,13 +807,6 @@ public abstract class BaseActivity
 
         TextView headerTitle = findViewById(R.id.header_title);
         headerTitle.setText(result);
-
-        TextView txtTypeFilter = findViewById(R.id.txtTypeFilter);
-        if(!getString(R.string.fde_linux_dir).equals(rootTitle) && !getString(R.string.fde_file_system).equals(rootTitle)){
-            txtTypeFilter.setVisibility(View.VISIBLE);
-        }else {
-            txtTypeFilter.setVisibility(View.GONE);
-        }
     }
 
     private String getHeaderRecentTitle() {

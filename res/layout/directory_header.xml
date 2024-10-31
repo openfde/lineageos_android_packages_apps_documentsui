@@ -21,11 +21,32 @@
     android:layout_marginTop="@dimen/action_bar_space_margin"
     android:orientation="vertical">
 
-    <com.android.documentsui.HorizontalBreadcrumb
-        android:id="@+id/horizontal_breadcrumb"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/colorBackground"/>
+        android:layout_height="1dp"
+        android:background="#F5F5F5"/>
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:orientation="horizontal"
+       android:layout_marginEnd="@dimen/root_info_header_horizontal_padding"
+       android:layout_height="wrap_content">
+
+       <com.android.documentsui.HorizontalBreadcrumb
+           android:id="@+id/horizontal_breadcrumb"
+           android:layout_width="0dp"
+           android:layout_weight="1"
+           android:layout_height="wrap_content"
+           android:background="?android:attr/colorBackground"/>
+
+
+
+   </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F5F5F5"/>
 
     <!-- used for search chip. -->
     <include layout="@layout/search_chip_row"/>
@@ -41,7 +62,6 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
-            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabMaxWidth="0dp"
@@ -66,6 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/root_info_header_horizontal_padding"
         android:layout_marginEnd="@dimen/root_info_header_horizontal_padding"
+        android:visibility="gone"
         android:minHeight="@dimen/root_info_header_height">
 
         <TextView
@@ -79,11 +100,7 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"/>
 
-        <androidx.appcompat.widget.ActionMenuView
-            android:id="@+id/sub_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"/>
+
 
     </LinearLayout>
 

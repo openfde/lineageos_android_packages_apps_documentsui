@@ -29,32 +29,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:layout_margin="@dimen/search_bar_margin"
-            android:background="?android:attr/colorBackground"
-            android:elevation="3dp"
-            android:theme="?actionBarTheme"
-            android:popupTheme="?actionBarPopupTheme"
-            app:collapseContentDescription="@string/button_back"
-            app:titleTextAppearance="@style/ToolbarTitle">
 
-            <TextView
-                android:id="@+id/searchbar_title"
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:layout_marginStart="@dimen/search_bar_text_margin_start"
-                android:layout_marginEnd="@dimen/search_bar_text_margin_end"
-                android:paddingStart="@dimen/search_bar_icon_padding"
-                android:gravity="center_vertical"
-                android:text="@string/search_bar_hint"
-                android:textAppearance="@style/SearchBarTitle"
-                android:drawableStart="@drawable/ic_menu_search"
-                android:drawablePadding="@dimen/search_bar_icon_padding"/>
-
-        </androidx.appcompat.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -73,6 +48,86 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:elevation="8dp">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:attr/actionBarSize"
+                    android:layout_margin="@dimen/search_bar_margin"
+                    android:background="?android:attr/colorBackground"
+                    android:elevation="3dp"
+                    android:popupTheme="?actionBarPopupTheme"
+                    android:theme="?actionBarTheme"
+                    android:visibility="gone"
+                    app:collapseContentDescription="@string/button_back"
+                    app:titleTextAppearance="@style/ToolbarTitle">
+
+                    <TextView
+                        android:id="@+id/searchbar_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="?android:attr/actionBarSize"
+                        android:layout_marginStart="@dimen/search_bar_text_margin_start"
+                        android:layout_marginEnd="@dimen/search_bar_text_margin_end"
+                        android:drawableStart="@drawable/ic_menu_search"
+                        android:drawablePadding="@dimen/search_bar_icon_padding"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/search_bar_icon_padding"
+                        android:text="@string/search_bar_hint"
+                        android:textAppearance="@style/SearchBarTitle" />
+
+                </androidx.appcompat.widget.Toolbar>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="right"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginRight="180dp"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/imgSort"
+                        android:src="@drawable/icon_sort"
+                        android:layout_width="16dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="20dp"
+                        android:layout_height="16dp"/>
+
+                    <ImageView
+                        android:id="@+id/imgAllSelected"
+                        android:src="@drawable/icon_all_selected"
+                        android:layout_width="16dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_gravity="center"
+                        android:layout_height="16dp"/>
+
+                    <ImageView
+                        android:id="@+id/imgSwitch"
+                        android:layout_width="16dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_gravity="center"
+                        android:layout_height="16dp"/>
+
+
+                    <EditText
+                        android:id="@+id/editSearch"
+                        android:layout_width="200dp"
+                        android:hint="搜索..."
+                        android:textSize="10sp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_grep_ellipse"
+                        android:paddingHorizontal="8dp"
+                        android:layout_height="24dp"/>
+
+                    <androidx.appcompat.widget.ActionMenuView
+                        android:id="@+id/sub_menu"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"/>
+
+
+                </LinearLayout>
 
                 <include layout="@layout/directory_header" />
 
