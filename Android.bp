@@ -26,6 +26,7 @@ java_defaults {
         "apache-commons-compress",
         "com.google.android.material_material",
         "guava",
+		"gson-jar",
     ],
 
     libs: [
@@ -57,6 +58,7 @@ filegroup {
     name: "DocumentsUI-srcs",
     srcs: [
         "src/**/*.java",
+		"src/**/*.aidl",
 	":statslog-docsui-java-gen",
     ],
 }
@@ -66,6 +68,7 @@ java_library {
     srcs: [
         ":statslog-docsui-java-gen",
     ],
+
 }
 
 genrule {
@@ -74,6 +77,7 @@ genrule {
     cmd: "$(location stats-log-api-gen) --java $(out) --module docsui --javaPackage com.android.documentsui --javaClass DocumentsStatsLog --supportQ",
     out: ["com/android/documentsui/DocumentsStatsLog.java"],
 }
+
 
 android_library {
     name: "DocumentsUI-res-lib",
@@ -138,3 +142,5 @@ android_app {
 
     min_sdk_version: "29",
 }
+
+

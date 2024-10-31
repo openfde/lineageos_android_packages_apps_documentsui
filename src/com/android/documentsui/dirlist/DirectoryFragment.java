@@ -82,6 +82,7 @@ import com.android.documentsui.FocusManager;
 import com.android.documentsui.Injector;
 import com.android.documentsui.Injector.ContentScoped;
 import com.android.documentsui.Injector.Injected;
+import com.android.documentsui.IpcService;
 import com.android.documentsui.MetricConsts;
 import com.android.documentsui.Metrics;
 import com.android.documentsui.Model;
@@ -104,18 +105,21 @@ import com.android.documentsui.clipping.DocumentClipper;
 import com.android.documentsui.clipping.UrisSupplier;
 import com.android.documentsui.dirlist.AnimationView.AnimationType;
 import com.android.documentsui.picker.PickActivity;
+import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.services.FileOperation;
 import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.services.FileOperationService.OpType;
 import com.android.documentsui.services.FileOperations;
 import com.android.documentsui.sorting.SortDimension;
 import com.android.documentsui.sorting.SortModel;
-
+import com.android.documentsui.util.SPUtils;
 import com.google.common.base.Objects;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
@@ -151,6 +155,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private Model mModel;
     private final EventListener<Model.Update> mModelUpdateListener = new ModelUpdateListener();
     private final DocumentsAdapter.Environment mAdapterEnv = new AdapterEnvironment();
+
+    private Handler handler = new Handler();
+
 
     @Injected
     @ContentScoped
@@ -234,6 +241,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
+            Log.i("bella","BroadcastReceiver  action:  "+action );
             if (isManagedProfileAction(action)) {
                 UserHandle userHandle = intent.getParcelableExtra(Intent.EXTRA_USER);
                 UserId userId = UserId.of(userHandle);
@@ -366,6 +374,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         mHandler = new Handler(Looper.getMainLooper());
         mActivity = (BaseActivity) getActivity();
         final View view = inflater.inflate(R.layout.fragment_directory, container, false);
+
 
         mProgressBar = view.findViewById(R.id.progressbar);
         assert mProgressBar != null;
@@ -709,6 +718,8 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private void onDisplayStateChanged() {
+        Log.i("bella","onDisplayStateChanged......" );
+
         updateLayout(mState.derivedMode);
         mRecView.setAdapter(mAdapter);
     }
@@ -919,10 +930,12 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 return true;
 
             case R.id.dir_menu_cut_to_clipboard:
+                SPUtils.putDocInfo(getContext(), FileUtils.FILE_OPERATE,FileUtils.OP_CUT );
                 mActions.cutToClipboard();
                 return true;
 
             case R.id.dir_menu_copy_to_clipboard:
+                SPUtils.putDocInfo(getContext(), FileUtils.FILE_OPERATE,FileUtils.OP_COPY );
                 mActions.copyToClipboard();
                 return true;
 
@@ -1157,6 +1170,27 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         return mModel;
     }
 
+    private void deleteOriginFile(){
+        String opStr = SPUtils.getDocInfo(getContext(), FileUtils.FILE_OPERATE);
+        String fileName = SPUtils.getDocInfo(getContext(), FileUtils.FILE_DESKTOP_NAME);
+        if(FileUtils.OP_CUT.equals(opStr)){
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                  try {
+                    if(fileName !=null){
+                        FileUtils.deleteFiles(FileUtils.PATH_ID_DESKTOP+fileName);
+                    }
+                    Log.i(TAG, "IpcService pasteFromClipboard opStr  "+opStr + ",fileName "+fileName);
+                    FileUtils.cleanClipboard(getContext());
+                  } catch (Exception e) {
+                    e.printStackTrace();
+                  }
+                }
+            }, 1000);
+        }
+    }
+
     /**
      * Paste selection files from the primary clip into the current window.
      */
@@ -1168,6 +1202,13 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
+        deleteOriginFile();
+        IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
+        if(ipcService !=null ){
+            ipcService.gotoClientApp("PASTE");
+        }else {
+            Log.i(TAG,"ipcService is null");
+        }
     }
 
     public void pasteIntoFolder() {
@@ -1188,6 +1229,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
+        deleteOriginFile();
     }
 
     private void setupDragAndDropOnDocumentView(View view, Cursor cursor) {
@@ -1387,6 +1429,17 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             if (DEBUG) {
                 Log.d(TAG, "Received model update. Loading=" + mModel.isLoading());
             }
+
+            // try {
+            //     IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
+            //     if(ipcService !=null ){
+            //         ipcService.gotoClientApp("REFRESH_DESKTOP");
+            //     }else {
+            //         Log.i(TAG,"ipcService is null");
+            //     }
+            // } catch (Exception e) {
+            //     e.printStackTrace();
+            // }
 
             mProgressBar.setVisibility(mModel.isLoading() ? View.VISIBLE : View.GONE);
 

@@ -358,7 +358,7 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
     @Override
     public void openContainerDocument(DocumentInfo doc) {
         assert(doc.isContainer());
-
+        Log.w(TAG, "openContainerDocument "+doc);
         if (mSearchMgr.isSearching()) {
             loadDocument(
                     doc.derivedUri,
@@ -618,11 +618,28 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
             currentDoc = mDocs.getArchiveDocument(doc.derivedUri, doc.userId);
         }
 
-        assert(currentDoc != null);
-        if (currentDoc.equals(mState.stack.peek())) {
-            Log.w(TAG, "This DocumentInfo is already in current DocumentsStack");
-            return;
+        if(doc.documentId.contains("volumes")){
+            try {
+                doc.updateSelf(mActivity.getContentResolver(), doc.userId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            doc.flags = 78;
+            doc.mimeType = "vnd.android.document/directory";
+            currentDoc = doc;
         }
+
+        assert(currentDoc != null);
+        if(mState !=null && mState.stack !=null){
+            Log.w(TAG, "This DocumentInfo is already in current currentDoc "+currentDoc);
+            if (currentDoc.equals(mState.stack.peek())) {
+                Log.w(TAG, "This DocumentInfo is already in current DocumentsStack");
+                return;
+            }
+        }else{
+            Log.e(TAG, "mState is null  or mState.stack is null ");
+        }
+       
 
         mActivity.notifyDirectoryNavigated(currentDoc.derivedUri);
 

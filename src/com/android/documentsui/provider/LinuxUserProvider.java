@@ -23,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -122,6 +124,7 @@ public class LinuxUserProvider extends DocumentsProvider {
 
     @Override
     public void deleteDocument(String documentId) throws FileNotFoundException {
+        Log.i("bella","deleteDocument  documentId: "+documentId);
         File file = new File(documentId);
         if (file.delete()) {
         } else {

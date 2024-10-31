@@ -189,7 +189,6 @@ public class ActionModeController extends SelectionObserver<String>
 
     @Override
     public void finishActionMode() {
-        Log.i(TAG,"finishActionMode................") ;
         if (mActionMode != null) {
             mActionMode.finish();
             mActionMode = null;

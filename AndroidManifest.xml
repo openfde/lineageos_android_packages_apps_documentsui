@@ -38,6 +38,11 @@
     <uses-permission android:name="android.permission.LOG_COMPAT_CHANGE"/>
     <uses-permission android:name="android.permission.READ_COMPAT_CHANGE_CONFIG"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CLIPBOARD" />
+    <uses-permission android:name="android.permission.WRITE_CLIPBOARD" />
+    <uses-permission android:name="android.permission.READ_CLIPBOARD_IN_BACKGROUND" />
+      <uses-permission android:name="android.permission.INTERNET" />
+
 
      <queries>
         <intent>
@@ -60,6 +65,7 @@
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:backupAgent=".prefs.BackupAgent"
         android:appCategory="productivity"
         android:fullBackupOnly="false"
@@ -68,6 +74,11 @@
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAInBA8ued0O_ZyYUsVhwinUF-x50NIe9K0GzBW4A" />
+
+        <service
+            android:name=".IpcService"
+            android:enabled="true"
+            android:exported="true"></service>
 
         <activity
             android:name=".picker.PickActivity"
@@ -129,7 +140,7 @@
 
         <activity
             android:name=".files.FilesActivity"
-            android:documentLaunchMode="intoExisting"
+            android:documentLaunchMode="always"
             android:exported="true"
             android:theme="@style/LauncherTheme">
             <intent-filter>
@@ -145,6 +156,19 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="vnd.android.document/directory" />
             </intent-filter>
+        </activity>
+
+         <activity
+            android:name=".files.DocEditViewActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="false" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="content" />
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+
         </activity>
 
         <activity-alias android:name=".ViewDownloadsActivity"

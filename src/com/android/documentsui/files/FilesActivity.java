@@ -44,6 +44,7 @@ import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.DummyProfileTabsAddons;
 import com.android.documentsui.FocusManager;
 import com.android.documentsui.Injector;
+import com.android.documentsui.IpcService;
 import com.android.documentsui.MenuManager.DirectoryDetails;
 import com.android.documentsui.OperationDialogFragment;
 import com.android.documentsui.OperationDialogFragment.DialogType;
@@ -65,9 +66,13 @@ import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.ui.DialogController;
 import com.android.documentsui.ui.MessageBuilder;
+import com.android.documentsui.util.SPUtils;
 
+import android.provider.DocumentsContract;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
+import androidx.recyclerview.selection.MutableSelection;
 
 import android.os.Build;
 
@@ -86,8 +91,12 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     private ActivityInputHandler mActivityInputHandler;
     private SharedInputHandler mSharedInputHandler;
     private final ProfileTabsAddons mProfileTabsAddonsStub = new DummyProfileTabsAddons();
+    
 
     public static final String[] permissions = {
+            "android.permission.READ_CLIPBOARD_IN_BACKGROUND",
+            "android.permission.READ_CLIPBOARD",
+            "android.permission.WRITE_CLIPBOARD",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE" };
 
@@ -110,6 +119,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     @Override
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
+
 
         if (Build.VERSION.SDK_INT >= 23) {
             requestPermissions(permissions, 1);
@@ -215,6 +225,64 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
         saveContainer.setBackgroundColor(Color.TRANSPARENT);
 
         presentFileErrors(icicle, intent);
+
+        IntentFilter filter = new IntentFilter(IpcService.ACTION_UPDATE_FILE);
+        registerReceiver(receiver, filter);
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (IpcService.ACTION_UPDATE_FILE.equals(intent.getAction())) {
+                String fileName = intent.getStringExtra("EXTRA_DATA");
+                int type = intent.getIntExtra("EXTRA_TYPE",1);
+                Log.i("bella","BroadcastReceiver............... "+fileName + ",type "+type);
+                if (type == 3) {
+                    parseFile();
+                    DocumentClipper mClipper = DocumentsApplication.getDocumentClipper(context);
+                }else if(type == 5) {
+                    if (mInjector.pickResult != null) {
+                        mInjector.pickResult.increaseActionCount();
+                    }
+                    MutableSelection<String> selection = new MutableSelection<>();
+                    mInjector.selectionMgr.copySelection(selection);
+                    mInjector.actions.openSelectedInNewWindow();
+                } else {
+                    copyFile(fileName, type);
+                }
+            }
+        }
+    };
+
+    public void parseFile() {
+        if (mInjector.pickResult != null) {
+            mInjector.pickResult.increaseActionCount();
+        }
+        DocumentInfo documentInfo = mInjector.getModel().doc;
+        mInjector.getModel().doc.documentId = "primary:Desktop";
+        mInjector.getModel().doc.displayName = "Desktop";
+        mInjector.getModel().doc.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Desktop");
+        DirectoryFragment dir = getDirectoryFragment();
+        if (dir != null) {
+            dir.pasteFromClipboard();
+        }
+    }
+
+    public void copyFile(String fileName,int type) {
+        if (mInjector.pickResult != null) {
+            mInjector.pickResult.increaseActionCount();
+        }
+        DocumentInfo documentInfo = mInjector.getModel().doc;
+
+        mInjector.selectionMgr.clearSelection();
+        List<String> enabled = new ArrayList<>();
+        enabled.add("0|com.android.externalstorage.documents|primary:Desktop/"+fileName);
+        mInjector.selectionMgr.setItemsSelected(enabled, true);
+        if(type == 1){
+            mInjector.actions.copyToClipboard();
+        }else{
+            mInjector.actions.cutToClipboard();
+        }
     }
 
     // This is called in the intent contains label and icon resources.
@@ -379,7 +447,22 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
             DirectoryFragment.showRecentsOpen(fm, anim);
         } else {
             // Normal boring directory
-            DirectoryFragment.showDirectory(fm, root, cwd, anim);
+            // 
+            String getPath = SPUtils.getDocInfo(this,"getPath");
+            if (getPath != null && !"".equals(getPath)) {
+                final DocumentInfo documentInfo = cwd;
+                String childPath = getIntent().getStringExtra("childPath");
+                Log.i("bella","getPath "+getPath + ",childPath "+childPath);
+                root.documentId = documentInfo.documentId = "primary:Desktop/"+childPath;
+                root.title  = documentInfo.displayName = childPath;
+                root.authority = documentInfo.authority = "com.android.externalstorage.documents";
+                documentInfo.mimeType = "vnd.android.document/directory";
+                documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary%3ADesktop%2"+childPath);
+                DirectoryFragment.showDirectory(fm, root, documentInfo, AnimationView.ANIM_NONE);
+                SPUtils.putDocInfo(this,"getPath","");
+            }else{
+                DirectoryFragment.showDirectory(fm, root, cwd, anim);
+            }
         }
     }
 

@@ -38,6 +38,7 @@ import com.android.documentsui.base.Lookup;
 import com.android.documentsui.base.Shared;
 import com.android.documentsui.base.State;
 import com.android.documentsui.base.UserId;
+import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.roots.RootCursorWrapper;
 import com.android.documentsui.ui.Views;
 
@@ -229,7 +230,17 @@ final class ListDocumentHolder extends DocumentHolder {
                 mSize.setVisibility(View.INVISIBLE);
             }
 
-            mType.setText(mFileTypeLookup.lookup(mDoc.mimeType));
+            String mimeType = mFileTypeLookup.lookup(mDoc.mimeType);
+            if("BIN 文件".equals(mimeType) || "BIN file".equals(mimeType)){
+                String fileType = FileUtils.getFileTyle(mDoc.documentId);
+                if(fileType !=null){
+                    mType.setText(fileType+" "+ mContext.getString(R.string.fde_file));
+                }else {
+                    mType.setText(mFileTypeLookup.lookup(mDoc.mimeType));
+                }
+            }else {
+                mType.setText(mFileTypeLookup.lookup(mDoc.mimeType));
+            }
         }
 
         // mDetails view doesn't exists in layout-sw720dp-land layout

@@ -751,6 +751,13 @@ public abstract class BaseActivity
 
         TextView headerTitle = findViewById(R.id.header_title);
         headerTitle.setText(result);
+
+        TextView txtTypeFilter = findViewById(R.id.txtTypeFilter);
+        if(!getString(R.string.fde_linux_dir).equals(rootTitle) && !getString(R.string.fde_file_system).equals(rootTitle)){
+            txtTypeFilter.setVisibility(View.VISIBLE);
+        }else {
+            txtTypeFilter.setVisibility(View.GONE);
+        }
     }
 
     private String getHeaderRecentTitle() {
