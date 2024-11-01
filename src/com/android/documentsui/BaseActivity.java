@@ -174,42 +174,53 @@ public abstract class BaseActivity
         mNavigator = new NavigationViewManager(this, mDrawer, mState, this, breadcrumb,
                 profileTabsContainer, DocumentsApplication.getUserIdManager(this));
 
-        ImageView imgSort = findViewById(R.id.imgSort);
-        imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
+       try {
+           ImageView imgSort = findViewById(R.id.imgSort);
+           imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
 
-        ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
-        imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
+           ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
+           imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
 
 
-        imgSwitch = findViewById(R.id.imgSwitch);
-        imgSwitch.setOnClickListener(view -> {
-                if(mState.derivedMode == State.MODE_GRID){
-                    setViewMode(State.MODE_LIST);
+           imgSwitch = findViewById(R.id.imgSwitch);
+           imgSwitch.setOnClickListener(view -> {
+               if(mState.derivedMode == State.MODE_GRID){
+                   setViewMode(State.MODE_LIST);
 //                    imgSwitch.setImageResource(R.drawable.icon_grid);
-                }else {
-                    setViewMode(State.MODE_GRID);
+               }else {
+                   setViewMode(State.MODE_GRID);
 //                    imgSwitch.setImageResource(R.drawable.icon_list);
-                }
-        });
+               }
+           });
 
 
-        EditText editSearch = findViewById(R.id.editSearch);
-        editSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+           EditText editSearch = findViewById(R.id.editSearch);
+           editSearch.addTextChangedListener(new TextWatcher() {
+               @Override
+               public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+               }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+               @Override
+               public void onTextChanged(CharSequence s, int start, int before, int count) {
+               }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                String strSearch = s.toString();
-                mSearchManager.onQueryTextChange(strSearch);
+               @Override
+               public void afterTextChanged(Editable s) {
+                   String strSearch = s.toString();
+                   mSearchManager.onQueryTextChange(strSearch);
 
-            }
-        });
+               }
+           });
+
+           ImageView imgOpen  = findViewById(R.id.imgOpen);
+           imgOpen.setOnClickListener(view->{
+               if (mDrawer.isPresent()) {
+                   mDrawer.setOpen(true);
+               }
+           });
+       }catch (Exception e){
+           e.printStackTrace();
+       }
 
         SearchManagerListener searchListener = new SearchManagerListener() {
             /**
@@ -650,10 +661,14 @@ public abstract class BaseActivity
 
         mState.derivedMode = LocalPreferences.getViewMode(this, mState.stack.getRoot(), MODE_GRID);
 
-        if(mState.derivedMode == MODE_GRID){
-            imgSwitch.setImageResource(R.drawable.icon_list);
-        }else {
-            imgSwitch.setImageResource(R.drawable.icon_grid);
+        try {
+            if(mState.derivedMode == MODE_GRID){
+                imgSwitch.setImageResource(R.drawable.icon_list);
+            }else {
+                imgSwitch.setImageResource(R.drawable.icon_grid);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         mNavigator.update();
@@ -733,10 +748,14 @@ public abstract class BaseActivity
     void setViewMode(@ViewMode int mode) {
         if (mode == State.MODE_GRID) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_GRID);
-            imgSwitch.setImageResource(R.drawable.icon_list);
+            if(imgSwitch !=null){
+                imgSwitch.setImageResource(R.drawable.icon_list);
+            }
         } else if (mode == State.MODE_LIST) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_LIST);
-            imgSwitch.setImageResource(R.drawable.icon_grid);
+            if(imgSwitch !=null){
+                imgSwitch.setImageResource(R.drawable.icon_grid);
+            }
         }
 
 
