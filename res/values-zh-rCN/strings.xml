@@ -28,6 +28,7 @@
     <string name="menu_grid" msgid="1453636521731880680">"网格视图"</string>
     <string name="menu_list" msgid="6714267452146410402">"列表视图"</string>
     <string name="menu_search" msgid="1876699106790719849">"搜索"</string>
+    <string name="search" msgid="1876699106790719849">"搜索..."</string>
     <string name="menu_settings" msgid="6520844520117939047">"存储设置"</string>
     <string name="menu_open" msgid="9092138100049759315">"打开"</string>
     <string name="menu_open_with" msgid="5507647065467520229">"打开方式"</string>
