@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:gravity="right"
+    android:layout_marginTop="6dp"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/imgSort"
+        android:src="@drawable/icon_sort"
+        android:layout_width="16dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="20dp"
+        android:layout_height="16dp"/>
+
+    <ImageView
+        android:id="@+id/imgAllSelected"
+        android:src="@drawable/icon_all_selected"
+        android:layout_width="16dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center"
+        android:layout_height="16dp"/>
+
+    <ImageView
+        android:id="@+id/imgSwitch"
+        android:layout_width="16dp"
+        android:src="@drawable/icon_grid"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center"
+        android:layout_height="16dp"/>
+
+
+    <EditText
+        android:id="@+id/editSearch"
+        android:layout_width="200dp"
+        android:hint="@string/search"
+        android:textSize="10sp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_grep_ellipse"
+        android:paddingHorizontal="8dp"
+        android:layout_height="24dp"/>
+
+
+
+</LinearLayout>

@@ -37,13 +37,18 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -78,7 +83,6 @@ import com.android.documentsui.roots.ProvidersCache;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.sorting.SortController;
 import com.android.documentsui.sorting.SortModel;
-
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
@@ -174,15 +178,27 @@ public abstract class BaseActivity
         mNavigator = new NavigationViewManager(this, mDrawer, mState, this, breadcrumb,
                 profileTabsContainer, DocumentsApplication.getUserIdManager(this));
 
+        LinearLayout layoutParent = new LinearLayout(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View viewControll = inflater.inflate(R.layout.layout_file_controller, layoutParent, false);
+        layoutParent.addView(viewControll);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        layoutParent.setTag("DecorCaptionView");
+        getWindow().addContentView(layoutParent,params);
+
        try {
-           ImageView imgSort = findViewById(R.id.imgSort);
+           ImageView imgSort = viewControll.findViewById(R.id.imgSort);
            imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
 
-           ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
+           ImageView imgAllSelected = viewControll.findViewById(R.id.imgAllSelected);
            imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
 
 
-           imgSwitch = findViewById(R.id.imgSwitch);
+           imgSwitch = viewControll.findViewById(R.id.imgSwitch);
            imgSwitch.setOnClickListener(view -> {
                if(mState.derivedMode == State.MODE_GRID){
                    setViewMode(State.MODE_LIST);
@@ -194,7 +210,9 @@ public abstract class BaseActivity
            });
 
 
-           EditText editSearch = findViewById(R.id.editSearch);
+           getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+           EditText editSearch = viewControll.findViewById(R.id.editSearch);
            editSearch.addTextChangedListener(new TextWatcher() {
                @Override
                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -212,12 +230,6 @@ public abstract class BaseActivity
                }
            });
 
-           ImageView imgOpen  = findViewById(R.id.imgOpen);
-           imgOpen.setOnClickListener(view->{
-               if (mDrawer.isPresent()) {
-                   mDrawer.setOpen(true);
-               }
-           });
        }catch (Exception e){
            e.printStackTrace();
        }

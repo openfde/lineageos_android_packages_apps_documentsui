@@ -18,6 +18,7 @@ package com.android.documentsui.sidebar;
 
 import android.app.Activity;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
@@ -50,7 +51,6 @@ class RootsAdapter extends ArrayAdapter<Item> {
             List<Item> items,
             OnDragListener dragListener) {
         super(activity, 0, items);
-
         mDragListener = dragListener;
     }
 
@@ -81,6 +81,7 @@ class RootsAdapter extends ArrayAdapter<Item> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final Item item = getItem(position);
+
         final View view = item.getView(convertView, parent);
 
         if (item.isRoot()) {

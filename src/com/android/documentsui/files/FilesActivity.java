@@ -120,7 +120,6 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
 
-
         if (Build.VERSION.SDK_INT >= 23) {
             requestPermissions(permissions, 1);
         }

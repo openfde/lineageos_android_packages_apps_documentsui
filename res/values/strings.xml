@@ -555,5 +555,7 @@
     <string name="fde_linux_dir" >"Linux Home Directory"</string>
     <string name="fde_file" >"file"</string>
     <string name="fde_file_type_filter" >"Filter by type "</string>
+    <string name="fde_quick_access" >"Quick Access"</string>
+    <string name="fde_storage_location" >"Storage Location"</string>
 
 </resources>

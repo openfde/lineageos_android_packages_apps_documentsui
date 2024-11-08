@@ -291,6 +291,6 @@
     <string name="fde_linux_dir" >"Linux主目录"</string>
     <string name="fde_file" >"文件"</string>
     <string name="fde_file_type_filter" >"按类型筛选 "</string>
-
-
+    <string name="fde_quick_access" >"快速访问"</string>
+    <string name="fde_storage_location" >"存储位置"</string>
 </resources>
