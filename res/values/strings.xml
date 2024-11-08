@@ -40,6 +40,7 @@
     <string name="menu_list">List view</string>
     <!-- Menu item that enters a mode to search for documents [CHAR LIMIT=28] -->
     <string name="menu_search">Search</string>
+    <string name="search">"搜索..."</string>
     <!-- Menu item that opens settings/options for a device (like an SD card). [CHAR LIMIT=28] -->
     <string name="menu_settings">Storage settings</string>
 
@@ -554,5 +555,7 @@
     <string name="fde_linux_dir" >"Linux Home Directory"</string>
     <string name="fde_file" >"file"</string>
     <string name="fde_file_type_filter" >"Filter by type "</string>
+    <string name="fde_quick_access" >"Quick Access"</string>
+    <string name="fde_storage_location" >"Storage Location"</string>
 
 </resources>

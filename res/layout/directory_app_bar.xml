@@ -27,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="3dp"
+
         app:titleEnabled="false"
         app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
@@ -54,6 +55,7 @@
             android:theme="?actionBarTheme"
             android:popupTheme="?actionBarPopupTheme"
             android:elevation="3dp"
+            android:visibility="gone"
             app:collapseContentDescription="@string/button_back"
             app:titleTextAppearance="@style/ToolbarTitle"
             app:layout_collapseMode="pin">
@@ -67,6 +69,14 @@
                 android:textAppearance="@style/SearchBarTitle"/>
 
         </androidx.appcompat.widget.Toolbar>
+
+        <androidx.appcompat.widget.ActionMenuView
+            android:id="@+id/sub_menu"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"/>
+
 
     </com.google.android.material.appbar.CollapsingToolbarLayout>
 

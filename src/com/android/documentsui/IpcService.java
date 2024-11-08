@@ -24,6 +24,8 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.os.Handler;
 import android.os.FileObserver;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 
 public class IpcService extends Service {
@@ -99,21 +101,33 @@ public class IpcService extends Service {
                 String[] arrParams = params.split("###");
                 String name = arrParams[0].trim().replaceAll("%[FfUu]", "");
                 String exec = arrParams[1].trim().replaceAll("%[FfUu]", "");
-                // new Thread(new Runnable() {
-                //     @Override
-                //     public void run() {
-                //         NetUtils.gotoLinuxApp(name,exec);
-                //     }
-                // }).start();
+                String type = arrParams[2].trim();
 
-                Intent intent = new Intent();
-                ComponentName componentName = new ComponentName("com.iiordanov.bVNC", "com.iiordanov.bVNC.LinuxAppActivity");
-                intent.setComponent(componentName);
-                intent.putExtra("fromOther", "Launcher");
-                intent.putExtra("vnc_activity_name", name);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-
+                if("open".equals(type)){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NetUtils.gotoLinuxApp(name,exec);
+                        }
+                    }).start();
+                }else if("vnc".equals(type)){
+                    Intent intent = new Intent();
+                    ComponentName componentName = new ComponentName("com.iiordanov.bVNC", "com.iiordanov.bVNC.LinuxAppActivity");
+                    intent.setComponent(componentName);
+                    intent.putExtra("fromOther", "Launcher");
+                    intent.putExtra("vnc_activity_name", name);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }else{
+                    Intent intent = new Intent();
+                    ComponentName componentName = new ComponentName("com.fde.x11", "com.fde.x11.AppListActivity");
+                    intent.setComponent(componentName);
+                    // intent.putExtra("Path", "mate-terminal");
+                    // intent.putExtra("App", "MATE Terminal");
+                    intent.putExtra("App", name);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent); 
+                }
             }else if(FileUtils.DELETE_FILE.equals(method)){
                 FileUtils.deleteFiles(params);
                 // gotoClientApp("DELETE");

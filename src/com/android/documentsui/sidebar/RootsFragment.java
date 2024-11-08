@@ -87,6 +87,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import android.provider.Settings;
 
 
@@ -133,13 +134,17 @@ public class RootsFragment extends Fragment {
 
     private List<Item> mApplicationItemList;
 
+    private static int openQuickFlag = 1;
+    private static int openStorageFlag = 1;
+
     /**
      * Shows the {@link RootsFragment}.
-     * @param fm the FragmentManager for interacting with fragments associated with this
-     *           fragment's activity
+     *
+     * @param fm          the FragmentManager for interacting with fragments associated with this
+     *                    fragment's activity
      * @param includeApps if {@code true}, query the intent from the system and include apps in
      *                    the {@RootsFragment}.
-     * @param intent the intent to query for package manager
+     * @param intent      the intent to query for package manager
      */
     public static RootsFragment show(FragmentManager fm, boolean includeApps, Intent intent) {
         final Bundle args = new Bundle();
@@ -365,9 +370,10 @@ public class RootsFragment extends Fragment {
     /**
      * If the package name of other providers or apps capable of handling the original intent
      * include the preferred root source, it will have higher order than others.
-     * @param excludePackage Exclude activities from this given package
+     *
+     * @param excludePackage   Exclude activities from this given package
      * @param handlerAppIntent When not null, apps capable of handling the original intent will
-     *            be included in list of roots (in special section at bottom).
+     *                         be included in list of roots (in special section at bottom).
      */
     @VisibleForTesting
     List<Item> sortLoadResult(
@@ -387,18 +393,18 @@ public class RootsFragment extends Fragment {
                 userIds);
         final List<RootItem> otherProviders = new ArrayList<>();
 
-        RootInfo documentsInfo = null ;
-        RootInfo musicInfo = null ;
-        RootInfo pictureInfo = null ;
-        RootInfo videoInfo = null ;
-        RootInfo downloadInfo = null ;
+        RootInfo documentsInfo = null;
+        RootInfo musicInfo = null;
+        RootInfo pictureInfo = null;
+        RootInfo videoInfo = null;
+        RootInfo downloadInfo = null;
 
 
         for (final RootInfo root : roots) {
             final RootItem item;
             //if (root.isExternalStorageHome()) {
-            if (Providers.ROOT_ID_HOME.equals(root.rootId)) {  
-               continue;
+            if (Providers.ROOT_ID_HOME.equals(root.rootId)) {
+                continue;
             } else if (root.isLibrary() || root.isDownloads()) {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
                 //librariesBuilder.add(item);
@@ -409,12 +415,14 @@ public class RootsFragment extends Fragment {
                 videoInfo = RootInfo.copyRootInfo(root);
                 downloadInfo = RootInfo.copyRootInfo(root);
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
-				if (item.title.equals(
+                if (item.title.equals(
                         Settings.Global.getString(getContext().getContentResolver(), Settings.Global.DEVICE_NAME))) {
                     item.title = getContext().getString(R.string.fde_fde_dir);
                 }
                 item.root.summary = ANDROID;
-                storageProvidersBuilder.add(item);
+                if (openQuickFlag == 1) {
+                    storageProvidersBuilder.add(item);
+                }
             } else {
                 item = new RootItem(root, mActionHandler,
                         providersAccess.getPackageName(root.userId, root.authority),
@@ -428,33 +436,33 @@ public class RootsFragment extends Fragment {
         }
 
 
+        if (openQuickFlag == 1) {
+            musicInfo.documentId = musicInfo.rootId = Providers.ROOT_ID_AUDIO_NEW;
+            musicInfo.title = getString(R.string.fde_music);
+            musicInfo.derivedIcon = R.mipmap.icon_audio;
+            otherProviders.add(new RootItem(musicInfo, mActionHandler, maybeShowBadge));
 
-       
+            videoInfo.rootId = videoInfo.documentId = Providers.ROOT_ID_VIDEOS_NEW;
+            videoInfo.title = getString(R.string.fde_videos);
+            videoInfo.derivedIcon = R.mipmap.icon_video;
+            otherProviders.add(new RootItem(videoInfo, mActionHandler, maybeShowBadge));
 
-        musicInfo.documentId = musicInfo.rootId = Providers.ROOT_ID_AUDIO_NEW;
-        musicInfo.title = getString(R.string.fde_music);
-        musicInfo.derivedIcon = R.mipmap.icon_audio;
-        otherProviders.add(new RootItem(musicInfo, mActionHandler, maybeShowBadge));
+            pictureInfo.documentId = pictureInfo.rootId = Providers.ROOT_ID_IMAGES_NEW;
+            pictureInfo.title = getString(R.string.fde_pictures);
+            pictureInfo.derivedIcon = R.mipmap.icon_picture;
+            otherProviders.add(new RootItem(pictureInfo, mActionHandler, maybeShowBadge));
 
-        videoInfo.rootId = videoInfo.documentId = Providers.ROOT_ID_VIDEOS_NEW;
-        videoInfo.title = getString(R.string.fde_videos);
-        videoInfo.derivedIcon = R.mipmap.icon_video;
-        otherProviders.add(new RootItem(videoInfo, mActionHandler, maybeShowBadge));
-        
-        pictureInfo.documentId =  pictureInfo.rootId = Providers.ROOT_ID_IMAGES_NEW;
-        pictureInfo.title = getString(R.string.fde_pictures);
-        pictureInfo.derivedIcon = R.mipmap.icon_picture;
-        otherProviders.add(new RootItem(pictureInfo, mActionHandler, maybeShowBadge));
+            documentsInfo.documentId = documentsInfo.rootId = Providers.ROOT_ID_DOCUMENTS_NEW;
+            documentsInfo.title = getString(R.string.fde_documents);
+            documentsInfo.derivedIcon = R.mipmap.icon_document;
+            otherProviders.add(new RootItem(documentsInfo, mActionHandler, maybeShowBadge));
 
-        documentsInfo.documentId =  documentsInfo.rootId = Providers.ROOT_ID_DOCUMENTS_NEW;
-        documentsInfo.title = getString(R.string.fde_documents);
-        documentsInfo.derivedIcon = R.mipmap.icon_document;
-        otherProviders.add(new RootItem(documentsInfo, mActionHandler, maybeShowBadge));
+            downloadInfo.rootId = downloadInfo.documentId = Providers.ROOT_ID_DOWNLOADS_NEW;
+            downloadInfo.title = getString(R.string.fde_downloads);
+            downloadInfo.derivedIcon = R.mipmap.icon_download;
+            otherProviders.add(new RootItem(downloadInfo, mActionHandler, maybeShowBadge));
+        }
 
-        downloadInfo.rootId = downloadInfo.documentId = Providers.ROOT_ID_DOWNLOADS_NEW;
-        downloadInfo.title = getString(R.string.fde_downloads);
-        downloadInfo.derivedIcon = R.mipmap.icon_download;
-        otherProviders.add(new RootItem(downloadInfo, mActionHandler, maybeShowBadge));
 
         final List<RootItem> libraries = librariesBuilder.getList();
         final List<RootItem> storageProviders = storageProvidersBuilder.getList();
@@ -483,26 +491,30 @@ public class RootsFragment extends Fragment {
         } else {
             // Only add providers
             //Collections.sort(otherProviders, comp);
-             ArrayList<Item> rootAndroidList = new ArrayList<>();
-             ArrayList<Item> rootLinuxList = new ArrayList<>();
-             ArrayList<Item> rootOtherList = new ArrayList<>();
+            ArrayList<Item> rootAndroidList = new ArrayList<>();
+            ArrayList<Item> rootLinuxList = new ArrayList<>();
+            ArrayList<Item> rootOtherList = new ArrayList<>();
             // rootLinuxList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
             // rootAndroidList.add(new TitleItem(R.layout.item_android_header,"Android"));
             rootAndroidList.addAll(storageProviders);
 
             for (RootItem item : otherProviders) {
                 if (UserId.CURRENT_USER.equals(item.userId)) {
-					 if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
+                    if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
                         // remove
                     } else {
                         // Log.i("bella","otherProviders title: "+item.root.title + " ,authority: "+item.root.authority + " ,rootId: "+item.root.rootId);
-                        if( item.root.authority.contains("fusionvolume")){
+                        if (item.root.authority.contains("fusionvolume")) {
                             item.root.summary = "";
-                            rootOtherList.add(item);
-                        }else if(item.root.authority.contains(LINUX)){
+                            if (openStorageFlag == 1) {
+                                rootOtherList.add(item);
+                            }
+                        } else if (item.root.authority.contains(LINUX)) {
                             item.root.summary = "";
-                            rootOtherList.add(item);
-                        }else{
+                            if (openStorageFlag == 1) {
+                                rootOtherList.add(item);
+                            }
+                        } else {
                             // item.root.summary = ANDROID;
                             rootAndroidList.add(item);
                         }
@@ -512,16 +524,23 @@ public class RootsFragment extends Fragment {
                 }
                 mApplicationItemList.add(item);
             }
-            rootOtherList.add(new SpacerItem());
+            rootOtherList.add(new DrawerTitleItem(getString(R.string.fde_storage_location), openStorageFlag, isOpen -> {
+                this.openStorageFlag = isOpen ? 1 : 0;
+                onDisplayStateChanged();
+            }));
             Collections.reverse(rootOtherList);
             if (VERBOSE) Log.i(TAG, "bella Adding rootAndroidList roots: " + rootAndroidList);
             // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
+            rootList.add(new DrawerTitleItem(getString(R.string.fde_quick_access), openQuickFlag, isOpen -> {
+                this.openQuickFlag = isOpen ? 1 : 0;
+                onDisplayStateChanged();
+            }));
             rootList.addAll(rootLinuxList);
             // rootList.add(new SpacerItem());
             // rootList.add(new TitleItem(R.layout.item_android_header,"Android"));
-            
+
             rootList.addAll(rootAndroidList);
-            rootList.addAll(rootOtherList);  
+            rootList.addAll(rootOtherList);
         }
 
         List<Item> presentableList = new UserItemsCombiner(resources, state)
@@ -766,8 +785,8 @@ public class RootsFragment extends Fragment {
     }
 
     static void ejectClicked(View ejectIcon, RootInfo root, ActionHandler actionHandler) {
-        assert(ejectIcon != null);
-        assert(!root.ejecting);
+        assert (ejectIcon != null);
+        assert (!root.ejecting);
         ejectIcon.setEnabled(false);
         root.ejecting = true;
         actionHandler.ejectRoot(

@@ -66,8 +66,8 @@ public class HeaderCell extends LinearLayout {
             label.setText(dimension.getLabelId());
             switch (dimension.getDataType()) {
                 case SortDimension.DATA_TYPE_NUMBER:
-                    setDataTypeNumber(label);
-                    break;
+//                    setDataTypeNumber(label);
+//                    break;
                 case SortDimension.DATA_TYPE_STRING:
                     setDataTypeString(label);
                     break;

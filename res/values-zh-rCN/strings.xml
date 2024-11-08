@@ -28,6 +28,7 @@
     <string name="menu_grid" msgid="1453636521731880680">"网格视图"</string>
     <string name="menu_list" msgid="6714267452146410402">"列表视图"</string>
     <string name="menu_search" msgid="1876699106790719849">"搜索"</string>
+    <string name="search" msgid="1876699106790719849">"搜索..."</string>
     <string name="menu_settings" msgid="6520844520117939047">"存储设置"</string>
     <string name="menu_open" msgid="9092138100049759315">"打开"</string>
     <string name="menu_open_with" msgid="5507647065467520229">"打开方式"</string>
@@ -70,7 +71,7 @@
     <string name="sort_dimension_summary" msgid="7724534446881397860">"摘要"</string>
     <string name="sort_dimension_file_type" msgid="5779709622922085381">"类型"</string>
     <string name="sort_dimension_size" msgid="2190547351159472884">"大小"</string>
-    <string name="sort_dimension_date" msgid="4231005651895254033">"上次修改时间"</string>
+    <string name="sort_dimension_date" msgid="4231005651895254033">"修改时间"</string>
     <string name="sort_dimension_name_ascending" msgid="3715725253270614742">"文件名（从 A 到 Z）"</string>
     <string name="sort_dimension_file_type_ascending" msgid="3466973933402894292">"类型（从 A 到 Z）"</string>
     <string name="sort_dimension_size_ascending" msgid="2617359017800057762">"大小（从小到大）"</string>
@@ -290,6 +291,6 @@
     <string name="fde_linux_dir" >"Linux主目录"</string>
     <string name="fde_file" >"文件"</string>
     <string name="fde_file_type_filter" >"按类型筛选 "</string>
-
-
+    <string name="fde_quick_access" >"快速访问"</string>
+    <string name="fde_storage_location" >"存储位置"</string>
 </resources>
