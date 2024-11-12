@@ -611,7 +611,7 @@ public static String newFile() {
     try{
         String documentId = PATH_ID_DESKTOP;
         File folder = new File(documentId);  
-        String newDocName = "NewDir.txt";  
+        String newDocName = "NewFile.txt";  
         if (!folder.exists()) {
             boolean result = folder.mkdirs();
             if (result) {
