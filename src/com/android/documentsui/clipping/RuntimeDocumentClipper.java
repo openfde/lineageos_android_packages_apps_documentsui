@@ -69,9 +69,9 @@ final class RuntimeDocumentClipper implements DocumentClipper {
     public boolean hasItemsToPaste() {
         if (mClipboard.hasPrimaryClip()) {
             ClipData clipData = mClipboard.getPrimaryClip();
-	    if (clipData == null ){
-		    return false;
-	    }
+	    // if (clipData == null ){
+		//     return false;
+	    // }
             int count = clipData.getItemCount();
             if (count > 0) {
                 for (int i = 0; i < count; ++i) {
@@ -275,10 +275,10 @@ final class RuntimeDocumentClipper implements DocumentClipper {
         }
 
         PersistableBundle bundle = clipData.getDescription().getExtras();
-        if ( bundle == null ){
-            Log.i(TAG, "Received null bundle . Ignoring.");
-            return;
-        }
+        // if ( bundle == null ){
+        //     Log.i(TAG, "Received null bundle . Ignoring.");
+        //     return;
+        // }
         @OpType int opType = getOpType(bundle);
         try {
             if (!canCopy(dstStack.peek())) {
