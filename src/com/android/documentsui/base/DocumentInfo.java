@@ -236,7 +236,7 @@ public class DocumentInfo implements Durable, Parcelable {
                 + "docId=" + documentId
                 + ", userId=" + userId
                 + ", name=" + displayName
-                + ", flags=" + flags
+                + ", authority=" + authority
                 + ", mimeType=" + mimeType
                 + ", isContainer=" + isContainer()
                 + ", isDirectory=" + isDirectory()

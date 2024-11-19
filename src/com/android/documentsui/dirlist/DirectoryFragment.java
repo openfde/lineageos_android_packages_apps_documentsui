@@ -115,11 +115,9 @@ import com.android.documentsui.sorting.SortModel;
 import com.android.documentsui.util.SPUtils;
 import com.google.common.base.Objects;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
@@ -207,6 +205,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     private Handler mHandler;
     private Runnable mProviderTestRunnable;
+
+    private static final long DOUBLE_CLICK_TIME_DELTA = 400; //
+    private static long lastClickTime = 0;
 
     // Note, we use !null to indicate that selection was restored (from rotation).
     // So don't fiddle with this field unless you've got the bigger picture in mind.
@@ -685,7 +686,6 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     // TODO: Move to UserInputHander.
     protected boolean onContextMenuClick(MotionEvent e) {
-
         if (mDetailsLookup.overItemWithSelectionKey(e)) {
             View childView = mRecView.findChildViewUnder(e.getX(), e.getY());
             ViewHolder holder = mRecView.getChildViewHolder(childView);
@@ -702,6 +702,19 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private boolean onItemActivated(ItemDetails<String> item, MotionEvent e) {
+        long currentTime = System.currentTimeMillis();
+        long subTime = currentTime - lastClickTime;
+        if (subTime  < DOUBLE_CLICK_TIME_DELTA) {
+            //double click
+        }else{
+            int pos = item.getPosition();
+            mRecView.findViewHolderForAdapterPosition(pos).itemView.setFocusableInTouchMode(true);
+            mRecView.findViewHolderForAdapterPosition(pos).itemView.requestFocus();
+            lastClickTime = currentTime;
+            return false ;
+        }
+
+
         if (((DocumentItemDetails) item).inPreviewIconHotspot(e)) {
             return mActions.previewItem(item);
         }
