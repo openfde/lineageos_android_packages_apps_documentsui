@@ -156,7 +156,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     private Handler handler = new Handler();
 
-
+    int posSelect = 0 ;
     @Injected
     @ContentScoped
     private Injector<?> mInjector;
@@ -206,7 +206,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private Handler mHandler;
     private Runnable mProviderTestRunnable;
 
-    private static final long DOUBLE_CLICK_TIME_DELTA = 400; //
+    private static final long DOUBLE_CLICK_TIME_DELTA = 400; // max time
     private static long lastClickTime = 0;
 
     // Note, we use !null to indicate that selection was restored (from rotation).
@@ -392,6 +392,28 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
         mRecView.setItemAnimator(new DirectoryItemAnimator());
+
+        mRecView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                if (e.getAction() == MotionEvent.ACTION_UP) {
+                    View child = rv.findChildViewUnder(e.getX(), e.getY());
+                    if (child == null) {
+                        mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(false);
+                        mRecView.findViewHolderForAdapterPosition(posSelect).itemView.clearFocus();
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) { }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
+        });
+
 
         mInjector = mActivity.getInjector();
         // Initially, this selection tracker (delegator) uses a dummy implementation, so it must be
@@ -707,9 +729,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         if (subTime  < DOUBLE_CLICK_TIME_DELTA) {
             //double click
         }else{
-            int pos = item.getPosition();
-            mRecView.findViewHolderForAdapterPosition(pos).itemView.setFocusableInTouchMode(true);
-            mRecView.findViewHolderForAdapterPosition(pos).itemView.requestFocus();
+            posSelect = item.getPosition();
+            mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(true);
+            mRecView.findViewHolderForAdapterPosition(posSelect).itemView.requestFocus();
             lastClickTime = currentTime;
             return false ;
         }
