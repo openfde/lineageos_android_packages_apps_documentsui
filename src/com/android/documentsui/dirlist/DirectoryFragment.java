@@ -726,6 +726,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private boolean onItemActivated(ItemDetails<String> item, MotionEvent e) {
         long currentTime = System.currentTimeMillis();
         long subTime = currentTime - lastClickTime;
+        Log.i(TAG,"bella subTime:  "+subTime  + " ,currentTime:  "+currentTime + ",lastClickTime "+lastClickTime);
         if (subTime  < DOUBLE_CLICK_TIME_DELTA) {
             //double click
         }else{

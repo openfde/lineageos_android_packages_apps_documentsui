@@ -108,4 +108,14 @@
         <item name="buttonBarNegativeButtonStyle">@style/DialogTextButton</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialogTitleStyle</item>
     </style>
+
+    <style name="DialogActivityTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowMinWidthMajor">80%</item>
+        <item name="android:windowMinWidthMinor">400dp</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+
+    </style>
+
 </resources>
