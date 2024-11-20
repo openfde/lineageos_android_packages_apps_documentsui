@@ -40,7 +40,7 @@
     <string name="menu_list">List view</string>
     <!-- Menu item that enters a mode to search for documents [CHAR LIMIT=28] -->
     <string name="menu_search">Search</string>
-    <string name="search">"搜索..."</string>
+    <string name="search" >"Search..."</string>
     <!-- Menu item that opens settings/options for a device (like an SD card). [CHAR LIMIT=28] -->
     <string name="menu_settings">Storage settings</string>
 

@@ -115,11 +115,9 @@ import com.android.documentsui.sorting.SortModel;
 import com.android.documentsui.util.SPUtils;
 import com.google.common.base.Objects;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
@@ -158,7 +156,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     private Handler handler = new Handler();
 
-
+    int posSelect = 0 ;
     @Injected
     @ContentScoped
     private Injector<?> mInjector;
@@ -207,6 +205,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     private Handler mHandler;
     private Runnable mProviderTestRunnable;
+
+    private static final long DOUBLE_CLICK_TIME_DELTA = 400; // max time
+    private static long lastClickTime = 0;
 
     // Note, we use !null to indicate that selection was restored (from rotation).
     // So don't fiddle with this field unless you've got the bigger picture in mind.
@@ -391,6 +392,28 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
         mRecView.setItemAnimator(new DirectoryItemAnimator());
+
+        mRecView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                if (e.getAction() == MotionEvent.ACTION_UP) {
+                    View child = rv.findChildViewUnder(e.getX(), e.getY());
+                    if (child == null) {
+                        mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(false);
+                        mRecView.findViewHolderForAdapterPosition(posSelect).itemView.clearFocus();
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) { }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) { }
+        });
+
 
         mInjector = mActivity.getInjector();
         // Initially, this selection tracker (delegator) uses a dummy implementation, so it must be
@@ -685,7 +708,6 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     // TODO: Move to UserInputHander.
     protected boolean onContextMenuClick(MotionEvent e) {
-
         if (mDetailsLookup.overItemWithSelectionKey(e)) {
             View childView = mRecView.findChildViewUnder(e.getX(), e.getY());
             ViewHolder holder = mRecView.getChildViewHolder(childView);
@@ -702,6 +724,19 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private boolean onItemActivated(ItemDetails<String> item, MotionEvent e) {
+        long currentTime = System.currentTimeMillis();
+        long subTime = currentTime - lastClickTime;
+        if (subTime  < DOUBLE_CLICK_TIME_DELTA) {
+            //double click
+        }else{
+            posSelect = item.getPosition();
+            mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(true);
+            mRecView.findViewHolderForAdapterPosition(posSelect).itemView.requestFocus();
+            lastClickTime = currentTime;
+            return false ;
+        }
+
+
         if (((DocumentItemDetails) item).inPreviewIconHotspot(e)) {
             return mActions.previewItem(item);
         }
