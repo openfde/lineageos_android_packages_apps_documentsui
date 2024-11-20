@@ -45,6 +45,7 @@
     <string name="menu_compress" msgid="37539111904724188">"压缩"</string>
     <string name="menu_extract" msgid="8171946945982532262">"解压到…"</string>
     <string name="menu_rename" msgid="1883113442688817554">"重命名"</string>
+    <string name="rename_hint" msgid="1883113442688817554">"请输入新名称"</string>
     <string name="menu_inspect" msgid="7279855349299446224">"获取信息"</string>
     <string name="menu_show_hidden_files" msgid="5140676344684492769">"显示隐藏的文件"</string>
     <string name="menu_hide_hidden_files" msgid="5654495713350153702">"不显示隐藏的文件"</string>
@@ -293,4 +294,6 @@
     <string name="fde_file_type_filter" >"按类型筛选 "</string>
     <string name="fde_quick_access" >"快速访问"</string>
     <string name="fde_storage_location" >"存储位置"</string>
+    <string name="fde_ok" >"确定"</string>
+    <string name="fde_cancel" >"取消"</string>
 </resources>

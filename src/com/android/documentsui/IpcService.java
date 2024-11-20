@@ -16,8 +16,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.provider.DocumentsContract;
+import com.android.documentsui.provider.FileUtils;
+import com.android.documentsui.ui.RenameDialogActivity;
 import android.content.ComponentName;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -148,10 +151,14 @@ public class IpcService extends Service {
                 SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, "");
             }else if(FileUtils.RENAME_FILE.equals(method) || FileUtils.RENAME_DIR.equals(method) ){
                 try {
-                    String[] arrFileName = params.split("###");
-                    File file = new File(FileUtils.PATH_ID_DESKTOP+arrFileName[0]);
-                    file.renameTo(new File(FileUtils.PATH_ID_DESKTOP+arrFileName[1]));
-                    gotoClientApp("RENAME",params);
+//                    gotoClientApp("RENAME",params);
+//                    renameDialog(FileUtils.PATH_ID_DESKTOP+arrFileName[0]);
+
+                    Intent intent = new Intent();
+                    intent.setClass(context, RenameDialogActivity.class);
+                    intent.putExtra("oldFileName",params);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

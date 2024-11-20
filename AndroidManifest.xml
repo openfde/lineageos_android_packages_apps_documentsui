@@ -70,6 +70,11 @@
         android:appCategory="productivity"
         android:fullBackupOnly="false"
         android:crossProfile="true">
+        <activity
+            android:name=".ui.RenameDialogActivity"
+            android:theme="@style/DialogActivityTheme"
+            android:launchMode="singleTask"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.backup.api_key"
