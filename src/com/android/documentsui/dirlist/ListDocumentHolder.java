@@ -173,8 +173,9 @@ final class ListDocumentHolder extends DocumentHolder {
 
     @Override
     public boolean inSelectRegion(MotionEvent event) {
-        return (mDoc.isDirectory() && !(mAction == State.ACTION_BROWSE)) ?
-                false : Views.isEventOver(event, mIconLayout);
+        return false ;
+        // return (mDoc.isDirectory() && !(mAction == State.ACTION_BROWSE)) ?
+        //         false : Views.isEventOver(event, mIconLayout);
     }
 
     @Override

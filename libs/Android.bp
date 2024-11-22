@@ -20,3 +20,15 @@ java_import {
     sdk_version: "current",
 }
 
+android_library_import {
+    name: "recyclerview-selection",
+    aars: ["recyclerview-selection.aar"],
+    sdk_version: "current",
+}
+
+
+android_library_import {
+    name: "recyclerview",
+    aars: ["recyclerview.aar"],
+    sdk_version: "current",
+}

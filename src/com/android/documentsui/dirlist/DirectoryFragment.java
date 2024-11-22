@@ -206,7 +206,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private Handler mHandler;
     private Runnable mProviderTestRunnable;
 
-    private static final long DOUBLE_CLICK_TIME_DELTA = 400; // max time
+    private static final long DOUBLE_CLICK_TIME_DELTA = 600; // max time
     private static long lastClickTime = 0;
 
     // Note, we use !null to indicate that selection was restored (from rotation).
@@ -726,7 +726,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private boolean onItemActivated(ItemDetails<String> item, MotionEvent e) {
         long currentTime = System.currentTimeMillis();
         long subTime = currentTime - lastClickTime;
-        Log.i(TAG,"bella subTime:  "+subTime  + " ,currentTime:  "+currentTime + ",lastClickTime "+lastClickTime);
+        Log.i(TAG,"bella qq subTime:  "+subTime  + " ,currentTime:  "+currentTime + ",lastClickTime "+lastClickTime);
         if (subTime  < DOUBLE_CLICK_TIME_DELTA) {
             //double click
         }else{
@@ -734,9 +734,8 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(true);
             mRecView.findViewHolderForAdapterPosition(posSelect).itemView.requestFocus();
             lastClickTime = currentTime;
-            return false ;
+            return true ;
         }
-
 
         if (((DocumentItemDetails) item).inPreviewIconHotspot(e)) {
             return mActions.previewItem(item);

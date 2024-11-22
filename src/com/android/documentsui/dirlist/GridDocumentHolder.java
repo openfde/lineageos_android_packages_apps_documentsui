@@ -138,7 +138,8 @@ final class GridDocumentHolder extends DocumentHolder {
 
     @Override
     public boolean inSelectRegion(MotionEvent event) {
-        return Views.isEventOver(event, mIconLayout);
+        return false ;
+        //return Views.isEventOver(event, mIconLayout);
     }
 
     @Override

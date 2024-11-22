@@ -76,12 +76,12 @@ final class GridDirectoryHolder extends DocumentHolder {
     @Override
     public boolean inDragRegion(MotionEvent event) {
         // Entire grid box should be draggable
-        return true;
+        return false;
     }
 
     @Override
     public boolean inSelectRegion(MotionEvent event) {
-        return mAction == State.ACTION_BROWSE ? Views.isEventOver(event, mIconLayout) : false;
+        return false ;//mAction == State.ACTION_BROWSE ? Views.isEventOver(event, mIconLayout) : false;
     }
 
     /**
