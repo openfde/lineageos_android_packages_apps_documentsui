@@ -156,7 +156,8 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     private Handler handler = new Handler();
 
-    int posSelect = 0 ;
+    int posSelect = -1 ;
+    int lastSelect = -1 ;
     @Injected
     @ContentScoped
     private Injector<?> mInjector;
@@ -726,14 +727,15 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private boolean onItemActivated(ItemDetails<String> item, MotionEvent e) {
         long currentTime = System.currentTimeMillis();
         long subTime = currentTime - lastClickTime;
+        posSelect = item.getPosition();
         Log.i(TAG,"bella qq subTime:  "+subTime  + " ,currentTime:  "+currentTime + ",lastClickTime "+lastClickTime);
-        if (subTime  < DOUBLE_CLICK_TIME_DELTA) {
+        if (subTime  < DOUBLE_CLICK_TIME_DELTA && posSelect == lastSelect) {
             //double click
         }else{
-            posSelect = item.getPosition();
             mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(true);
             mRecView.findViewHolderForAdapterPosition(posSelect).itemView.requestFocus();
             lastClickTime = currentTime;
+            lastSelect = posSelect;
             return true ;
         }
 
