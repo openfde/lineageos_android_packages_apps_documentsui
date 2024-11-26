@@ -397,13 +397,17 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         mRecView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                if (e.getAction() == MotionEvent.ACTION_UP) {
-                    View child = rv.findChildViewUnder(e.getX(), e.getY());
-                    if (child == null) {
-                        mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(false);
-                        mRecView.findViewHolderForAdapterPosition(posSelect).itemView.clearFocus();
-                        return true;
+                try {
+                    if (e.getAction() == MotionEvent.ACTION_UP) {
+                        View child = rv.findChildViewUnder(e.getX(), e.getY());
+                        if (child == null && mRecView.findViewHolderForAdapterPosition(posSelect) !=null && mRecView.findViewHolderForAdapterPosition(posSelect).itemView !=null) {
+                            mRecView.findViewHolderForAdapterPosition(posSelect).itemView.setFocusableInTouchMode(false);
+                            mRecView.findViewHolderForAdapterPosition(posSelect).itemView.clearFocus();
+                            return true;
+                        }
                     }
+                } catch (Exception ee) {
+                    ee.printStackTrace();
                 }
                 return false;
             }
