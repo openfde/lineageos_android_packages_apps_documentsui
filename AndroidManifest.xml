@@ -71,6 +71,11 @@
         android:fullBackupOnly="false"
         android:crossProfile="true">
         <activity
+            android:name=".ui.OpenLinuxAppActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/DialogActivityTheme"
+            android:exported="false" />
+        <activity
             android:name=".ui.RenameDialogActivity"
             android:theme="@style/DialogActivityTheme"
             android:launchMode="singleTask"

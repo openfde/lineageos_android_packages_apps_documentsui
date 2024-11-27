@@ -1,67 +1,57 @@
 package com.android.documentsui.provider;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.LauncherActivityInfo;
+import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.os.CancellationSignal;
-import android.os.ParcelFileDescriptor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.SystemProperties;
+import android.os.UserHandle;
+import android.os.UserManager;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
 import android.provider.DocumentsContract.Root;
-import android.provider.DocumentsProvider;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
-
-import android.os.SystemProperties;
-import android.util.Log;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import com.android.documentsui.R;
-import android.os.Bundle;
-import android.content.Intent;
-import android.provider.MediaStore;
-import android.content.ContentResolver;
-import android.net.Uri;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
-import android.widget.Toast;
-
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import androidx.documentfile.provider.DocumentFile;
-import android.graphics.Canvas;
-import android.content.pm.ApplicationInfo;
-import android.graphics.drawable.Drawable;
-import android.content.pm.LauncherActivityInfo;
-import android.content.pm.LauncherApps;
-import android.os.UserHandle;
-import android.os.UserManager;
 
 
 public class FileUtils {
@@ -611,7 +601,7 @@ public static String newFile() {
     try{
         String documentId = PATH_ID_DESKTOP;
         File folder = new File(documentId);  
-        String newDocName = "NewDir.txt";  
+        String newDocName = "NewFile.txt";  
         if (!folder.exists()) {
             boolean result = folder.mkdirs();
             if (result) {
@@ -846,5 +836,15 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
     }
 
  }
+
+    public static boolean isAppInstalled(Context context, String packageName) {
+        PackageManager packageManager = context.getPackageManager();
+        try {
+            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true; // app installed
+        } catch (PackageManager.NameNotFoundException e) {
+            return false; // app not install
+        }
+    }
     
 }

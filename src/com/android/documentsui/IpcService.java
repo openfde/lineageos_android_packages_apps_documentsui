@@ -1,34 +1,28 @@
 package com.android.documentsui;
 
-import java.io.File;
-import java.net.URI;
-
-import com.android.documentsui.base.Providers;
-import com.android.documentsui.clipping.DocumentClipper;
-import com.android.documentsui.files.FilesActivity;
-import com.android.documentsui.provider.FileUtils;
-import com.android.documentsui.util.SPUtils;
-import com.android.documentsui.util.NetUtils;
-
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.provider.DocumentsContract;
 import android.util.Log;
-import android.provider.DocumentsContract;
+import android.view.LayoutInflater;
+
+import com.android.documentsui.base.Providers;
+import com.android.documentsui.files.FilesActivity;
 import com.android.documentsui.provider.FileUtils;
+import com.android.documentsui.ui.OpenLinuxAppActivity;
 import com.android.documentsui.ui.RenameDialogActivity;
-import android.content.ComponentName;
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.ClipboardManager;
-import android.os.Handler;
-import android.os.FileObserver;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import com.android.documentsui.util.NetUtils;
+import com.android.documentsui.util.SPUtils;
+
+import java.io.File;
 
 
 public class IpcService extends Service {
@@ -101,36 +95,23 @@ public class IpcService extends Service {
                   SPUtils.putDocInfo(context,"getPath",FileUtils.PATH_ID_DESKTOP);
                   context.startActivity(intent);
             }else if(FileUtils.OPEN_LINUX_APP.equals(method)){
-                String[] arrParams = params.split("###");
-                String name = arrParams[0].trim().replaceAll("%[FfUu]", "");
-                String exec = arrParams[1].trim().replaceAll("%[FfUu]", "");
-                String type = arrParams[2].trim();
+                new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected String doInBackground(Void... voids) {
+                        return NetUtils.getFdeMode();
+                    }
 
-                if("open".equals(type)){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            NetUtils.gotoLinuxApp(name,exec);
-                        }
-                    }).start();
-                }else if("vnc".equals(type)){
-                    Intent intent = new Intent();
-                    ComponentName componentName = new ComponentName("com.iiordanov.bVNC", "com.iiordanov.bVNC.LinuxAppActivity");
-                    intent.setComponent(componentName);
-                    intent.putExtra("fromOther", "Launcher");
-                    intent.putExtra("vnc_activity_name", name);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                }else{
-                    Intent intent = new Intent();
-                    ComponentName componentName = new ComponentName("com.fde.x11", "com.fde.x11.AppListActivity");
-                    intent.setComponent(componentName);
-                    // intent.putExtra("Path", "mate-terminal");
-                    // intent.putExtra("App", "MATE Terminal");
-                    intent.putExtra("App", name);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent); 
-                }
+                    @Override
+                    protected void onPostExecute(String result) {
+                        super.onPostExecute(result);
+                        Intent intent = new Intent();
+                        intent.setClass(context, OpenLinuxAppActivity.class);
+                        intent.putExtra("openParams",params);
+                        intent.putExtra("fdeModel",result);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                }.execute();
             }else if(FileUtils.DELETE_FILE.equals(method)){
                 FileUtils.deleteFiles(params);
                 // gotoClientApp("DELETE");
