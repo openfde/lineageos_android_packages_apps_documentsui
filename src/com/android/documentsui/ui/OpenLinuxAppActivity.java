@@ -172,17 +172,20 @@ public class OpenLinuxAppActivity extends Activity {
         layoutDirectType.setOnClickListener(view -> {
             openDirect();
             SPUtils.putIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
+            cleanPrefered();
         });
 
 
         layoutVncType.setOnClickListener(view -> {
             openVnc();
             SPUtils.putIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
+            cleanPrefered();
         });
 
         layoutX11Type.setOnClickListener(view -> {
             openX11();
             SPUtils.putIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
+            cleanPrefered();
         });
     }
 
@@ -263,6 +266,12 @@ public class OpenLinuxAppActivity extends Activity {
             }
         }
         return count;
+    }
+
+    private void cleanPrefered(){
+        getPackageManager().clearPackagePreferredActivities("com.iiordanov.bVNC");
+        getPackageManager().clearPackagePreferredActivities("com.fde.x11");
+        getPackageManager().clearPackagePreferredActivities("com.fde.txt");
     }
 
 }
