@@ -303,4 +303,6 @@
     <string name="fde_linux_open" >"使用原生方式打开"</string>
     <string name="fde_xserver_open" >"使用X11打开"</string>
     <string name="fde_vnc_open" >"使用VNC打开"</string>
+    <string name="fde_app_install" >"请安装 "</string>
+    <string name="fde_app_choose" >"请选用fde_utils 打开openFDE "</string>
 </resources>

@@ -95,24 +95,51 @@ public class IpcService extends Service {
                   SPUtils.putDocInfo(context,"getPath",FileUtils.PATH_ID_DESKTOP);
                   context.startActivity(intent);
             }else if(FileUtils.OPEN_LINUX_APP.equals(method)){
-                new AsyncTask<Void, Void, String>() {
-                    @Override
-                    protected String doInBackground(Void... voids) {
-                        return NetUtils.getFdeMode();
-                    }
+                String[] arrParams = params.split("###");
+                String name = arrParams[0].trim().replaceAll("%[FfUu]", "");
+                String exec = arrParams[1].trim().replaceAll("%[FfUu]", "");
+                String type = arrParams[2];
+                String fileName =  name+".desktop";
+                if(arrParams.length > 3){
+                    fileName = arrParams[3];
+                }
 
-                    @Override
-                    protected void onPostExecute(String result) {
-                        super.onPostExecute(result);
-                        Intent intent = new Intent();
-                        intent.setClass(context, OpenLinuxAppActivity.class);
-                        intent.putExtra("openParams",params);
-                        intent.putExtra("fdeModel",result);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
-                }.execute();
-            }else if(FileUtils.DELETE_FILE.equals(method)){
+                if (!"open".equals(type)) {
+                    new AsyncTask<Void, Void, String>() {
+                        @Override
+                        protected String doInBackground(Void... voids) {
+                            return NetUtils.getFdeMode();
+                        }
+
+                        @Override
+                        protected void onPostExecute(String result) {
+                            super.onPostExecute(result);
+                            Intent intent = new Intent();
+                            intent.setClass(context, OpenLinuxAppActivity.class);
+                            intent.putExtra("openParams", params);
+                            intent.putExtra("fdeModel", result);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                        }
+                    }.execute();
+                } else {
+                    String path = "content://" + Providers.AUTHORITY_STORAGE + "/document/" + Providers.ROOT_ID_DESKTOP + "%2f" + fileName;
+                    Log.i(TAG, "bella fileName: " + fileName + "   ,path : "+path);
+                    Uri uri = Uri.parse(path);
+                    Intent shareIntent = new Intent(Intent.ACTION_VIEW);
+                    shareIntent.setDataAndType(uri, "application/vnd.desktop");
+                    shareIntent.putExtra("fromOther", "Launcher");
+                    shareIntent.putExtra("vnc_activity_name", name);
+                    shareIntent.putExtra("App", name);
+                    shareIntent.putExtra("docTitle", fileName);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                    int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                    flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                    flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                    shareIntent.setFlags(flags);
+                    startActivity(shareIntent);
+                }
+            } else if (FileUtils.DELETE_FILE.equals(method)) {
                 FileUtils.deleteFiles(params);
                 // gotoClientApp("DELETE");
             }else if(FileUtils.NEW_FILE.equals(method)){

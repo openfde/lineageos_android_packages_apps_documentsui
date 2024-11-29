@@ -1,5 +1,6 @@
 package com.android.documentsui.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,7 +22,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 
-public class RenameDialogActivity extends AppCompatActivity {
+public class RenameDialogActivity extends Activity {
     TextView txtOk;
     TextView txtCancel;
     TextInputEditText mEditText;
@@ -33,12 +34,8 @@ public class RenameDialogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setTitle("");
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
         oldFileName = getIntent().getStringExtra("oldFileName");
         setContentView(R.layout.dialog_file_rename);
-        setActionBar(null);
         initView();
 
     }

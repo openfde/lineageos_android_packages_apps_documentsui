@@ -110,7 +110,7 @@
     </style>
 
     <style name="DialogActivityTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
-        <item name="android:windowMinWidthMajor">50%</item>
+        <item name="android:windowMinWidthMajor">500dp</item>
         <item name="android:windowMinWidthMinor">400dp</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
