@@ -269,9 +269,14 @@ public class OpenLinuxAppActivity extends Activity {
     }
 
     private void cleanPrefered(){
-        getPackageManager().clearPackagePreferredActivities("com.iiordanov.bVNC");
-        getPackageManager().clearPackagePreferredActivities("com.fde.x11");
-        getPackageManager().clearPackagePreferredActivities("com.fde.txt");
+       try {
+            getPackageManager().clearPackagePreferredActivities("com.iiordanov.bVNC");
+            getPackageManager().clearPackagePreferredActivities("com.fde.x11");
+            getPackageManager().clearPackagePreferredActivities("com.fde.txt");
+            getPackageManager().clearPackagePreferredActivities("com.fde.tools");
+       } catch (Exception e) {
+            e.printStackTrace();
+       }
     }
 
 }

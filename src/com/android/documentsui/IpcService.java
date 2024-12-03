@@ -131,6 +131,7 @@ public class IpcService extends Service {
                     shareIntent.putExtra("fromOther", "Launcher");
                     shareIntent.putExtra("vnc_activity_name", name);
                     shareIntent.putExtra("App", name);
+                    shareIntent.putExtra("openParams", params);
                     shareIntent.putExtra("docTitle", fileName);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                     int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;

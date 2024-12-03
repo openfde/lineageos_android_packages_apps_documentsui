@@ -2,6 +2,8 @@ package com.android.documentsui.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -10,7 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.android.documentsui.DocumentsApplication;
@@ -63,6 +64,28 @@ public class RenameDialogActivity extends Activity {
                 });
         mEditText.requestFocus();
         selectFileName(mEditText);
+
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = s.toString();
+                String filteredText = text.replaceAll("[$%]", "").replaceAll("[^a-zA-Z0-9\\u4e00-\\u9fa5\\.]", ""); 
+                if (!text.equals(filteredText)) {
+                    mEditText.setText(filteredText); 
+                    mEditText.setSelection(mEditText.getText().length()); 
+                }
+            }
+        });
 
         txtOk.setOnClickListener(view->{
             reNameFileName();
