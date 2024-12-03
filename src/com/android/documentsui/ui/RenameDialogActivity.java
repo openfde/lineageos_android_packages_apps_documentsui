@@ -35,6 +35,7 @@ public class RenameDialogActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setTitle("");
+        DocumentsApplication.getInstance().setCurrentActivity(this);
         oldFileName = getIntent().getStringExtra("oldFileName");
         setContentView(R.layout.dialog_file_rename);
         initView();
@@ -115,6 +116,11 @@ public class RenameDialogActivity extends Activity {
         int separatorIndex = text.lastIndexOf(".");
         editText.setSelection(0,
                 (separatorIndex == -1 ) ? text.length() : separatorIndex);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
 }

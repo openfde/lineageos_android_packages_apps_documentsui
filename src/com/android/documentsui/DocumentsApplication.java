@@ -44,6 +44,7 @@ import com.android.documentsui.theme.ThemeOverlayManager;
 import com.google.common.collect.Lists;
 
 import java.util.List;
+import android.app.Activity;
 
 public class DocumentsApplication extends Application {
     private static final String TAG = "DocumentsApplication";
@@ -73,6 +74,8 @@ public class DocumentsApplication extends Application {
 
     private  IpcService ipcService ;
     private static DocumentsApplication instance;
+    private Activity mCurrentActivity;
+
 
 
     public IpcService getIpcService() {
@@ -207,4 +210,12 @@ public class DocumentsApplication extends Application {
             }
         }
     };
+
+    public void setCurrentActivity(Activity activity) {
+        mCurrentActivity = activity;
+    }
+
+    public Activity getCurrentActivity() {
+        return mCurrentActivity;
+    }
 }

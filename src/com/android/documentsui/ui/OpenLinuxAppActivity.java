@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.R;
 import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.util.NetUtils;
@@ -57,6 +58,7 @@ public class OpenLinuxAppActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setTitle("");
         context = this;
+        DocumentsApplication.getInstance().setCurrentActivity(this);
 
         setContentView(R.layout.activity_open_linux_app);
 
@@ -277,6 +279,11 @@ public class OpenLinuxAppActivity extends Activity {
        } catch (Exception e) {
             e.printStackTrace();
        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
 }

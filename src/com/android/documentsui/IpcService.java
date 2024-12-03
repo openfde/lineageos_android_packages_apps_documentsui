@@ -13,6 +13,8 @@ import android.os.RemoteException;
 import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.content.ComponentName;
+
 
 import com.android.documentsui.base.Providers;
 import com.android.documentsui.files.FilesActivity;
@@ -23,7 +25,9 @@ import com.android.documentsui.util.NetUtils;
 import com.android.documentsui.util.SPUtils;
 
 import java.io.File;
-
+import java.util.List;
+import android.app.ActivityManager;
+import android.app.Activity;
 
 public class IpcService extends Service {
     Context context ;
@@ -35,6 +39,7 @@ public class IpcService extends Service {
     public static final String ACTION_UPDATE_FILE = "com.android.documentsui.UPDATE_FILE";
 
     private Handler handler = new Handler();
+
 
     @Override
     public void onCreate() {
@@ -57,6 +62,7 @@ public class IpcService extends Service {
             Log.i(TAG,"basicIpcMethon.....method........ "+method + ",params "+params);
 
             if(FileUtils.OPEN_FILE.equals(method)){
+                finishDialog();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
                 Uri uri = Uri.parse(path);
@@ -77,6 +83,7 @@ public class IpcService extends Service {
                 intent.setFlags(flags);
                 context.startActivity(intent);
             }else if(FileUtils.OPEN_DIR.equals(method)){
+                finishDialog();
                 //   Intent intent = new Intent();
                 //   ComponentName componentName = new ComponentName( "com.android.documentsui", "com.android.documentsui.files.FilesActivity"  );
                 //   intent.setComponent(componentName);
@@ -230,6 +237,8 @@ public class IpcService extends Service {
                         NetUtils.getLinuxApp();
                     }
                 }).start();
+            }else if(FileUtils.CLICK_BLANK.equals(method)){
+                finishDialog();
             }
             return "1";
         }
@@ -255,5 +264,28 @@ public class IpcService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return myBinder;
+    }
+
+    public void finishDialog(){
+        Activity activity = DocumentsApplication.getInstance().getCurrentActivity();
+        if (activity != null) {
+            activity.finish();
+        }
+    }
+
+    public  boolean isActivityRunning(Context context, Class<?> activityClass) {
+        try {
+            ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
+    
+            for (ActivityManager.RunningTaskInfo task : tasks) {
+                if (activityClass.getName().equals(task.baseActivity.getClassName())) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        return false;
     }
 }
