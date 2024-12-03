@@ -67,9 +67,13 @@ public class IpcService extends Service {
                 String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
                 Uri uri = Uri.parse(path);
                 String mimeType = FileUtils.getMimeType(new File(Providers.PATH_ID_DESKTOP+params));
-                if(mimeType == null ){
-                    intent.setDataAndType(uri, "application/*");
-                }else if(mimeType.contains("image")){
+                if (mimeType == null) {
+                    if (params.contains(".txt") || params.contains(".json")  || params.contains(".md")) {
+                        intent.setDataAndType(uri, "text/plain");
+                    } else {
+                        intent.setDataAndType(uri, "application/*");
+                    }
+                } else if (mimeType.contains("image")) {
                     intent.setDataAndType(uri, "image/*");
                 }else if(mimeType.contains("text")){
                     intent.setDataAndType(uri, "text/plain");
