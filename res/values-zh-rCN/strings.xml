@@ -296,4 +296,13 @@
     <string name="fde_storage_location" >"存储位置"</string>
     <string name="fde_ok" >"确定"</string>
     <string name="fde_cancel" >"取消"</string>
+
+    <string name="fde_once" >"仅此一次"</string>
+    <string name="fde_always" >"始终"</string>
+    <string name="fde_other_app" >"使用其它应用"</string>
+    <string name="fde_linux_open" >"使用原生方式打开"</string>
+    <string name="fde_xserver_open" >"使用X11打开"</string>
+    <string name="fde_vnc_open" >"使用VNC打开"</string>
+    <string name="fde_app_install" >"请安装 "</string>
+    <string name="fde_app_choose" >"请选用fde_utils 打开openFDE "</string>
 </resources>

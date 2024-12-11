@@ -16,6 +16,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_white_ellipse"
     android:fitsSystemWindows="true">
 
     <TextView
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="@string/menu_rename"
+        android:layout_marginTop="@dimen/doc_header_sort_icon_size"
         android:textColor="@color/empty_state_text"
         android:textSize="20sp" />
 

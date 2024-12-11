@@ -560,4 +560,13 @@
     <string name="fde_storage_location">"Storage Location"</string>
     <string name="fde_ok" >"OK"</string>
     <string name="fde_cancel" >"Cancel"</string>
+
+    <string name="fde_once" >"Once"</string>
+    <string name="fde_always" >"Always"</string>
+    <string name="fde_other_app" >"Other apps"</string>
+    <string name="fde_linux_open" >"Linux Open"</string>
+    <string name="fde_xserver_open" >"X11 Open"</string>
+    <string name="fde_vnc_open" >"VNC Open"</string>
+    <string name="fde_app_install" >"please install "</string>
+    <string name="fde_app_choose" >"please choose fde_utils open openFDE "</string>
 </resources>

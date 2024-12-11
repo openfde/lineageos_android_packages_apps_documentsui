@@ -16,6 +16,11 @@ public class SPUtils {
         shared_doc_info.edit().putString(key, values).commit();
     }
 
+    public static int getIntDocInfo(Context context, String key, int defaultValue) {
+        SharedPreferences shared_doc_info = context.getSharedPreferences(DOC_INFO, context.MODE_PRIVATE);
+        return shared_doc_info.getInt(key, defaultValue);
+    }
+
     public static int getIntDocInfo(Context context, String key) {
         SharedPreferences shared_doc_info = context.getSharedPreferences(DOC_INFO, context.MODE_PRIVATE);
         return shared_doc_info.getInt(key, 0);

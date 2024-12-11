@@ -1,35 +1,33 @@
 package com.android.documentsui;
 
-import java.io.File;
-import java.net.URI;
-
-import com.android.documentsui.base.Providers;
-import com.android.documentsui.clipping.DocumentClipper;
-import com.android.documentsui.files.FilesActivity;
-import com.android.documentsui.provider.FileUtils;
-import com.android.documentsui.util.SPUtils;
-import com.android.documentsui.util.NetUtils;
-
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.provider.DocumentsContract;
 import android.util.Log;
-import android.provider.DocumentsContract;
-import com.android.documentsui.provider.FileUtils;
-import com.android.documentsui.ui.RenameDialogActivity;
+import android.view.LayoutInflater;
 import android.content.ComponentName;
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.ClipboardManager;
-import android.os.Handler;
-import android.os.FileObserver;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 
+
+import com.android.documentsui.base.Providers;
+import com.android.documentsui.files.FilesActivity;
+import com.android.documentsui.provider.FileUtils;
+import com.android.documentsui.ui.OpenLinuxAppActivity;
+import com.android.documentsui.ui.RenameDialogActivity;
+import com.android.documentsui.util.NetUtils;
+import com.android.documentsui.util.SPUtils;
+
+import java.io.File;
+import java.util.List;
+import android.app.ActivityManager;
+import android.app.Activity;
 
 public class IpcService extends Service {
     Context context ;
@@ -41,6 +39,7 @@ public class IpcService extends Service {
     public static final String ACTION_UPDATE_FILE = "com.android.documentsui.UPDATE_FILE";
 
     private Handler handler = new Handler();
+
 
     @Override
     public void onCreate() {
@@ -63,13 +62,18 @@ public class IpcService extends Service {
             Log.i(TAG,"basicIpcMethon.....method........ "+method + ",params "+params);
 
             if(FileUtils.OPEN_FILE.equals(method)){
+                finishDialog();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
                 Uri uri = Uri.parse(path);
                 String mimeType = FileUtils.getMimeType(new File(Providers.PATH_ID_DESKTOP+params));
-                if(mimeType == null ){
-                    intent.setDataAndType(uri, "application/*");
-                }else if(mimeType.contains("image")){
+                if (mimeType == null) {
+                    if (params.contains(".txt") || params.contains(".json")  || params.contains(".md")) {
+                        intent.setDataAndType(uri, "text/plain");
+                    } else {
+                        intent.setDataAndType(uri, "application/*");
+                    }
+                } else if (mimeType.contains("image")) {
                     intent.setDataAndType(uri, "image/*");
                 }else if(mimeType.contains("text")){
                     intent.setDataAndType(uri, "text/plain");
@@ -83,6 +87,7 @@ public class IpcService extends Service {
                 intent.setFlags(flags);
                 context.startActivity(intent);
             }else if(FileUtils.OPEN_DIR.equals(method)){
+                finishDialog();
                 //   Intent intent = new Intent();
                 //   ComponentName componentName = new ComponentName( "com.android.documentsui", "com.android.documentsui.files.FilesActivity"  );
                 //   intent.setComponent(componentName);
@@ -104,34 +109,49 @@ public class IpcService extends Service {
                 String[] arrParams = params.split("###");
                 String name = arrParams[0].trim().replaceAll("%[FfUu]", "");
                 String exec = arrParams[1].trim().replaceAll("%[FfUu]", "");
-                String type = arrParams[2].trim();
-
-                if("open".equals(type)){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            NetUtils.gotoLinuxApp(name,exec);
-                        }
-                    }).start();
-                }else if("vnc".equals(type)){
-                    Intent intent = new Intent();
-                    ComponentName componentName = new ComponentName("com.iiordanov.bVNC", "com.iiordanov.bVNC.LinuxAppActivity");
-                    intent.setComponent(componentName);
-                    intent.putExtra("fromOther", "Launcher");
-                    intent.putExtra("vnc_activity_name", name);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                }else{
-                    Intent intent = new Intent();
-                    ComponentName componentName = new ComponentName("com.fde.x11", "com.fde.x11.AppListActivity");
-                    intent.setComponent(componentName);
-                    // intent.putExtra("Path", "mate-terminal");
-                    // intent.putExtra("App", "MATE Terminal");
-                    intent.putExtra("App", name);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent); 
+                String type = arrParams[2];
+                String fileName =  name+".desktop";
+                if(arrParams.length > 3){
+                    fileName = arrParams[3];
                 }
-            }else if(FileUtils.DELETE_FILE.equals(method)){
+
+                if (!"open".equals(type)) {
+                    new AsyncTask<Void, Void, String>() {
+                        @Override
+                        protected String doInBackground(Void... voids) {
+                            return NetUtils.getFdeMode();
+                        }
+
+                        @Override
+                        protected void onPostExecute(String result) {
+                            super.onPostExecute(result);
+                            Intent intent = new Intent();
+                            intent.setClass(context, OpenLinuxAppActivity.class);
+                            intent.putExtra("openParams", params);
+                            intent.putExtra("fdeModel", result);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                        }
+                    }.execute();
+                } else {
+                    String path = "content://" + Providers.AUTHORITY_STORAGE + "/document/" + Providers.ROOT_ID_DESKTOP + "%2f" + fileName;
+                    Log.i(TAG, "bella fileName: " + fileName + "   ,path : "+path);
+                    Uri uri = Uri.parse(path);
+                    Intent shareIntent = new Intent(Intent.ACTION_VIEW);
+                    shareIntent.setDataAndType(uri, "application/vnd.desktop");
+                    shareIntent.putExtra("fromOther", "Launcher");
+                    shareIntent.putExtra("vnc_activity_name", name);
+                    shareIntent.putExtra("App", name);
+                    shareIntent.putExtra("openParams", params);
+                    shareIntent.putExtra("docTitle", fileName);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                    int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                    flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                    flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                    shareIntent.setFlags(flags);
+                    startActivity(shareIntent);
+                }
+            } else if (FileUtils.DELETE_FILE.equals(method)) {
                 FileUtils.deleteFiles(params);
                 // gotoClientApp("DELETE");
             }else if(FileUtils.NEW_FILE.equals(method)){
@@ -221,6 +241,8 @@ public class IpcService extends Service {
                         NetUtils.getLinuxApp();
                     }
                 }).start();
+            }else if(FileUtils.CLICK_BLANK.equals(method)){
+                finishDialog();
             }
             return "1";
         }
@@ -246,5 +268,28 @@ public class IpcService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return myBinder;
+    }
+
+    public void finishDialog(){
+        Activity activity = DocumentsApplication.getInstance().getCurrentActivity();
+        if (activity != null) {
+            activity.finish();
+        }
+    }
+
+    public  boolean isActivityRunning(Context context, Class<?> activityClass) {
+        try {
+            ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
+    
+            for (ActivityManager.RunningTaskInfo task : tasks) {
+                if (activityClass.getName().equals(task.baseActivity.getClassName())) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        return false;
     }
 }
