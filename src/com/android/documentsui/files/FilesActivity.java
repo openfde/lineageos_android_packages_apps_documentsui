@@ -28,6 +28,10 @@ import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import com.android.documentsui.dirlist.AnimationView;
 
 import androidx.annotation.CallSuper;
 import androidx.fragment.app.FragmentManager;
@@ -39,6 +43,7 @@ import com.android.documentsui.DocsSelectionHelper;
 import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.FocusManager;
 import com.android.documentsui.Injector;
+import com.android.documentsui.IpcService;
 import com.android.documentsui.MenuManager.DirectoryDetails;
 import com.android.documentsui.OperationDialogFragment;
 import com.android.documentsui.OperationDialogFragment.DialogType;
@@ -61,7 +66,10 @@ import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.ui.DialogController;
 import com.android.documentsui.ui.MessageBuilder;
+import com.android.documentsui.util.SPUtils;
 
+import android.provider.DocumentsContract;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +86,12 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     private SharedInputHandler mSharedInputHandler;
     private final ProfileTabsAddons mProfileTabsAddonsStub = new StubProfileTabsAddons();
 
+    public static final String[] permissions = {
+            "android.permission.READ_CLIPBOARD_IN_BACKGROUND",
+            "android.permission.READ_CLIPBOARD",
+            "android.permission.WRITE_CLIPBOARD",
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.READ_EXTERNAL_STORAGE" };
     public FilesActivity() {
         super(R.layout.files_activity, TAG);
     }
@@ -208,6 +222,36 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
                         mUserIdManager, mConfigStore);
     }
 
+public void parseFile() {
+        if (mInjector.pickResult != null) {
+            mInjector.pickResult.increaseActionCount();
+        }
+        DocumentInfo documentInfo = mInjector.getModel().doc;
+        mInjector.getModel().doc.documentId = "primary:Desktop";
+        mInjector.getModel().doc.displayName = "Desktop";
+        mInjector.getModel().doc.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Desktop");
+        DirectoryFragment dir = getDirectoryFragment();
+        if (dir != null) {
+            dir.pasteFromClipboard();
+        }
+    }
+
+    public void copyFile(String fileName,int type) {
+        if (mInjector.pickResult != null) {
+            mInjector.pickResult.increaseActionCount();
+        }
+        DocumentInfo documentInfo = mInjector.getModel().doc;
+
+        mInjector.selectionMgr.clearSelection();
+        List<String> enabled = new ArrayList<>();
+        enabled.add("0|com.android.externalstorage.documents|primary:Desktop/"+fileName);
+        mInjector.selectionMgr.setItemsSelected(enabled, true);
+        if(type == 1){
+            mInjector.actions.copyToClipboard();
+        }else{
+            mInjector.actions.cutToClipboard();
+        }
+    }
     // This is called in the intent contains label and icon resources.
     // When that is true, the launcher activity has supplied them so we
     // can adapt our presentation to how we were launched.
@@ -363,7 +407,21 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
             DirectoryFragment.showRecentsOpen(fm, anim);
         } else {
             // Normal boring directory
-            DirectoryFragment.showDirectory(fm, root, cwd, anim);
+            String getPath = SPUtils.getDocInfo(this,"getPath");
+            if (getPath != null && !"".equals(getPath)) {
+                final DocumentInfo documentInfo = cwd;
+                String childPath = getIntent().getStringExtra("childPath");
+                Log.i("bella","getPath "+getPath + ",childPath "+childPath);
+                root.documentId = documentInfo.documentId = "primary:Desktop/"+childPath;
+                root.title  = documentInfo.displayName = childPath;
+                root.authority = documentInfo.authority = "com.android.externalstorage.documents";
+                documentInfo.mimeType = "vnd.android.document/directory";
+                documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary%3ADesktop%2"+childPath);
+                DirectoryFragment.showDirectory(fm, root, documentInfo, AnimationView.ANIM_NONE);
+                SPUtils.putDocInfo(this,"getPath","");
+            }else{
+                DirectoryFragment.showDirectory(fm, root, cwd, anim);
+            }
         }
     }
 

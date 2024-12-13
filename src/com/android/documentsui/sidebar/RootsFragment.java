@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -78,6 +79,7 @@ import com.android.documentsui.roots.ProvidersAccess;
 import com.android.documentsui.roots.ProvidersCache;
 import com.android.documentsui.roots.RootsLoader;
 import com.android.documentsui.util.CrossProfileUtils;
+import com.android.documentsui.provider.LinuxRootProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,6 +90,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import android.provider.Settings;
+
+
 /**
  * Display list of known storage backend roots.
  */
@@ -97,6 +102,8 @@ public class RootsFragment extends Fragment {
     private static final String EXTRA_INCLUDE_APPS = "includeApps";
     private static final String EXTRA_INCLUDE_APPS_INTENT = "includeAppsIntent";
     private static final int CONTEXT_MENU_ITEM_TIMEOUT = 500;
+    private static final String LINUX = "linux";
+    private static final String ANDROID = "android";
 
     private final OnItemClickListener mItemListener = new OnItemClickListener() {
         @Override
@@ -128,6 +135,8 @@ public class RootsFragment extends Fragment {
     private ActionHandler mActionHandler;
 
     private List<Item> mApplicationItemList;
+    private static int openQuickFlag = 1;
+    private static int openStorageFlag = 1;
 
     /**
      * Shows the {@link RootsFragment}.
@@ -290,16 +299,17 @@ public class RootsFragment extends Fragment {
                 }
 
                 List<Item> sortedItems = sortLoadResult(
-                        getContext(),
+                        getResources(),
                         state,
                         roots,
                         excludePackage,
                         shouldIncludeHandlerApp ? handlerAppIntent : null,
                         DocumentsApplication.getProvidersCache(getContext()),
                         getBaseActivity().getSelectedUser(),
-                        getUserIds(),
+                        DocumentsApplication.getUserIdManager(getContext()).getUserIds(),
                         maybeShowBadge,
                         userManagerState);
+
 
                 // This will be removed when feature flag is removed.
                 if (crossProfileResolveInfo != null && !Features.CROSS_PROFILE_TABS) {
@@ -384,7 +394,7 @@ public class RootsFragment extends Fragment {
      */
     @VisibleForTesting
     List<Item> sortLoadResult(
-            Context context,
+            Resources resources,
             State state,
             Collection<RootInfo> roots,
             @Nullable String excludePackage,
@@ -401,25 +411,74 @@ public class RootsFragment extends Fragment {
                 userIds);
         final List<RootItem> otherProviders = new ArrayList<>();
 
+        RootInfo documentsInfo = null;
+        RootInfo musicInfo = null;
+        RootInfo pictureInfo = null;
+        RootInfo videoInfo = null;
+        RootInfo downloadInfo = null;
+
         for (final RootInfo root : roots) {
             final RootItem item;
 
-            if (root.isExternalStorageHome()) {
+            //if (root.isExternalStorageHome()) {
+            if (Providers.ROOT_ID_HOME.equals(root.rootId)) {
                 continue;
             } else if (root.isLibrary() || root.isDownloads()) {
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
-                librariesBuilder.add(item);
+                //librariesBuilder.add(item);
             } else if (root.isStorage()) {
+                documentsInfo = RootInfo.copyRootInfo(root);
+                musicInfo = RootInfo.copyRootInfo(root);
+                pictureInfo = RootInfo.copyRootInfo(root);
+                videoInfo = RootInfo.copyRootInfo(root);
+                downloadInfo = RootInfo.copyRootInfo(root);
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
-                storageProvidersBuilder.add(item);
+                if (item.title.equals(
+                        Settings.Global.getString(getContext().getContentResolver(), Settings.Global.DEVICE_NAME))) {
+                    item.title = getContext().getString(R.string.fde_fde_dir);
+                }
+                item.root.summary = ANDROID;
+                if (openQuickFlag == 1) {
+                    storageProvidersBuilder.add(item);
+                }
             } else {
                 item = new RootItem(root, mActionHandler,
                         providersAccess.getPackageName(root.userId, root.authority),
                         maybeShowBadge);
-                otherProviders.add(item);
+                if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
+                    // remove
+                } else {
+                    otherProviders.add(item);
+                }
             }
         }
 
+        if (openQuickFlag == 1) {
+            musicInfo.documentId = musicInfo.rootId = Providers.ROOT_ID_AUDIO_NEW;
+            musicInfo.title = getString(R.string.fde_music);
+            musicInfo.derivedIcon = R.mipmap.icon_audio;
+            otherProviders.add(new RootItem(musicInfo, mActionHandler, maybeShowBadge));
+
+            videoInfo.rootId = videoInfo.documentId = Providers.ROOT_ID_VIDEOS_NEW;
+            videoInfo.title = getString(R.string.fde_videos);
+            videoInfo.derivedIcon = R.mipmap.icon_video;
+            otherProviders.add(new RootItem(videoInfo, mActionHandler, maybeShowBadge));
+
+            pictureInfo.documentId = pictureInfo.rootId = Providers.ROOT_ID_IMAGES_NEW;
+            pictureInfo.title = getString(R.string.fde_pictures);
+            pictureInfo.derivedIcon = R.mipmap.icon_picture;
+            otherProviders.add(new RootItem(pictureInfo, mActionHandler, maybeShowBadge));
+
+            documentsInfo.documentId = documentsInfo.rootId = Providers.ROOT_ID_DOCUMENTS_NEW;
+            documentsInfo.title = getString(R.string.fde_documents);
+            documentsInfo.derivedIcon = R.mipmap.icon_document;
+            otherProviders.add(new RootItem(documentsInfo, mActionHandler, maybeShowBadge));
+
+            downloadInfo.rootId = downloadInfo.documentId = Providers.ROOT_ID_DOWNLOADS_NEW;
+            downloadInfo.title = getString(R.string.fde_downloads);
+            downloadInfo.derivedIcon = R.mipmap.icon_download;
+            otherProviders.add(new RootItem(downloadInfo, mActionHandler, maybeShowBadge));
+        }
         final List<RootItem> libraries = librariesBuilder.getList();
         final List<RootItem> storageProviders = storageProvidersBuilder.getList();
 
@@ -431,68 +490,87 @@ public class RootsFragment extends Fragment {
         result.addAll(libraries);
 
         // Only add the spacer if it is actually separating something.
-        if (!result.isEmpty() && !storageProviders.isEmpty()) {
-            result.add(new SpacerItem());
-        }
-        if (VERBOSE) Log.v(TAG, "Adding storage roots: " + storageProviders);
-        result.addAll(storageProviders);
+        // if (!result.isEmpty() && !storageProviders.isEmpty()) {
+        //     result.add(new SpacerItem());
+        // }
+        if (VERBOSE) Log.i(TAG, "bella Adding storage roots: " + storageProviders);
+        // result.addAll(storageProviders);
 
         final List<Item> rootList = new ArrayList<>();
         final List<Item> rootListOtherUser = new ArrayList<>();
-        final List<List<Item>> rootListAllUsers = new ArrayList<>();
-        for (int i = 0; i < userIds.size(); ++i) {
-            rootListAllUsers.add(new ArrayList<>());
-        }
-
         mApplicationItemList = new ArrayList<>();
         if (handlerAppIntent != null) {
+            rootList.addAll(storageProviders);
             includeHandlerApps(state, handlerAppIntent, excludePackage, rootList, rootListOtherUser,
-                    rootListAllUsers, otherProviders, userIds, maybeShowBadge);
+                    otherProviders, userIds, maybeShowBadge);
         } else {
             // Only add providers
-            otherProviders.sort(comp);
+            //Collections.sort(otherProviders, comp);
+            ArrayList<Item> rootAndroidList = new ArrayList<>();
+            ArrayList<Item> rootLinuxList = new ArrayList<>();
+            ArrayList<Item> rootOtherList = new ArrayList<>();
+            // rootLinuxList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
+            // rootAndroidList.add(new TitleItem(R.layout.item_android_header,"Android"));
+            rootAndroidList.addAll(storageProviders);
+
             for (RootItem item : otherProviders) {
-                if (state.configStore.isPrivateSpaceInDocsUIEnabled()) {
-                    createRootListsPrivateSpaceEnabled(item, userIds, rootListAllUsers);
+                if (UserId.CURRENT_USER.equals(item.userId)) {
+                    if (item.stringId.contains("bugreport") || item.stringId.contains("traces")) {
+                        // remove
+                    } else {
+                        // Log.i("bella","otherProviders title: "+item.root.title + " ,authority: "+item.root.authority + " ,rootId: "+item.root.rootId);
+                        if (item.root.authority.contains("fusionvolume")) {
+                            item.root.summary = "";
+                            if (openStorageFlag == 1) {
+                                rootOtherList.add(item);
+                            }
+                        } else if (item.root.authority.contains(LINUX)) {
+                            item.root.summary = "";
+                            if (openStorageFlag == 1) {
+                                rootOtherList.add(item);
+                            }
+                        } else {
+                            // item.root.summary = ANDROID;
+                            rootAndroidList.add(item);
+                        }
+                    }
                 } else {
-                    createRootListsPrivateSpaceDisabled(item, rootList, rootListOtherUser);
+                    rootListOtherUser.add(item);
                 }
                 mApplicationItemList.add(item);
             }
+            rootOtherList.add(new DrawerTitleItem(getString(R.string.fde_storage_location), openStorageFlag, isOpen -> {
+                this.openStorageFlag = isOpen ? 1 : 0;
+                onDisplayStateChanged();
+            }));
+            Collections.reverse(rootOtherList);
+            if (VERBOSE) Log.i(TAG, "bella Adding rootAndroidList roots: " + rootAndroidList);
+            // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
+            rootList.add(new DrawerTitleItem(getString(R.string.fde_quick_access), openQuickFlag, isOpen -> {
+                this.openQuickFlag = isOpen ? 1 : 0;
+                onDisplayStateChanged();
+            }));
+            rootList.addAll(rootLinuxList);
+            // rootList.add(new SpacerItem());
+            // rootList.add(new TitleItem(R.layout.item_android_header,"Android"));
+
+            rootList.addAll(rootAndroidList);
+            rootList.addAll(rootOtherList);
         }
 
-        List<Item> presentableList =
-                state.configStore.isPrivateSpaceInDocsUIEnabled()
-                        ? getPresentableListPrivateSpaceEnabled(
-                        context, state, rootListAllUsers, userIds, userManagerState) :
-                        getPresentableListPrivateSpaceDisabled(context, state, rootList,
-                                rootListOtherUser);
+        List<Item> presentableList = new UserItemsCombiner(resources, getContext().getSystemService(DevicePolicyManager.class), state)
+                .setRootListForCurrentUser(rootList)
+                .setRootListForOtherUser(rootListOtherUser)
+                .createPresentableList();
         addListToResult(result, presentableList);
         return result;
     }
 
-    private List<Item> getPresentableListPrivateSpaceEnabled(Context context, State state,
-            List<List<Item>> rootListAllUsers, List<UserId> userIds,
-            UserManagerState userManagerState) {
-        return new UserItemsCombiner(context.getResources(),
-                context.getSystemService(DevicePolicyManager.class), state)
-                .setRootListForAllUsers(rootListAllUsers)
-                .createPresentableListForAllUsers(userIds, userManagerState.getUserIdToLabelMap());
-    }
-
-    private List<Item> getPresentableListPrivateSpaceDisabled(Context context, State state,
-            List<Item> rootList, List<Item> rootListOtherUser) {
-        return new UserItemsCombiner(context.getResources(),
-                context.getSystemService(DevicePolicyManager.class), state)
-                .setRootListForCurrentUser(rootList)
-                .setRootListForOtherUser(rootListOtherUser)
-                .createPresentableList();
-    }
-
     private void addListToResult(List<Item> result, List<Item> rootList) {
-        if (!result.isEmpty() && !rootList.isEmpty()) {
-            result.add(new SpacerItem());
-        }
+        // if (!result.isEmpty() && !rootList.isEmpty()) {
+        //     result.add(new SpacerItem());
+        // }
+        // if (VERBOSE) Log.i(TAG, "bella Adding rootList roots: " + rootList);
         result.addAll(rootList);
     }
 
@@ -501,11 +579,12 @@ public class RootsFragment extends Fragment {
      * the providers and apps are the same package name, combine them as RootAndAppItems.
      */
     private void includeHandlerApps(State state,
-            Intent handlerAppIntent, @Nullable String excludePackage, List<Item> rootList,
-            List<Item> rootListOtherUser, List<List<Item>> rootListAllUsers,
-            List<RootItem> otherProviders, List<UserId> userIds, boolean maybeShowBadge) {
+                                    Intent handlerAppIntent, @Nullable String excludePackage, List<Item> rootList,
+                                    List<Item> rootListOtherUser, List<RootItem> otherProviders, List<UserId> userIds,
+                                    boolean maybeShowBadge) {
         if (VERBOSE) Log.v(TAG, "Adding handler apps for intent: " + handlerAppIntent);
-
+        List<Item> linuxList = new ArrayList<>();
+        List<Item> androidList = new ArrayList<>();
         Context context = getContext();
         final Map<UserPackage, ResolveInfo> appsMapping = new HashMap<>();
         final Map<UserPackage, Item> appItems = new HashMap<>();
@@ -556,24 +635,40 @@ public class RootsFragment extends Fragment {
                 item = rootItem;
             }
 
-            if (state.configStore.isPrivateSpaceInDocsUIEnabled()) {
-                createRootListsPrivateSpaceEnabled(item, userIds, rootListAllUsers);
+            if (UserId.CURRENT_USER.equals(item.userId)) {
+                if (VERBOSE) Log.v(TAG, "Adding provider : " + item);
+                if (rootItem.root.rootId.contains(LINUX)) {
+                    linuxList.add(rootItem);
+                } else if (rootItem.root.authority.contains("externalstorage.documents")) {
+                    androidList.add(rootItem);
+                } else {
+                    rootList.add(rootItem);
+                }
             } else {
-                createRootListsPrivateSpaceDisabled(item, rootList, rootListOtherUser);
+                if (VERBOSE) Log.v(TAG, "Adding provider to other users : " + item);
+                rootListOtherUser.add(item);
             }
         }
 
         for (Item item : appItems.values()) {
-            if (state.configStore.isPrivateSpaceInDocsUIEnabled()) {
-                createRootListsPrivateSpaceEnabled(item, userIds, rootListAllUsers);
+            if (UserId.CURRENT_USER.equals(item.userId)) {
+                rootList.add(item);
             } else {
-                createRootListsPrivateSpaceDisabled(item, rootList, rootListOtherUser);
+                rootListOtherUser.add(item);
             }
         }
-
+        Collections.reverse(linuxList);
+        rootList.addAll(androidList);
+//        rootList.add(new SpacerItem());
+        rootList.addAll(linuxList);
         final String preferredRootPackage = getResources().getString(
                 R.string.preferred_root_package, "");
         final ItemComparator comp = new ItemComparator(preferredRootPackage);
+
+        final List<List<Item>> rootListAllUsers = new ArrayList<>();
+        for (int i = 0; i < userIds.size(); ++i) {
+            rootListAllUsers.add(new ArrayList<>());
+        }
 
         if (state.configStore.isPrivateSpaceInDocsUIEnabled()) {
             addToApplicationItemListPrivateSpaceEnabled(userIds, rootListAllUsers, comp, state);

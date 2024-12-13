@@ -47,6 +47,7 @@
     <string name="menu_list">List view</string>
     <!-- Menu item that enters a mode to search for documents [CHAR LIMIT=28] -->
     <string name="menu_search">Search</string>
+    <string name="search" >"Search..."</string>
     <!-- Menu item that opens settings/options for a device (like an SD card). [CHAR LIMIT=28] -->
     <string name="menu_settings">Storage settings</string>
 
@@ -80,6 +81,7 @@
     <string name="menu_extract">Extract to\u2026</string>
     <!-- Menu item that renames the selected document [CHAR LIMIT=28] -->
     <string name="menu_rename">Rename</string>
+    <string name="rename_hint" >"input new name"</string>
     <!-- Menu item that displays properties about the selected document [CHAR LIMIT=28] -->
     <string name="menu_inspect">Get info</string>
     <!-- Menu item that shows hidden files [CHAR LIMIT=36] -->
@@ -584,5 +586,30 @@
 
     <!-- Accessibility announcement when switching to list mode of files and directories shown. [CHAR_LIMIT=100] -->
     <string name="list_mode_showing">Showing in list mode.</string>
+<string name="fde_music">Music</string>
+    <string name="fde_documents">Documents</string>
+    <string name="fde_downloads">Downloads</string>
+    <string name="fde_videos">Videos</string>
+    <string name="fde_pictures">Pictures</string>
+    <string name="fde_images">Images</string>
+    <string name="fde_audio">Audio</string>
+    <string name="fde_fde_dir" >"Home Directory"</string>
+    <string name="fde_linux_dir" >"Linux Home Directory"</string>
+    <string name="fde_file" >"file"</string>
+    <string name="fde_file_type_filter" >"Filter by type "</string>
+    <string name="fde_quick_access" >"Quick Access"</string>
+    <string name="fde_storage_location">"Storage Location"</string>
+    <string name="fde_ok" >"OK"</string>
+    <string name="fde_cancel" >"Cancel"</string>
 
+    <string name="fde_once" >"Once"</string>
+    <string name="fde_always" >"Always"</string>
+    <string name="fde_other_app" >"Other apps"</string>
+    <string name="fde_linux_open" >"Linux Open"</string>
+    <string name="fde_xserver_open" >"X11 Open"</string>
+    <string name="fde_vnc_open" >"VNC Open"</string>
+    <string name="fde_app_install" >"please install "</string>
+    <string name="fde_app_choose" >"please choose fde_utils open openFDE "</string>
+    <string name="fde_file_system" >"File System"</string>
+    <string name="fde_user_dir" >"User"</string>
 </resources>

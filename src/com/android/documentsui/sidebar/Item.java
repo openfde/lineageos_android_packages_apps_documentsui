@@ -37,7 +37,7 @@ import com.android.documentsui.base.UserId;
 public abstract class Item {
     private final @LayoutRes int mLayoutId;
 
-    public final String title;
+    public  String title;
     public final UserId userId;
     final String stringId;
 

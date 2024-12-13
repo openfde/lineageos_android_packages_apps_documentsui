@@ -103,6 +103,7 @@ android_library {
 
     srcs: [
         "src/**/*.java",
+		"src/**/*.aidl",
         ":statslog-docsui-java-gen",
     ],
 

@@ -48,7 +48,7 @@ import com.android.modules.utils.build.SdkLevel;
 import com.google.common.collect.Lists;
 
 import java.util.List;
-
+import android.app.Activity;
 import javax.annotation.concurrent.GuardedBy;
 
 public class DocumentsApplication extends Application {
@@ -81,6 +81,23 @@ public class DocumentsApplication extends Application {
     private UserIdManager mUserIdManager;
     private UserManagerState mUserManagerState;
     private Lookup<String, String> mFileTypeLookup;
+    private  IpcService ipcService ;
+    private static DocumentsApplication instance;
+    private Activity mCurrentActivity;
+
+
+
+    public IpcService getIpcService() {
+        return ipcService;
+    }
+
+    public void setIpcService(IpcService ipcService) {
+        this.ipcService = ipcService;
+    }
+
+    public static DocumentsApplication getInstance() {
+        return instance;
+    }
 
     public static ProvidersCache getProvidersCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mProviders;
@@ -179,6 +196,7 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this ;
         synchronized (DocumentsApplication.class) {
             if (sConfigStore == null) {
                 sConfigStore = new ConfigStore.ConfigStoreImpl();
@@ -278,4 +296,11 @@ public class DocumentsApplication extends Application {
             }
         }
     };
+    public void setCurrentActivity(Activity activity) {
+        mCurrentActivity = activity;
+    }
+
+    public Activity getCurrentActivity() {
+        return mCurrentActivity;
+    }
 }

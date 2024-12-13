@@ -38,26 +38,59 @@
     <!-- Permissions required for reading and logging compat changes -->
     <uses-permission android:name="android.permission.LOG_COMPAT_CHANGE"/>
     <uses-permission android:name="android.permission.READ_COMPAT_CHANGE_CONFIG"/>
-
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CLIPBOARD" />
+    <uses-permission android:name="android.permission.WRITE_CLIPBOARD" />
+    <uses-permission android:name="android.permission.READ_CLIPBOARD_IN_BACKGROUND" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.START_FOREGROUND_SERVICES_FROM_BACKGROUND"/>
 
     <!-- Permissions required for reading device configs -->
     <uses-permission android:name="android.permission.READ_DEVICE_CONFIG"/>
-
+ <uses-permission android:name="android.permission.SET_PREFERRED_APPLICATIONS" />
+     <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND_MULTIPLE" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
     <application
         android:name=".DocumentsApplication"
         android:label="@string/app_label"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:backupAgent=".prefs.BackupAgent"
         android:appCategory="productivity"
         android:fullBackupOnly="false"
         android:crossProfile="true">
+        <activity
+            android:name=".ui.OpenLinuxAppActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/DialogActivityTheme"
+            android:exported="false" />
+        <activity
+            android:name=".ui.RenameDialogActivity"
+            android:theme="@style/DialogActivityTheme"
+            android:launchMode="singleTask"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAInBA8ued0O_ZyYUsVhwinUF-x50NIe9K0GzBW4A" />
+        <service
+            android:name=".IpcService"
+            android:enabled="true"
+            android:exported="true"/>
 
         <activity
             android:name=".picker.PickActivity"
@@ -119,7 +152,7 @@
 
         <activity
             android:name=".files.FilesActivity"
-            android:documentLaunchMode="intoExisting"
+            android:documentLaunchMode="always"
             android:exported="true"
             android:theme="@style/LauncherTheme">
             <intent-filter>
@@ -162,6 +195,29 @@
             android:authorities="com.android.documentsui.lastAccessed"
             android:exported="false"/>
 
+        <provider
+            android:name=".provider.LinuxRootProvider"
+            android:authorities="com.android.documentsui.fusionvolume"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name=".provider.LinuxUserProvider"
+            android:authorities="com.android.documentsui.linux.user"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+            </intent-filter>
+        </provider>
+
+    
         <provider
             android:name=".picker.PickCountRecordProvider"
             android:authorities="com.android.documentsui.pickCountRecord"
