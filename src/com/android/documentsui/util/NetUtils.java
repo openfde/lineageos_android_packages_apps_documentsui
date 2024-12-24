@@ -55,12 +55,13 @@ public class NetUtils {
             List<Map<String, Object>> responseList = (List<Map<String, Object>>) mpData.get("data");
             if (responseList != null) {
                 Log.i("bella", "getLinuxApp responseList " + responseList.size());
-                for (Map<String, Object> mp : responseList) {
-                    // Log.i("bella","getLinuxApp IconPath " + mp.get("IconPath") + " ,Path : "+mp.get("Path")+ " ,IconType : "+mp.get("IconType")+ " ,Name : "+mp.get("Name"));
-                }
+                // for (Map<String, Object> mp : responseList) {
+                //      Log.i("bella","getLinuxApp IconPath " + mp.get("IconPath") + " ,Path : "+mp.get("Path")+ " ,IconType : "+mp.get("IconType")+ " ,Name : "+mp.get("Name"));
+                //      String name = mp.get("Name").toString();
+                //      String exec = mp.get("Path").toString().replaceAll(" %F", "").replaceAll(" %u", "").replaceAll(" %U", "");
+                //      setSystemProperty(name,exec);
+                // }
             }
-
-
             return res;
         } catch (IOException e) {
             e.printStackTrace();

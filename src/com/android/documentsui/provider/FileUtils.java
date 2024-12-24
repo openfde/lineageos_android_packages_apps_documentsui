@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -612,7 +613,7 @@ public static String newFile() {
                 Log.e("bella", "Failed to create folder");
             }
         } else {
-            Log.i("bella", "Folder already exists");
+            Log.i("bella", "file already exists");
             newDocName =  getUniqueFileName(documentId,newDocName);
         }
         folder = new File(documentId,newDocName);
@@ -812,7 +813,7 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
  public static void  createAllAndroidIconToLinux(Context context){
     PackageManager packageManager = context.getPackageManager();
     List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
-    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/.openfde/pic/";
+    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+ "/.local/share/applications/"; //"/.openfde/pic/";
 
     apps.addAll(getAllApp(context));
 
@@ -846,6 +847,16 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
             return true; // app installed
         } catch (PackageManager.NameNotFoundException e) {
             return false; // app not install
+        }
+    }
+
+      public static void setSystemProperty(String key, String value) {
+        try {
+            Class<?> systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Method setMethod = systemPropertiesClass.getDeclaredMethod("set", String.class, String.class);
+            setMethod.invoke(null, key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
