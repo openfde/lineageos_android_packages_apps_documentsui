@@ -233,7 +233,7 @@ public class IpcService extends Service {
             }else if(FileUtils.OP_INIT.equals(method)) {
                 FileUtils.createDesktopDir();
             }else if(FileUtils.OP_CREATE_ANDROID_ICON.equals(method)) {
-                FileUtils.createAllAndroidIconToLinux(context);
+                FileUtils.createAllAndroidIconToLinux(context,params);
             }else if(FileUtils.OP_CREATE_LINUX_ICON.equals(method)) {
                 new Thread(new Runnable() {
                     @Override

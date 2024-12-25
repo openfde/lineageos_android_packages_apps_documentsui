@@ -111,7 +111,7 @@ public abstract class BaseActivity
     protected NavigationViewManager mNavigator;
     protected SortController mSortController;
 
-    ImageView imgSwitch;
+    ImageView imgSwitch,imgShowHide;
     private final List<EventListener> mEventListeners = new ArrayList<>();
     private final String mTag;
 
@@ -197,6 +197,8 @@ public abstract class BaseActivity
            ImageView imgAllSelected = viewControll.findViewById(R.id.imgAllSelected);
            imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
 
+           imgShowHide = viewControll.findViewById(R.id.imgShowHide);
+           imgShowHide.setOnClickListener(view -> onClickedShowHiddenFiles());
 
            imgSwitch = viewControll.findViewById(R.id.imgSwitch);
            imgSwitch.setOnClickListener(view -> {
@@ -743,6 +745,11 @@ public abstract class BaseActivity
     private void onClickedShowHiddenFiles() {
         boolean showHiddenFiles = !mState.showHiddenFiles;
         Context context = getApplicationContext();
+
+        if(imgShowHide !=null){
+            imgShowHide.setImageResource(showHiddenFiles ? R.drawable.icon_hide_file : R.drawable.icon_show_file);
+        }
+
 
         Metrics.logUserAction(showHiddenFiles
                 ? MetricConsts.USER_ACTION_SHOW_HIDDEN_FILES

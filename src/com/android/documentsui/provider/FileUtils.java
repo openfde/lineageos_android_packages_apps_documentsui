@@ -810,34 +810,53 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
     return listApps;
 }
 
- public static void  createAllAndroidIconToLinux(Context context){
+ public static void  createAllAndroidIconToLinux(Context context,String packageName){
     PackageManager packageManager = context.getPackageManager();
-    List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
-    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+ "/.local/share/applications/"; //"/.openfde/pic/";
+    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+ "/.local/share/icons/"; 
 
-    apps.addAll(getAllApp(context));
-
-    // Log.i("bella","createAllAndroidIconToLinux rootPath : "+rootPath + ",apps "+apps.size());
-
-    for (ApplicationInfo appInfo : apps) {
+   
+    if("".equals(packageName)){
+        List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
+        apps.addAll(getAllApp(context));
+        for (ApplicationInfo appInfo : apps) {
+            try {
+                // if(appInfo.name !=null){
+                    Drawable icon = packageManager.getApplicationIcon(appInfo);
+                    String appName = packageManager.getApplicationLabel(appInfo).toString();
+    
+                    String path = rootPath+appName+".png";
+                    Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
+                    File file = new File(path);
+                    if(!file.exists() && !path.contains(" ") ){
+                        drawableToPng(icon,path);
+                    }    
+                // }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }else{
         try {
-            // if(appInfo.name !=null){
-                Drawable icon = packageManager.getApplicationIcon(appInfo);
-                String appName = packageManager.getApplicationLabel(appInfo).toString();
-                String packageName = appInfo.packageName ;
+            ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
+            Drawable icon = packageManager.getApplicationIcon(appInfo);
+            String appName = packageManager.getApplicationLabel(appInfo).toString();
 
-                String path = rootPath+appName+".png";
-                Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
-                File file = new File(path);
-                if(!file.exists() && !path.contains(" ") ){
-                    drawableToPng(icon,path);
-                }    
-            // }
+            String path = rootPath+appName+".png";
+            Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
+            File file = new File(path);
+            if(!file.exists() && !path.contains(" ") ){
+                drawableToPng(icon,path);
+            }    
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    
+
+    // Log.i("bella","createAllAndroidIconToLinux rootPath : "+rootPath + ",apps "+apps.size());
+
+    
  }
 
     public static boolean isAppInstalled(Context context, String packageName) {
