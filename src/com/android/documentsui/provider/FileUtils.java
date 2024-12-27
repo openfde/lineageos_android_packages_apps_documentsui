@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -612,7 +613,7 @@ public static String newFile() {
                 Log.e("bella", "Failed to create folder");
             }
         } else {
-            Log.i("bella", "Folder already exists");
+            Log.i("bella", "file already exists");
             newDocName =  getUniqueFileName(documentId,newDocName);
         }
         folder = new File(documentId,newDocName);
@@ -809,34 +810,53 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
     return listApps;
 }
 
- public static void  createAllAndroidIconToLinux(Context context){
+ public static void  createAllAndroidIconToLinux(Context context,String packageName){
     PackageManager packageManager = context.getPackageManager();
-    List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
-    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/.openfde/pic/";
+    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+ "/.local/share/icons/"; 
 
-    apps.addAll(getAllApp(context));
-
-    // Log.i("bella","createAllAndroidIconToLinux rootPath : "+rootPath + ",apps "+apps.size());
-
-    for (ApplicationInfo appInfo : apps) {
+   
+    if("".equals(packageName)){
+        List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
+        apps.addAll(getAllApp(context));
+        for (ApplicationInfo appInfo : apps) {
+            try {
+                // if(appInfo.name !=null){
+                    Drawable icon = packageManager.getApplicationIcon(appInfo);
+                    String appName = packageManager.getApplicationLabel(appInfo).toString();
+    
+                    String path = rootPath+appName+".png";
+                    Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
+                    File file = new File(path);
+                    if(!file.exists() && !path.contains(" ") ){
+                        drawableToPng(icon,path);
+                    }    
+                // }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }else{
         try {
-            // if(appInfo.name !=null){
-                Drawable icon = packageManager.getApplicationIcon(appInfo);
-                String appName = packageManager.getApplicationLabel(appInfo).toString();
-                String packageName = appInfo.packageName ;
+            ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
+            Drawable icon = packageManager.getApplicationIcon(appInfo);
+            String appName = packageManager.getApplicationLabel(appInfo).toString();
 
-                String path = rootPath+appName+".png";
-                Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
-                File file = new File(path);
-                if(!file.exists() && !path.contains(" ") ){
-                    drawableToPng(icon,path);
-                }    
-            // }
+            String path = rootPath+appName+".png";
+            Log.i("bella","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
+            File file = new File(path);
+            if(!file.exists() && !path.contains(" ") ){
+                drawableToPng(icon,path);
+            }    
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    
+
+    // Log.i("bella","createAllAndroidIconToLinux rootPath : "+rootPath + ",apps "+apps.size());
+
+    
  }
 
     public static boolean isAppInstalled(Context context, String packageName) {
@@ -846,6 +866,16 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
             return true; // app installed
         } catch (PackageManager.NameNotFoundException e) {
             return false; // app not install
+        }
+    }
+
+      public static void setSystemProperty(String key, String value) {
+        try {
+            Class<?> systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Method setMethod = systemPropertiesClass.getDeclaredMethod("set", String.class, String.class);
+            setMethod.invoke(null, key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     

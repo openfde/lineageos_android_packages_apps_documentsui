@@ -17,6 +17,14 @@
         android:layout_height="16dp"/>
 
     <ImageView
+        android:id="@+id/imgShowHide"
+        android:src="@drawable/icon_show_file"
+        android:layout_width="16dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="20dp"
+        android:layout_height="16dp"/>
+
+    <ImageView
         android:id="@+id/imgAllSelected"
         android:src="@drawable/icon_all_selected"
         android:layout_width="16dp"
