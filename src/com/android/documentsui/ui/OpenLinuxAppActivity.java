@@ -96,35 +96,38 @@ public class OpenLinuxAppActivity extends Activity {
 
         Log.i(TAG, "fdeModel " + fdeModel + ",openParams " + openParams + ",isInstallVnc " + isInstallVnc + ",isInstallX11  " + isInstallX11);
 
-//        layoutDirectType.setVisibility(isShellType ? View.VISIBLE : View.GONE);
-//        layoutVncType.setVisibility(isInstallVnc ? View.VISIBLE : View.GONE);
-//        layoutX11Type.setVisibility(isInstallX11 ? View.VISIBLE : View.GONE);
+       layoutDirectType.setVisibility(isShellType ? View.VISIBLE : View.GONE);
+       layoutVncType.setVisibility(isInstallVnc ? View.VISIBLE : View.GONE);
+       layoutX11Type.setVisibility(isInstallX11 ? View.VISIBLE : View.GONE);
 
 
         openType = SPUtils.getIntDocInfo(context, OPEN_TYPE, OPEN_TYPE_DEFAULT);
         boolean[] arrBool = {isShellType, isInstallVnc, isInstallX11};
         long count = countTrueValues(arrBool);
         Log.i(TAG, "openType: " + openType + " , count:  " + count);
-        if (count > 1 && "open".equals(type)) {
-            viewLine.setVisibility(View.VISIBLE);
-            txtOtherTitle.setVisibility(View.VISIBLE);
-            int openTypeAlways = SPUtils.getIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
-            Log.i(TAG, "openTypeAlways: " + openTypeAlways );
-            if (openTypeAlways > -1 && arrBool[openTypeAlways]) {
-                openType = openTypeAlways;
-                selectOpenType();
-            }
-        } else if (count == 1) {
-            if (isShellType) {
-                openDirect();
-            } else if (isInstallVnc) {
-                openVnc();
-            } else {
-                openX11();
-            }
-        } else {
-            //please install vnc x11 app
+        if(count == 0 ){
+            Toast.makeText(context,getString(R.string.fde_app_install)+"Vnc or X11 app",Toast.LENGTH_LONG).show();
         }
+         //      if ("open".equals(type)) {
+        //     viewLine.setVisibility(View.VISIBLE);
+        //     txtOtherTitle.setVisibility(View.VISIBLE);
+        //     int openTypeAlways = SPUtils.getIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
+        //     Log.i(TAG, "openTypeAlways: " + openTypeAlways );
+        //     if (openTypeAlways > -1 && arrBool[openTypeAlways]) {
+        //         openType = openTypeAlways;
+        //         selectOpenType();
+        //     }
+        // // } else if (count == 1) {
+        // //     if (isShellType) {
+        // //         openDirect();
+        // //     } else if (isInstallVnc) {
+        // //         openVnc();
+        // //     } else {
+        // //         openX11();
+        // //     }
+        // } else {
+        //     //please install vnc x11 app
+        // }
 
         Drawable leftDrawable = getResources().getDrawable(R.mipmap.icon_vnc);
 
