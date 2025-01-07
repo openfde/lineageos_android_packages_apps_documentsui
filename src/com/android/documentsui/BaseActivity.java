@@ -175,10 +175,15 @@ public abstract class BaseActivity
         setSupportActionBar(toolbar);
 
         Breadcrumb breadcrumb = findViewById(R.id.horizontal_breadcrumb);
-        imgView = findViewById(R.id.imgView);
-        layoutLoading = findViewById(R.id.layoutLoading);
-        imgView.setBackgroundResource(R.drawable.frame_animation);
-        animationDrawable = (AnimationDrawable)imgView.getBackground();
+       
+        try {
+            imgView = findViewById(R.id.imgView);
+            layoutLoading = findViewById(R.id.layoutLoading);
+            imgView.setBackgroundResource(R.drawable.frame_animation);
+            animationDrawable = (AnimationDrawable)imgView.getBackground();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         assert(breadcrumb != null);
         View profileTabsContainer = findViewById(R.id.tabs_container);
         assert (profileTabsContainer != null);
@@ -410,13 +415,21 @@ public abstract class BaseActivity
 
 
     public void startLoading(){
+      try {
         layoutLoading.setVisibility(View.VISIBLE);
         animationDrawable.start();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     public void endLoading(){
+       try {
         animationDrawable.stop();
         layoutLoading.setVisibility(View.GONE);
+       } catch (Exception e) {
+        e.printStackTrace();
+       }
     }
 
     public void onPreferenceChanged(String pref) {
