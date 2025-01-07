@@ -84,6 +84,7 @@ import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.sorting.SortController;
 import com.android.documentsui.sorting.SortModel;
 import com.google.android.material.appbar.AppBarLayout;
+import android.graphics.drawable.AnimationDrawable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,6 +113,10 @@ public abstract class BaseActivity
     protected SortController mSortController;
 
     ImageView imgSwitch,imgShowHide;
+    ImageView imgView;
+    LinearLayout  layoutLoading;
+    AnimationDrawable animationDrawable ;
+
     private final List<EventListener> mEventListeners = new ArrayList<>();
     private final String mTag;
 
@@ -170,6 +175,10 @@ public abstract class BaseActivity
         setSupportActionBar(toolbar);
 
         Breadcrumb breadcrumb = findViewById(R.id.horizontal_breadcrumb);
+        imgView = findViewById(R.id.imgView);
+        layoutLoading = findViewById(R.id.layoutLoading);
+        imgView.setBackgroundResource(R.drawable.frame_animation);
+        animationDrawable = (AnimationDrawable)imgView.getBackground();
         assert(breadcrumb != null);
         View profileTabsContainer = findViewById(R.id.tabs_container);
         assert (profileTabsContainer != null);
@@ -227,6 +236,7 @@ public abstract class BaseActivity
                @Override
                public void afterTextChanged(Editable s) {
                    String strSearch = s.toString();
+                   startLoading();
                    mSearchManager.onQueryTextChange(strSearch);
 
                }
@@ -258,16 +268,19 @@ public abstract class BaseActivity
                 if (dir != null) {
                     dir.scrollToTop();
                 }
+                Log.i(mTag, "bella onSearchChanged............ " );
             }
 
             @Override
             public void onSearchFinished() {
+                Log.i(mTag, "bella onSearchFinished............ " );
                 // Restores menu icons state
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onSearchViewChanged(boolean opened) {
+                Log.i(mTag, "bella onSearchViewChanged............ "+opened );
                 mNavigator.update();
                 // We also need to update AppsRowManager because we may want to show/hide the
                 // appsRow in cross-profile search according to the searching conditions.
@@ -276,6 +289,7 @@ public abstract class BaseActivity
 
             @Override
             public void onSearchChipStateChanged(View v) {
+                Log.i(mTag, "bella onSearchChipStateChanged............ " );
                 final Checkable chip = (Checkable) v;
                 if (chip.isChecked()) {
                     final SearchChipData item = (SearchChipData) v.getTag();
@@ -394,6 +408,17 @@ public abstract class BaseActivity
         setResult(AppCompatActivity.RESULT_CANCELED);
     }
 
+
+    public void startLoading(){
+        layoutLoading.setVisibility(View.VISIBLE);
+        animationDrawable.start();
+    }
+
+    public void endLoading(){
+        animationDrawable.stop();
+        layoutLoading.setVisibility(View.GONE);
+    }
+
     public void onPreferenceChanged(String pref) {
         // For now, we only work with prefs that we backup. This
         // just limits the scope of what we expect to come flowing
@@ -451,6 +476,7 @@ public abstract class BaseActivity
     @Override
     protected void onDestroy() {
         mRootsMonitor.stop();
+        endLoading();
         mPreferencesMonitor.stop();
         mSortController.destroy();
         super.onDestroy();

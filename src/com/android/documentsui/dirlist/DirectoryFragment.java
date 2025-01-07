@@ -512,6 +512,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             public void onLayoutCompleted(RecyclerView.State state) {
                 super.onLayoutCompleted(state);
                 mFocusManager.onLayoutCompleted();
+                Log.i(TAG, "bella onLayoutCompleted............ " );
             }
         };
 
@@ -756,6 +757,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     public void onViewModeChanged() {
         // Mode change is just visual change; no need to kick loader.
         onDisplayStateChanged();
+        Log.i(TAG, "bella onViewModeChanged............ " );
     }
 
     private void onDisplayStateChanged() {
@@ -1483,6 +1485,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             // }
 
             mProgressBar.setVisibility(mModel.isLoading() ? View.VISIBLE : View.GONE);
+            mActivity.endLoading();
 
             updateLayout(mState.derivedMode);
 
