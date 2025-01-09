@@ -96,7 +96,7 @@ public class OpenLinuxAppActivity extends Activity {
 
         Log.i(TAG, "fdeModel " + fdeModel + ",openParams " + openParams + ",isInstallVnc " + isInstallVnc + ",isInstallX11  " + isInstallX11);
 
-       layoutDirectType.setVisibility(isShellType ? View.VISIBLE : View.GONE);
+    //    layoutDirectType.setVisibility(isShellType ? View.VISIBLE : View.GONE);
        layoutVncType.setVisibility(isInstallVnc ? View.VISIBLE : View.GONE);
        layoutX11Type.setVisibility(isInstallX11 ? View.VISIBLE : View.GONE);
 
@@ -105,9 +105,15 @@ public class OpenLinuxAppActivity extends Activity {
         boolean[] arrBool = {isShellType, isInstallVnc, isInstallX11};
         long count = countTrueValues(arrBool);
         Log.i(TAG, "openType: " + openType + " , count:  " + count);
-        if(count == 0 ){
-            Toast.makeText(context,getString(R.string.fde_app_install)+"Vnc or X11 app",Toast.LENGTH_LONG).show();
+
+   
+        if(!isShellType && !isInstallX11 && !isInstallVnc){
+            Toast.makeText(context,getString(R.string.fde_app_install)+"X11 app",Toast.LENGTH_LONG).show();
         }
+
+        // if(count == 0 ){
+        //     Toast.makeText(context,getString(R.string.fde_app_install)+"Vnc or X11 app",Toast.LENGTH_LONG).show();
+        // }
          //      if ("open".equals(type)) {
         //     viewLine.setVisibility(View.VISIBLE);
         //     txtOtherTitle.setVisibility(View.VISIBLE);
@@ -148,7 +154,7 @@ public class OpenLinuxAppActivity extends Activity {
 //                layoutX11Type.setVisibility(View.GONE);
                 break;
             default:
-                txtDefaultType.setText(R.string.fde_vnc_open);
+                txtDefaultType.setText(R.string.fde_linux_open);
                 leftDrawable = getResources().getDrawable(R.mipmap.icon_vnc);
 //                layoutVncType.setVisibility(View.GONE);
                 break;
@@ -175,6 +181,10 @@ public class OpenLinuxAppActivity extends Activity {
         });
 
         layoutDirectType.setOnClickListener(view -> {
+            if(!isShellType){
+                Toast.makeText(context,getString(R.string.fde_xserver_tip),Toast.LENGTH_LONG).show();
+                return ;
+            }
             openDirect();
             SPUtils.putIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
             cleanPrefered();
@@ -191,6 +201,9 @@ public class OpenLinuxAppActivity extends Activity {
             openX11();
             SPUtils.putIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
             cleanPrefered();
+            if(isShellType){
+                Toast.makeText(context,getString(R.string.fde_x11_tip),Toast.LENGTH_LONG).show();
+            }
         });
     }
 
