@@ -300,12 +300,12 @@
     <string name="fde_once" >"仅此一次"</string>
     <string name="fde_always" >"始终"</string>
     <string name="fde_other_app" >"使用其它应用"</string>
-    <string name="fde_linux_open" >"用Linux桌面打开"</string>
+    <string name="fde_linux_open" >"Linux App Launcher"</string>
     <string name="fde_xserver_open" >"X11 server"</string>
     <string name="fde_vnc_open" >"VNC"</string>
     <string name="fde_app_install" >"请安装 "</string>
     <string name="fde_app_choose" >"请选用fde_utils 打开openFDE "</string>
-    <string name="fde_x11_tip" >"x11 server 在FDE应用模式下可能运行不正常，建议使用在Linux桌面打开方式 "</string>
+    <string name="fde_x11_tip" >"X11 server 在FDE应用模式下可能运行不正常，建议使用在Linux桌面打开方式 "</string>
     <string name="fde_xserver_tip" >"当前模式下不支持使用在Linux桌面打开 "</string>
     
 
