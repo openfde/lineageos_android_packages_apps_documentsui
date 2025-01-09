@@ -227,7 +227,7 @@ public class OpenLinuxAppActivity extends Activity {
 
     private void openDirect() {
         if(!isShellType){
-            Toast.makeText(context,R.string.fde_app_choose,Toast.LENGTH_LONG).show();
+            Toast.makeText(context,R.string.fde_xserver_tip,Toast.LENGTH_LONG).show();
             finish();
             return;
         }

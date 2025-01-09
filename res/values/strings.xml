@@ -565,11 +565,11 @@
     <string name="fde_always" >"Always"</string>
     <string name="fde_other_app" >"Other apps"</string>
     <string name="fde_linux_open" >"Start int the Linux"</string>
-    <string name="fde_xserver_open" >"X11 Open"</string>
-    <string name="fde_vnc_open" >"VNC Open"</string>
+    <string name="fde_xserver_open" >"X11 server"</string>
+    <string name="fde_vnc_open" >"VNC server"</string>
     <string name="fde_app_install" >"please install "</string>
     <string name="fde_app_choose" >"please choose fde_utils open openFDE "</string>
-    <string name="fde_x11_tip" >"该模式下可能运行不正常，建议使用在linux桌面打开 "</string>
-    <string name="fde_xserver_tip" >"当前模式下不支持使用在linux桌面打开 "</string>
+    <string name="fde_x11_tip" >"X11 server app may not run properly in FDE application mode, it is recommended to use starting in the Linux Desktop. "</string>
+    <string name="fde_xserver_tip" >"The current app not supported in this mode. "</string>
 
 </resources>
