@@ -47,6 +47,7 @@ public class OpenLinuxAppActivity extends Activity {
     String name;
     String exec;
     int openType;
+    String openParams ;
 
     boolean isInstallVnc;
     boolean isInstallX11;
@@ -83,7 +84,7 @@ public class OpenLinuxAppActivity extends Activity {
 //        txtAlways.setTextColor(android.R.color.primary_text_dark);
 
         String fdeModel = getIntent().getStringExtra("fdeModel");
-        String openParams = getIntent().getStringExtra("openParams");
+        openParams = getIntent().getStringExtra("openParams");
 
         String[] arrParams = openParams.split("###");
         name = arrParams[0].trim().replaceAll("%[FfUu]", "");
@@ -97,8 +98,11 @@ public class OpenLinuxAppActivity extends Activity {
         Log.i(TAG, "fdeModel " + fdeModel + ",openParams " + openParams + ",isInstallVnc " + isInstallVnc + ",isInstallX11  " + isInstallX11);
 
     //    layoutDirectType.setVisibility(isShellType ? View.VISIBLE : View.GONE);
-       layoutVncType.setVisibility(isInstallVnc ? View.VISIBLE : View.GONE);
-       layoutX11Type.setVisibility(isInstallX11 ? View.VISIBLE : View.GONE);
+    //    layoutVncType.setVisibility(isInstallVnc ? View.VISIBLE : View.GONE);
+    //    layoutX11Type.setVisibility(isInstallX11 ? View.VISIBLE : View.GONE);
+
+       layoutVncType.setVisibility(View.GONE);
+       layoutX11Type.setVisibility(View.GONE);
 
 
         openType = SPUtils.getIntDocInfo(context, OPEN_TYPE, OPEN_TYPE_DEFAULT);
@@ -181,10 +185,10 @@ public class OpenLinuxAppActivity extends Activity {
         });
 
         layoutDirectType.setOnClickListener(view -> {
-            if(!isShellType){
-                Toast.makeText(context,getString(R.string.fde_xserver_tip),Toast.LENGTH_LONG).show();
-                return ;
-            }
+            // if(!isShellType){
+            //     Toast.makeText(context,getString(R.string.fde_xserver_tip),Toast.LENGTH_LONG).show();
+            //     return ;
+            // }
             openDirect();
             SPUtils.putIntDocInfo(context, OPEN_TYPE_ALWAYS, -1);
             cleanPrefered();
@@ -226,19 +230,31 @@ public class OpenLinuxAppActivity extends Activity {
     }
 
     private void openDirect() {
-        if(!isShellType){
-            Toast.makeText(context,R.string.fde_xserver_tip,Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                NetUtils.gotoLinuxApp(name, exec);
-            }
-        }).start();
+        // if(!isShellType){
+        //     Toast.makeText(context,R.string.fde_xserver_tip,Toast.LENGTH_LONG).show();
+        //     finish();
+        //     return;
+        // }
+        // new Thread(new Runnable() {
+        //     @Override
+        //     public void run() {
+        //         NetUtils.gotoLinuxApp(name, exec);
+        //     }
+        // }).start();
+        // SPUtils.putIntDocInfo(context, OPEN_TYPE, OPEN_TYPE_DIRECT);
+        // finish();
+
+        Intent intent = new Intent();
+        ComponentName componentName = new ComponentName("com.fde.fde_linux_app_launcher", "com.fde.fde_linux_app_launcher.MainActivity");
+        intent.setComponent(componentName);
+        intent.putExtra("openParams", openParams);
+        intent.putExtra("fromOther", "Launcher");
+        intent.putExtra("vnc_activity_name", name);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
         SPUtils.putIntDocInfo(context, OPEN_TYPE, OPEN_TYPE_DIRECT);
         finish();
+
     }
 
     private void openVnc() {

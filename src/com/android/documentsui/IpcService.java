@@ -114,7 +114,7 @@ public class IpcService extends Service {
                 if(arrParams.length > 3){
                     fileName = arrParams[3];
                 }
-
+                String path = "content://" + Providers.AUTHORITY_STORAGE + "/document/" + Providers.ROOT_ID_DESKTOP + "%2f" + fileName;
                 if (!"open".equals(type)) {
                     new AsyncTask<Void, Void, String>() {
                         @Override
@@ -133,8 +133,17 @@ public class IpcService extends Service {
                             context.startActivity(intent);
                         }
                     }.execute();
+                    // Uri uri = Uri.parse(path);
+                    // Intent targetIntent = new Intent(Intent.ACTION_VIEW);
+                    // targetIntent.setDataAndType(uri, "application/vnd.desktop");
+                    // targetIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    // Intent chooser = Intent.createChooser(targetIntent, "选择应用打开desktop文件");
+                    // int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                    // flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                    // flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                    // chooser.setFlags(flags);
+                    // context.startActivity(chooser);
                 } else {
-                    String path = "content://" + Providers.AUTHORITY_STORAGE + "/document/" + Providers.ROOT_ID_DESKTOP + "%2f" + fileName;
                     Log.i(TAG, "bella fileName: " + fileName + "   ,path : "+path);
                     Uri uri = Uri.parse(path);
                     Intent shareIntent = new Intent(Intent.ACTION_VIEW);
