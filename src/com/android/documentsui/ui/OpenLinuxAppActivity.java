@@ -308,6 +308,7 @@ public class OpenLinuxAppActivity extends Activity {
             getPackageManager().clearPackagePreferredActivities("com.fde.x11");
             getPackageManager().clearPackagePreferredActivities("com.fde.txt");
             getPackageManager().clearPackagePreferredActivities("com.fde.tools");
+            getPackageManager().clearPackagePreferredActivities("com.fde.fde_linux_app_launcher");
        } catch (Exception e) {
             e.printStackTrace();
        }
