@@ -15,6 +15,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
+import com.android.documentsui.provider.FileUtils;
 
 
 public class NetUtils {
@@ -49,18 +50,23 @@ public class NetUtils {
             connection.disconnect();
 
             // Log.i("bella","getLinuxApp res "+res);
-            Map<String, Object> mpRes = new Gson().fromJson(res, new TypeToken<Map<String, Object>>() {
-            }.getType());
-            Map<String, Object> mpData = (Map<String, Object>) mpRes.get("data");
-            List<Map<String, Object>> responseList = (List<Map<String, Object>>) mpData.get("data");
-            if (responseList != null) {
-                Log.i("bella", "getLinuxApp responseList " + responseList.size());
-                // for (Map<String, Object> mp : responseList) {
-                //      Log.i("bella","getLinuxApp IconPath " + mp.get("IconPath") + " ,Path : "+mp.get("Path")+ " ,IconType : "+mp.get("IconType")+ " ,Name : "+mp.get("Name"));
-                //      String name = mp.get("Name").toString();
-                //      String exec = mp.get("Path").toString().replaceAll(" %F", "").replaceAll(" %u", "").replaceAll(" %U", "");
-                //      setSystemProperty(name,exec);
-                // }
+            try {
+                Map<String, Object> mpRes = new Gson().fromJson(res, new TypeToken<Map<String, Object>>() {
+                }.getType());
+                Map<String, Object> mpData = (Map<String, Object>) mpRes.get("data");
+                List<Map<String, Object>> responseList = (List<Map<String, Object>>) mpData.get("data");
+                if (responseList != null) {
+                    Log.i("bella", "getLinuxApp responseList " + responseList.size());
+                    for (Map<String, Object> mp : responseList) {
+                        //  Log.i("bella","getLinuxApp IconPath " + mp.get("IconPath") + " ,Path : "+mp.get("Path")+ " ,IconType : "+mp.get("IconType")+ " ,Name : "+mp.get("Name"));
+                         String name = mp.get("Name").toString().replaceAll(" ", "_");
+                        //  String exec = mp.get("Path").toString().replaceAll(" %F", "").replaceAll(" %u", "").replaceAll(" %U", "");
+                         String IconPath = mp.get("IconPath").toString();
+                         FileUtils.setSystemProperty(name,IconPath);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return res;
         } catch (IOException e) {
