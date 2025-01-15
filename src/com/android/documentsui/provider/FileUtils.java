@@ -323,6 +323,7 @@ public class FileUtils {
         row.add(Document.COLUMN_DOCUMENT_ID, file.getAbsolutePath());
         row.add(Document.COLUMN_DISPLAY_NAME, file.getName());
         String mimeType = getDocumentType(file.getAbsolutePath());
+        Log.i(TAG,"includeFile mimeType: "+mimeType + ",file.getAbsolutePath() "+file.getAbsolutePath());
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
         int flags = file.canWrite()
                 ? Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_WRITE | Document.FLAG_SUPPORTS_RENAME
@@ -347,11 +348,13 @@ public class FileUtils {
         row.add(Document.COLUMN_DISPLAY_NAME, fileName);
         String mimeType = getDocumentType(file.getAbsolutePath());
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
+        Log.i(TAG,"includeVolumesFile mimeType: "+mimeType + ",file.getAbsolutePath() "+file.getAbsolutePath() + ",fileName "+fileName);
+
         int flags = file.canWrite()
                 ? Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_WRITE | Document.FLAG_SUPPORTS_RENAME
-                        | (mimeType.equals(Document.MIME_TYPE_DIR) ? Document.FLAG_DIR_SUPPORTS_CREATE : 0)
+                        | (mimeType !=null &&mimeType.equals(Document.MIME_TYPE_DIR) ? Document.FLAG_DIR_SUPPORTS_CREATE : 0)
                 : 0;
-        if (mimeType.startsWith("image/"))
+        if (mimeType !=null && mimeType.startsWith("image/"))
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         row.add(Document.COLUMN_FLAGS, flags);
         row.add(Document.COLUMN_SIZE, file.length());
@@ -384,7 +387,8 @@ public class FileUtils {
                 return mime;
             }
         }
-        return "vnd.android.document/directory";
+        String str  = getFileTyle(documentId);
+        return str;
     }
 
     public static  String readFile() {
