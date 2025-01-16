@@ -1155,4 +1155,14 @@ public static String getMD5(String input) {
         return bitmap;
     }
 
+
+    public static boolean containsChinese(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        //is Chinese
+        String regex = "[\\u4e00-\\u9fa5]";
+        return str.matches(".*" + regex + ".*");
+    }
+
 }
