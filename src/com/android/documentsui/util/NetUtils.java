@@ -56,13 +56,21 @@ public class NetUtils {
                 Map<String, Object> mpData = (Map<String, Object>) mpRes.get("data");
                 List<Map<String, Object>> responseList = (List<Map<String, Object>>) mpData.get("data");
                 if (responseList != null) {
-                    Log.i("bella", "getLinuxApp responseList " + responseList.size());
+                    // Log.i("bella", "getLinuxApp responseList " + responseList.size());
                     for (Map<String, Object> mp : responseList) {
                         //  Log.i("bella","getLinuxApp IconPath " + mp.get("IconPath") + " ,Path : "+mp.get("Path")+ " ,IconType : "+mp.get("IconType")+ " ,Name : "+mp.get("Name"));
                          String name = mp.get("Name").toString().replaceAll(" ", "_");
-                        //  String exec = mp.get("Path").toString().replaceAll(" %F", "").replaceAll(" %u", "").replaceAll(" %U", "");
+                         String exec = mp.get("Path").toString().replaceAll(" %F", "").replaceAll(" %u", "").replaceAll(" %U", "").replaceAll(" ", "");;
                          String IconPath = mp.get("IconPath").toString();
-                         FileUtils.setSystemProperty(name,IconPath);
+                         String key = name ;
+                         if(FileUtils.containsChinese(name)){
+                            int lastIndex = exec.lastIndexOf('/');
+                            if(lastIndex > 0){
+                               key = exec.substring(lastIndex+1);
+                            }
+                         }
+                         Log.i("bella","FastBitmapDrawable key: "+key + ",IconPath: "+IconPath + ",exec: "+exec+",name: "+name);
+                         FileUtils.setSystemProperty(key,IconPath);
                     }
                 }
             } catch (Exception e) {
