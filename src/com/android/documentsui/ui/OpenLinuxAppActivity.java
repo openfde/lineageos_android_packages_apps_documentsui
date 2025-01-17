@@ -111,9 +111,9 @@ public class OpenLinuxAppActivity extends Activity {
         Log.i(TAG, "openType: " + openType + " , count:  " + count);
 
    
-        if(!isShellType && !isInstallX11 && !isInstallVnc){
-            Toast.makeText(context,getString(R.string.fde_app_install)+"X11 app",Toast.LENGTH_LONG).show();
-        }
+        // if(!isShellType && !isInstallX11 && !isInstallVnc){
+        //     Toast.makeText(context,getString(R.string.fde_app_install)+"X11 app",Toast.LENGTH_LONG).show();
+        // }
 
         // if(count == 0 ){
         //     Toast.makeText(context,getString(R.string.fde_app_install)+"Vnc or X11 app",Toast.LENGTH_LONG).show();
