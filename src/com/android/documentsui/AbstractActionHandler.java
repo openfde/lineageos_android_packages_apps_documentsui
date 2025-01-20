@@ -463,6 +463,8 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
             return true;
         } catch (ActivityNotFoundException e) {
             mDialogs.showNoApplicationFound();
+        }catch(Exception e){
+            e.printStackTrace();
         }
         return false;
     }
