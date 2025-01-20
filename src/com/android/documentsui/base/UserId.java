@@ -190,7 +190,11 @@ public final class UserId {
      * Starts activity for this user
      */
     public void startActivityAsUser(Context context, Intent intent) {
+       try {
         context.startActivityAsUser(intent, mUserHandle);
+       } catch (Exception e) {
+         e.printStackTrace();
+       }
     }
 
     /**

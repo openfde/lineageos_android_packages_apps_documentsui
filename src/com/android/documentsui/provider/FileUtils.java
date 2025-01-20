@@ -319,6 +319,7 @@ public class FileUtils {
     }
 
     public static void includeFile(final MatrixCursor result, final File file) throws FileNotFoundException {
+       try {
         final MatrixCursor.RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, file.getAbsolutePath());
         row.add(Document.COLUMN_DISPLAY_NAME, file.getName());
@@ -334,6 +335,9 @@ public class FileUtils {
         row.add(Document.COLUMN_FLAGS, flags);
         row.add(Document.COLUMN_SIZE, file.length());
         row.add(Document.COLUMN_LAST_MODIFIED, file.lastModified());
+       } catch (Exception e) {
+         e.printStackTrace();
+       }
     }
 
     public static void includeVolumesFile(final MatrixCursor result, final File file) throws FileNotFoundException {
@@ -804,7 +808,7 @@ public static void drawableToPng(Context context ,Drawable drawable, String file
         if(drawable instanceof  AdaptiveIconDrawable){
             AdaptiveIconDrawable adaptiveIconDrawable = (AdaptiveIconDrawable)drawable;
             bitmapT = adaptiveIconToBitmap(adaptiveIconDrawable);
-            bitmapT  = scaleBitmap(bitmapT,42,42);
+            bitmapT  = scaleBitmap(bitmapT,48,48);
             Bitmap b2 = vectorToBitmap(context, R.mipmap.bg_android);
             b2  = scaleBitmap(b2,80,80);
             bitmap = overlayBitmaps(b2,bitmapT);  
@@ -814,7 +818,7 @@ public static void drawableToPng(Context context ,Drawable drawable, String file
                 Log.i("bella","createAllAndroidIconToLinux drawable 1111");
                 BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
                 bitmapT = bitmapDrawable.getBitmap();
-                bitmapT  = scaleBitmap(bitmapT,42,42);
+                bitmapT  = scaleBitmap(bitmapT,48,48);
                 Bitmap b2 = vectorToBitmap(context, R.mipmap.bg_android);
                 b2  = scaleBitmap(b2,80,80);
                 bitmap = overlayBitmaps(b2,bitmapT);  
