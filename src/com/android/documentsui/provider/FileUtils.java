@@ -844,8 +844,9 @@ public static void drawableToPng(Context context ,Drawable drawable, String file
         // b2  = scaleBitmap(b2,80,80);
         // Bitmap bitmap = overlayBitmaps(b2,bitmapT);  
         
-        
-        Canvas canvas = new Canvas(bitmapT);
+        Bitmap mutableBitmap = bitmapT.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(mutableBitmap);
+        // Canvas canvas = new Canvas(bitmapT);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         // 保存Bitmap到PNG文件
@@ -983,12 +984,6 @@ public static String getMD5(String input) {
             e.printStackTrace();
         }
     }
-
-    
-
-    // Log.i("bella","createAllAndroidIconToLinux rootPath : "+rootPath + ",apps "+apps.size());
-
-    
  }
 
 
@@ -1077,58 +1072,58 @@ public static String getMD5(String input) {
     }
     
 
-    public static void createLinuxDesktopFile(String title ,String packageName,int itemType ){
-        createDesktopDir(PATH_ID_DESKTOP);
-            try{    
-                if(title.contains(".desktop") || itemType == 8 || itemType == 9){
-                    return ;
-                }
+    // public static void createLinuxDesktopFile(String title ,String packageName,int itemType ){
+    //     createDesktopDir(PATH_ID_DESKTOP);
+    //         try{    
+    //             if(title.contains(".desktop") || itemType == 8 || itemType == 9){
+    //                 return ;
+    //             }
     
-                String documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/桌面/";  
-                File ff = new File(documentId);
-                if(!ff.exists()){
-                    documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/Desktop/";  
-                }
+    //             String documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/桌面/";  
+    //             File ff = new File(documentId);
+    //             if(!ff.exists()){
+    //                 documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/Desktop/";  
+    //             }
 
-                String md5 = getMD5(packageName);
-                String pathDesktop = documentId+""+ md5+"_fde.desktop";
-                File file = new File(pathDesktop);
-                if(file.exists()){
-                    Log.i(TAG,"bella...pathDesktop is exists :  "+pathDesktop);
-                    return ;
-                }
-                Path desktopFilePath = Paths.get(pathDesktop);
+    //             String md5 = getMD5(packageName);
+    //             String pathDesktop = documentId+""+ md5+"_fde.desktop";
+    //             File file = new File(pathDesktop);
+    //             if(file.exists()){
+    //                 Log.i(TAG,"bella...pathDesktop is exists :  "+pathDesktop);
+    //                 return ;
+    //             }
+    //             Path desktopFilePath = Paths.get(pathDesktop);
 
-                String picPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/.local/share/icons/"+md5+".png" ;
-                File filePic = new File(picPath);
-                String homeDir = getLinuxHomeDir();
-                String linuxPath = homeDir+"/.local/share/icons/"+md5+".png";
-                Log.i(TAG,"bella...homeDir :  "+homeDir + ",linuxPath: "+linuxPath);
-                File linuxPic = new File(linuxPath);
-                if(!linuxPic.exists()){
-                    Log.i(TAG,"bella...insert.............md5: "+md5 +  ", linuxPath "+linuxPath + ",packageName:  "+packageName);
-                }else{
-                    //if pic exists ,return 
-                }    
+    //             String picPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/.local/share/icons/"+md5+".png" ;
+    //             File filePic = new File(picPath);
+    //             String homeDir = getLinuxHomeDir();
+    //             String linuxPath = homeDir+"/.local/share/icons/"+md5+".png";
+    //             Log.i(TAG,"bella...homeDir :  "+homeDir + ",linuxPath: "+linuxPath);
+    //             File linuxPic = new File(linuxPath);
+    //             if(!linuxPic.exists()){
+    //                 Log.i(TAG,"bella...insert.............md5: "+md5 +  ", linuxPath "+linuxPath + ",packageName:  "+packageName);
+    //             }else{
+    //                 //if pic exists ,return 
+    //             }    
     
-                List<String> lines = List.of(
-                    "[Desktop Entry]",
-                    "Type=Application",
-                    "Name="+title,
-                    "Name[zh_CN]="+title,
-                    "Categories="+itemType,
-                    "Exec=fde_launch "+packageName,
-                    "Icon="+linuxPic
-                );
+    //             List<String> lines = List.of(
+    //                 "[Desktop Entry]",
+    //                 "Type=Application",
+    //                 "Name="+title,
+    //                 "Name[zh_CN]="+title,
+    //                 "Categories="+itemType,
+    //                 "Exec=fde_launch "+packageName,
+    //                 "Icon="+linuxPic
+    //             );
          
-                // 写入.desktop文件
-                Files.write(desktopFilePath, lines, StandardOpenOption.CREATE);
-                file.setExecutable(true);
+    //             // 写入.desktop文件
+    //             Files.write(desktopFilePath, lines, StandardOpenOption.CREATE);
+    //             file.setExecutable(true);
  
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-    }
+    //         }catch(Exception e){
+    //             e.printStackTrace();
+    //         }
+    // }
 
     public static Bitmap adaptiveIconToBitmap(AdaptiveIconDrawable adaptiveIconDrawable) {
         int width = adaptiveIconDrawable.getIntrinsicWidth();
