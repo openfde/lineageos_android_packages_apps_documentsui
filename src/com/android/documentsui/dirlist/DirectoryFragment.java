@@ -1221,8 +1221,14 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 @Override
                 public void run() {
                   try {
-                    if(fileName !=null){
+                    if(fileName !=null && !"".equals(fileName)){
                         FileUtils.deleteFiles(FileUtils.PATH_ID_DESKTOP+fileName);
+                    }
+                    IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
+                    if(ipcService !=null ){
+                        ipcService.gotoClientApp("PASTE");
+                    }else {
+                        Log.i(TAG,"ipcService is null");
                     }
                     Log.i(TAG, "IpcService pasteFromClipboard opStr  "+opStr + ",fileName "+fileName);
                     FileUtils.cleanClipboard(getContext());
@@ -1245,13 +1251,14 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
-        deleteOriginFile();
-        IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
-        if(ipcService !=null ){
-            ipcService.gotoClientApp("PASTE");
-        }else {
-            Log.i(TAG,"ipcService is null");
+        // RootInfo rootInfo = mState.stack.getRoot();
+        // rootInfo.rootId.contains(FileUtils.DESKTOP) || 
+        Uri uri = FileUtils.pasteFileFromClipboard(getContext());
+        //if cut file from desktop
+        if(uri !=null && uri.toString().contains(FileUtils.DESKTOP)){
+            deleteOriginFile();
         }
+      
     }
 
     public void pasteIntoFolder() {
@@ -1272,7 +1279,11 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
-        deleteOriginFile();
+        Uri uri = FileUtils.pasteFileFromClipboard(getContext());
+        Log.w(TAG, "destination: " + destination.derivedUri + ",mState.stack  "+mState.stack.getRoot() + ",uri "+uri);
+        if(uri !=null && uri.toString().contains(FileUtils.DESKTOP)){
+            deleteOriginFile();
+        }
     }
 
     private void setupDragAndDropOnDocumentView(View view, Cursor cursor) {
