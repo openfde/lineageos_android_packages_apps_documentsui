@@ -1219,10 +1219,16 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 @Override
                 public void run() {
                   try {
-                    if(fileName !=null){
+                    if(fileName !=null && !"".equals(fileName)){
                         FileUtils.deleteFiles(FileUtils.PATH_ID_DESKTOP+fileName);
                     }
                     Log.i(TAG, "IpcService pasteFromClipboard opStr  "+opStr + ",fileName "+fileName);
+                    IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
+                    if(ipcService !=null ){
+                        ipcService.gotoClientApp("PASTE");
+                    }else {
+                        Log.i(TAG,"ipcService is null");
+                    }
                     FileUtils.cleanClipboard(getContext());
                   } catch (Exception e) {
                     e.printStackTrace();
@@ -1243,12 +1249,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
-        deleteOriginFile();
-        IpcService ipcService  = DocumentsApplication.getInstance().getIpcService();
-        if(ipcService !=null ){
-            ipcService.gotoClientApp("PASTE");
-        }else {
-            Log.i(TAG,"ipcService is null");
+        Uri uri = FileUtils.pasteFileFromClipboard(getContext());
+        if(uri !=null && uri.toString().contains(FileUtils.DESKTOP)){
+            deleteOriginFile();
         }
     }
 
@@ -1270,7 +1273,10 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                 mState.stack,
                 mInjector.dialogs::showFileOperationStatus);
         getActivity().invalidateOptionsMenu();
-        deleteOriginFile();
+        Uri uri = FileUtils.pasteFileFromClipboard(getContext());
+        if(uri !=null && uri.toString().contains(FileUtils.DESKTOP)){
+            deleteOriginFile();
+        }
     }
 
     private void setupDragAndDropOnDocumentView(View view, Cursor cursor) {

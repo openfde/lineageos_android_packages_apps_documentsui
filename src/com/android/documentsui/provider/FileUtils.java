@@ -66,7 +66,9 @@ import android.os.UserManager;
 
 public class FileUtils {
 
-    public static final String PATH_ID_DESKTOP = "/mnt/sdcard/Desktop/";
+    public static final String DESKTOP = "Desktop";
+
+    public static final String  PATH_ID_DESKTOP = "/mnt/sdcard/"+DESKTOP+"/";
 
     public static final String OPEN_DIR = "OPEN_DIR";
 
