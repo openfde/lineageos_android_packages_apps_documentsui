@@ -13,18 +13,26 @@ import android.os.RemoteException;
 import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.database.Cursor;
 import android.content.ComponentName;
-
+import android.os.Bundle;
 
 import com.android.documentsui.base.Providers;
+import com.android.documentsui.base.UserId;
 import com.android.documentsui.files.FilesActivity;
 import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.ui.OpenLinuxAppActivity;
 import com.android.documentsui.ui.RenameDialogActivity;
 import com.android.documentsui.util.NetUtils;
 import com.android.documentsui.util.SPUtils;
+import android.database.ContentObserver;
+import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import android.app.ActivityManager;
 import android.app.Activity;
@@ -46,6 +54,10 @@ public class IpcService extends Service {
         super.onCreate();
         context = this;
         DocumentsApplication.getInstance().setIpcService(this);
+        
+        // LockingContentObserver mObserver = new LockingContentObserver(new ContentLock(),  () -> {
+        //     Log.i(TAG,"ContentLock........ ");
+        // });
     }
 
    

@@ -246,6 +246,12 @@
             </intent-filter>
         </provider>
 
+        <receiver android:name=".DesktopFileUpdatePackageReceiver">
+            <intent-filter>
+                <action android:name="com.fde.desktop.file.update"  />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name=".PackageReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />

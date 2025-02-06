@@ -955,7 +955,7 @@ public static String getMD5(String input) {
                 // if(appInfo.name !=null){
                     Drawable icon = packageManager.getApplicationIcon(appInfo);
                     String appName = packageManager.getApplicationLabel(appInfo).toString();
-                    String md5 = getMD5(appInfo.packageName);
+                    String md5 = appInfo.packageName;//getMD5(appInfo.packageName);
     
                     String path = rootPath+md5+".png";
                     Log.i("bella","createAllAndroidIconToLinux md5 : "+md5+",path: "+path +",packName: "+appInfo.packageName);
@@ -973,7 +973,7 @@ public static String getMD5(String input) {
             ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
             Drawable icon = packageManager.getApplicationIcon(appInfo);
             String appName = packageManager.getApplicationLabel(appInfo).toString();
-            String md5 = getMD5(appInfo.packageName);
+            String md5 = appInfo.packageName;// getMD5(appInfo.packageName);
 
             String path = rootPath+md5+".png";
             Log.i("bella","createAllAndroidIconToLinux md5 : "+md5+",path: "+path +",packageName: "+packageName +",appName: "+appName);
