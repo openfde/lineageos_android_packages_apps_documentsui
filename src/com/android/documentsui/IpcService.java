@@ -224,15 +224,29 @@ public class IpcService extends Service {
                     Log.i(TAG, "uri "+uri.toString());
                     String fileName = FileUtils.extractFileName(uri.getLastPathSegment()) ;
                     String newFilePath = FileUtils.getUniqueFileName(FileUtils.PATH_ID_DESKTOP,fileName);
-                    Log.i(TAG, "newFilePath "+newFilePath + " , fileName "+fileName + " ,uriPath: "+uri.getPath() );
-                    File destinationFile =  new File(FileUtils.PATH_ID_DESKTOP,newFilePath);
-                    
-                    String opStr = SPUtils.getDocInfo(context, FileUtils.FILE_OPERATE);
-                    if(!fileName.contains(".")){
-                        FileUtils.copyFolder(FileUtils.PATH_ID_DESKTOP+fileName,FileUtils.PATH_ID_DESKTOP+newFilePath);
+                    String uriPath = uri.getPath();
+                    File destinationFile =  new File(FileUtils.PATH_ID_DESKTOP,newFilePath); 
+
+                    if(uriPath.contains("volumes") && uriPath.contains(FileUtils.getLinuxUUID())){
+                        uriPath = uriPath.substring(10);
+                        try {
+                            File ff = new File(uriPath);
+                            Log.i(TAG, "isDirectory: "+ff.isDirectory());
+                            FileUtils.copyFile(uriPath, FileUtils.PATH_ID_DESKTOP,fileName);  
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }else{
-                        FileUtils.copyUriToFile(context,uri,destinationFile);
+                        if(!fileName.contains(".")){
+                            FileUtils.copyFolder(FileUtils.PATH_ID_DESKTOP+fileName,FileUtils.PATH_ID_DESKTOP+newFilePath);
+                        }else{
+                            FileUtils.copyUriToFile(context,uri,destinationFile);
+                        }
                     }
+                   
+                    Log.i(TAG, "newFilePath "+newFilePath + " , fileName "+fileName + " ,uriPath: "+ uriPath);
+                    String opStr = SPUtils.getDocInfo(context, FileUtils.FILE_OPERATE);
+                  
 
                     SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, "");
                     if(FileUtils.OP_CUT.equals(opStr)){

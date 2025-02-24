@@ -206,25 +206,71 @@ public class FileUtils {
     }
 
     public static String getUniqueFileName(String documentId,String fileName ) {
-        String name = fileName ;
-        String extension = "" ;
-        if(fileName.contains(".") && fileName.length() > 0){
-             name = fileName.substring(0, fileName.lastIndexOf('.'));
-             extension = fileName.substring(fileName.lastIndexOf('.'));
+        File f = new File(documentId,fileName);
+        if(f.exists()){
+            String name = fileName ;
+            String extension = "" ;
+            if(fileName.contains(".") && fileName.length() > 0){
+                 name = fileName.substring(0, fileName.lastIndexOf('.'));
+                 extension = fileName.substring(fileName.lastIndexOf('.'));
+            }else{
+    
+            }
+          
+            String newName = name;
+            int count = 0;
+            File newFile;
+            do {
+                count++;
+                newName = name + "_" + count + extension;
+                newFile = new File(documentId,newName);
+            } while (newFile.exists());
+            return newName;
         }else{
-
+            return fileName ;
         }
-      
-        String newName = name;
-        int count = 0;
-        File newFile;
-        do {
-            count++;
-            newName = name + "_" + count + extension;
-            newFile = new File(documentId,newName);
-        } while (newFile.exists());
+    }
 
-        return newName;
+    public static String copyFile(String sourceDir, String targetDir,String fileName)
+            throws FileNotFoundException {
+
+        File parent = new File(targetDir);
+        File oldFile = new File(sourceDir);
+        File newFile = new File(targetDir, fileName);
+
+        try {
+            // Create the new File to copy into
+            boolean wasNewFileCreated = false;
+            if (newFile.createNewFile()) {
+                if (newFile.setWritable(true) && newFile.setReadable(true)) {
+                    wasNewFileCreated = true;
+                }
+            }
+
+            if (!wasNewFileCreated) {
+                throw new FileNotFoundException("Failed to copy document " + sourceDir +
+                        ". Could not create new file.");
+            }
+
+            // Copy the bytes into the new file
+            try (InputStream inStream = new FileInputStream(oldFile)) {
+                try (OutputStream outStream = new FileOutputStream(newFile)) {
+                    // Transfer bytes from in to out
+                    byte[] buf = new byte[4096]; // ideal range for network: 2-8k, disk: 8-64k
+                    int len;
+                    while ((len = inStream.read(buf)) > 0) {
+                        outStream.write(buf, 0, len);
+                    }
+                    outStream.flush();
+                    outStream.close();
+                    inStream.close();
+                }
+            }
+        } catch (IOException e) {
+            throw new FileNotFoundException("Failed to copy document: " + sourceDir +
+                    ". " + e.getMessage());
+        }
+        return newFile.getAbsolutePath();
     }
 
      public static String copyFile(String sourceDocumentId, String targetParentDocumentId)
