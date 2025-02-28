@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import android.graphics.PixelFormat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,17 +47,41 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import com.android.documentsui.R;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.LevelListDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.VectorDrawable;
 
 public class FileUtils {
 
-    public static final String PATH_ID_DESKTOP = "/mnt/sdcard/Desktop/";
+    public static final String DESKTOP = "Desktop";
+    public static final String PATH_ID_DESKTOP = "/mnt/sdcard/"+DESKTOP+"/";
 
     public static final String OPEN_DIR = "OPEN_DIR";
 
@@ -112,6 +137,8 @@ public class FileUtils {
 
     public static final String FILE_DESKTOP_NAME = "FILE_DESKTOP_NAME";
 
+    protected static final String TAG = "FileUtils";
+
 
    /**
      * 默认root需要查询的项
@@ -137,7 +164,14 @@ public class FileUtils {
         if(!file.exists()){
             file.mkdirs();
         }
-    }        
+    }    
+    
+    public static void createDesktopDir(String path){
+        File file = new File(path);
+        if(!file.exists()){
+            file.mkdirs();
+        }
+}    
 
     public static String joinNewline(String... args) {
         return TextUtils.join("\n", args);
@@ -237,7 +271,7 @@ public class FileUtils {
 
 
     public static  String renameFile(String documentId, String displayName) throws FileNotFoundException {
-        Log.i("bellaDoc", "renameFile   documentId: " + documentId + " , displayName: "+displayName);
+        Log.i("bella", "renameFile   documentId: " + documentId + " , displayName: "+displayName);
         if (displayName == null) {
             throw new FileNotFoundException("Failed to rename document, new name is null");
         }
@@ -286,10 +320,12 @@ public class FileUtils {
     }
 
     public static void includeFile(final MatrixCursor result, final File file) throws FileNotFoundException {
+       try {
         final MatrixCursor.RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, file.getAbsolutePath());
         row.add(Document.COLUMN_DISPLAY_NAME, file.getName());
         String mimeType = getDocumentType(file.getAbsolutePath());
+        Log.i(TAG,"includeFile mimeType: "+mimeType + ",file.getAbsolutePath() "+file.getAbsolutePath());
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
         int flags = file.canWrite()
                 ? Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_WRITE | Document.FLAG_SUPPORTS_RENAME
@@ -300,6 +336,9 @@ public class FileUtils {
         row.add(Document.COLUMN_FLAGS, flags);
         row.add(Document.COLUMN_SIZE, file.length());
         row.add(Document.COLUMN_LAST_MODIFIED, file.lastModified());
+       } catch (Exception e) {
+         e.printStackTrace();
+       }
     }
 
     public static void includeVolumesFile(final MatrixCursor result, final File file) throws FileNotFoundException {
@@ -308,17 +347,19 @@ public class FileUtils {
         if (uuid != null) {
             fileName = uuid;
         }
-        // Log.i("bellaDoc", "includeVolumesFile uuid " + uuid + ",fileName " + fileName);
+        // Log.i("bella", "includeVolumesFile uuid " + uuid + ",fileName " + fileName);
         final MatrixCursor.RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, file.getAbsolutePath());
         row.add(Document.COLUMN_DISPLAY_NAME, fileName);
         String mimeType = getDocumentType(file.getAbsolutePath());
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
+        Log.i(TAG,"includeVolumesFile mimeType: "+mimeType + ",file.getAbsolutePath() "+file.getAbsolutePath() + ",fileName "+fileName);
+
         int flags = file.canWrite()
                 ? Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_WRITE | Document.FLAG_SUPPORTS_RENAME
-                        | (mimeType.equals(Document.MIME_TYPE_DIR) ? Document.FLAG_DIR_SUPPORTS_CREATE : 0)
+                        | (mimeType !=null &&mimeType.equals(Document.MIME_TYPE_DIR) ? Document.FLAG_DIR_SUPPORTS_CREATE : 0)
                 : 0;
-        if (mimeType.startsWith("image/"))
+        if (mimeType !=null && mimeType.startsWith("image/"))
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         row.add(Document.COLUMN_FLAGS, flags);
         row.add(Document.COLUMN_SIZE, file.length());
@@ -351,7 +392,8 @@ public class FileUtils {
                 return mime;
             }
         }
-        return "vnd.android.document/directory";
+        String str  = getFileTyle(documentId);
+        return str;
     }
 
     public static  String readFile() {
@@ -418,10 +460,11 @@ public class FileUtils {
 
     public static String getLinuxHomeDir(){
        try {
-            String propertyValue = SystemProperties.get("waydroid.host_data_path");
+            // String propertyValue = SystemProperties.get("waydroid.host_data_path");
+            String propertyValue = SystemProperties.get("openfde.host_data_path");
             int len = findNthSlashIndex(propertyValue,3);
             String subPath = propertyValue.substring(0,len);
-            Log.i("bellaDoc","propertyValue "+propertyValue +",subPath "+subPath);
+            Log.i("bella","propertyValue "+propertyValue +",subPath "+subPath);
             return subPath;
        } catch (Exception e) {
          e.printStackTrace();
@@ -582,12 +625,12 @@ public class FileUtils {
         if (!folder.exists()) {
             boolean result = folder.mkdirs();
             if (result) {
-                Log.i("bellaDoc", "Folder created: " + folder.getAbsolutePath());
+                Log.i("bella", "Folder created: " + folder.getAbsolutePath());
             } else {
-                Log.e("bellaDoc", "Failed to create folder");
+                Log.e("bella", "Failed to create folder");
             }
         } else {
-            Log.i("bellaDoc", "Folder already exists");
+            Log.i("bella", "Folder already exists");
             newDirName =  getUniqueFileName(documentId,newDirName);
         }
         folder = new File(documentId,newDirName);
@@ -607,12 +650,12 @@ public static String newFile() {
         if (!folder.exists()) {
             boolean result = folder.mkdirs();
             if (result) {
-                Log.i("bellaDoc", "Folder created: " + folder.getAbsolutePath());
+                Log.i("bella", "Folder created: " + folder.getAbsolutePath());
             } else {
-                Log.e("bellaDoc", "Failed to create folder");
+                Log.e("bella", "Failed to create folder");
             }
         } else {
-            Log.i("bellaDoc", "file already exists");
+            Log.i("bella", "file already exists");
             newDocName =  getUniqueFileName(documentId,newDocName);
         }
         folder = new File(documentId,newDocName);
@@ -630,10 +673,10 @@ public static void copyFileToClipboard(Context context, Uri uri) {
     ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
     ClipData clip = ClipData.newUri(context.getContentResolver(), "File", uri);
     if (clip == null) {
-        Log.i("bellaDoc", "copyFileToClipboard........ clip is null ");
+        Log.i("bella", "copyFileToClipboard........ clip is null ");
     }
     clipboard.setPrimaryClip(clip);
-    Log.i("bellaDoc", "copyFileToClipboard  File copied to clipboard");
+    Log.i("bella", "copyFileToClipboard  File copied to clipboard");
 }
 
 public static Uri pasteFileFromClipboard(Context context) {
@@ -641,7 +684,7 @@ public static Uri pasteFileFromClipboard(Context context) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = clipboard.getPrimaryClip();
         if (clip == null) {
-            Log.i("bellaDoc", "pasteFileFromClipboard........ clip is null ");
+            Log.i("bella", "pasteFileFromClipboard........ clip is null ");
         }
         ClipData.Item item = clip.getItemAt(0);
         return item.getUri();
@@ -656,7 +699,7 @@ public static void cleanClipboard(Context context) {
     try {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
-            clipboard.setPrimaryClip(null); 
+            // clipboard.setPrimaryClip(null); 
             clipboard.clearPrimaryClip();
         }
     } catch (Exception e) {
@@ -759,11 +802,53 @@ public static String getDesktopFiles(){
   return null ;
 }
 
-public static void drawableToPng(Drawable drawable, String filePath) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        // 将Drawable内容画到Bitmap上
+public static void drawableToPng(Context context ,Drawable drawable, String filePath) {
+        Bitmap bitmapT = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(),  drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565);
+        
+        Bitmap bitmap;
+        if(drawable instanceof  AdaptiveIconDrawable){
+            AdaptiveIconDrawable adaptiveIconDrawable = (AdaptiveIconDrawable)drawable;
+            bitmapT = adaptiveIconToBitmap(adaptiveIconDrawable);
+            bitmapT  = scaleBitmap(bitmapT,48,48);
+            Bitmap b2 = vectorToBitmap(context, R.mipmap.bg_android);
+            b2  = scaleBitmap(b2,80,80);
+            bitmap = overlayBitmaps(b2,bitmapT);  
+        }else {
+            Log.i("bella","createAllAndroidIconToLinux drawable is not  AdaptiveIconDrawable....  ");
+            if(drawable instanceof BitmapDrawable){
+                Log.i("bella","createAllAndroidIconToLinux drawable 1111");
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                bitmapT = bitmapDrawable.getBitmap();
+                bitmapT  = scaleBitmap(bitmapT,48,48);
+                Bitmap b2 = vectorToBitmap(context, R.mipmap.bg_android);
+                b2  = scaleBitmap(b2,80,80);
+                bitmap = overlayBitmaps(b2,bitmapT);  
+            // }else if(drawable instanceof VectorDrawable){
+            // }else if(drawable instanceof StateListDrawable){
+            // }else if(drawable instanceof LayerDrawable){
+            // }else if(drawable instanceof LevelListDrawable){
+            // }else if(drawable instanceof ShapeDrawable){
+            // }else if(drawable instanceof GradientDrawable){
+            // }else if(drawable instanceof InsetDrawable){
+            // }else if(drawable instanceof RippleDrawable){
+            // }else if(drawable instanceof ColorDrawable){
+            // }else if(drawable instanceof AdaptiveIconDrawable){
+            }else{
+                Log.i("bella","createAllAndroidIconToLinux drawable cccc");
+                bitmap = bitmapT;
+            }
+            
+        }
+                
+        // bitmapT  = scaleBitmap(bitmapT,42,42);
+        // Bitmap b2 = vectorToBitmap(context, R.mipmap.bg_android);
+        // b2  = scaleBitmap(b2,80,80);
+        // Bitmap bitmap = overlayBitmaps(b2,bitmapT);  
+        
+        Bitmap mutableBitmap = bitmapT.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(mutableBitmap);
+        // Canvas canvas = new Canvas(bitmapT);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         // 保存Bitmap到PNG文件
@@ -787,6 +872,31 @@ public static void drawableToPng(Drawable drawable, String filePath) {
 
 }
 
+public static Bitmap vectorToBitmap(Context context, int drawableId) {
+    Drawable drawable = context.getResources().getDrawable(drawableId, null);
+    Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(bitmap);
+    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+    drawable.draw(canvas);
+    return bitmap;
+}
+
+public static  Bitmap overlayBitmaps(Bitmap bitmap1, Bitmap bitmap2) {
+    // 创建一个与第一个 Bitmap 相同大小的空白 Bitmap
+    Bitmap overlayBitmap = Bitmap.createBitmap(bitmap1.getWidth(), bitmap1.getHeight(), bitmap1.getConfig());
+    // 创建 Canvas，将第一个 Bitmap 作为底图
+    Canvas canvas = new Canvas(overlayBitmap);
+    canvas.drawBitmap(bitmap1, 0, 0, null);  // 将 bitmap1 绘制到 canvas 上
+    // 将第二个 Bitmap 绘制到 Canvas 上，叠加在第一个 Bitmap 上
+    canvas.drawBitmap(bitmap2, (bitmap1.getWidth()-bitmap2.getWidth())/2, (bitmap1.getHeight()-bitmap2.getHeight())/2, null);  // 将 bitmap2 绘制到 canvas 上
+    // 将叠加后的 Bitmap 设置到 ImageView
+    return overlayBitmap ;
+}
+
+public static  Bitmap scaleBitmap(Bitmap originalBitmap, int newWidth, int newHeight) {
+    return Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, true);
+}
+
 private static   List<ApplicationInfo>   getAllApp(Context context) {
     LauncherApps launcherApps = (LauncherApps)context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
     UserManager userManager = (UserManager)context.getSystemService(Context.USER_SERVICE);
@@ -798,46 +908,86 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
 
     PackageManager packageManager = context.getPackageManager();
     List<ApplicationInfo>  listApps = new ArrayList<>();
-    Log.i("bellaDoc","getAllApp list  size:   " + list.size());
+    Log.i("bella","getAllApp list  size:   " + list.size());
     for (LauncherActivityInfo li : list){
         String appName = packageManager.getApplicationLabel(li.getApplicationInfo()).toString();
         Drawable icon = packageManager.getApplicationIcon(li.getApplicationInfo());
         String packageName = li.getApplicationInfo().packageName ;
-        // Log.i("bellaDoc","getAllApp list  li:  getName: " + li.getName() +"  ,appName: "+appName + ",packageName "+packageName + " ,name : "+li.getApplicationInfo().name);
+        // Log.i("bella","getAllApp list  li:  getName: " + li.getName() +"  ,appName: "+appName + ",packageName "+packageName + " ,name : "+li.getApplicationInfo().name);
         listApps.add(li.getApplicationInfo());
     }
     return listApps;
 }
 
- public static void  createAllAndroidIconToLinux(Context context){
+public static String getMD5(String input) {
+    try {
+        // 创建一个 MessageDigest 实例，指定使用 MD5 算法
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        // 计算 MD5 值，得到一个字节数组
+        byte[] hashBytes = digest.digest(input.getBytes());
+
+        // 转换字节数组为 16 进制字符串
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashBytes) {
+            String hex = Integer.toHexString(0xFF & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return "a"+hexString.toString();
+    } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace();
+    }
+    return null;
+    }
+
+ public static void  createAllAndroidIconToLinux(Context context,String packageName){
     PackageManager packageManager = context.getPackageManager();
-    List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
-    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+".openfde/pic/";
+    String rootPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+ "/.local/share/icons/"; 
 
-    apps.addAll(getAllApp(context));
-
-    // Log.i("bellaDoc","createAllAndroidIconToLinux rootPath : "+rootPath + ",apps "+apps.size());
-
-    for (ApplicationInfo appInfo : apps) {
+   
+    if("".equals(packageName)){
+        List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
+        apps.addAll(getAllApp(context));
+        for (ApplicationInfo appInfo : apps) {
+            try {
+                // if(appInfo.name !=null){
+                    Drawable icon = packageManager.getApplicationIcon(appInfo);
+                    String appName = packageManager.getApplicationLabel(appInfo).toString();
+                    String md5 = appInfo.packageName;//getMD5(appInfo.packageName);
+    
+                    String path = rootPath+md5+".png";
+                    Log.i("bella","createAllAndroidIconToLinux md5 : "+md5+",path: "+path +",packName: "+appInfo.packageName);
+                    File file = new File(path);
+                    if(!file.exists() && !path.contains(" ") ){
+                        drawableToPng(context,icon,path);
+                    }    
+                // }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }else{
         try {
-            // if(appInfo.name !=null){
-                Drawable icon = packageManager.getApplicationIcon(appInfo);
-                String appName = packageManager.getApplicationLabel(appInfo).toString();
-                String packageName = appInfo.packageName ;
+            ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
+            Drawable icon = packageManager.getApplicationIcon(appInfo);
+            String appName = packageManager.getApplicationLabel(appInfo).toString();
+            String md5 = appInfo.packageName;// getMD5(appInfo.packageName);
 
-                String path = rootPath+appName+".png";
-                Log.i("bellaDoc","createAllAndroidIconToLinux appName : "+appName+",path: "+path +",packageName: "+packageName);
-                File file = new File(path);
-                if(!file.exists() && !path.contains(" ") ){
-                    drawableToPng(icon,path);
-                }    
-            // }
+            String path = rootPath+md5+".png";
+            Log.i("bella","createAllAndroidIconToLinux md5 : "+md5+",path: "+path +",packageName: "+packageName +",appName: "+appName);
+            File file = new File(path);
+            if(!file.exists() && !path.contains(" ") ){
+                drawableToPng(context,icon,path);
+            }    
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
  }
+
 
     public static boolean isAppInstalled(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
@@ -848,5 +998,172 @@ private static   List<ApplicationInfo>   getAllApp(Context context) {
             return false; // app not install
         }
     }
+
+    public static void setSystemProperty(String key, String value) {
+        try {
+            Class<?> systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Method setMethod = systemPropertiesClass.getDeclaredMethod("set", String.class, String.class);
+            setMethod.invoke(null, key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Bitmap addTextWatermark(Bitmap source, String watermarkText) {
+        int width = source.getWidth();
+        int height = source.getHeight();
+
+        // 创建一个新的Bitmap，大小与原始Bitmap相同
+        Bitmap watermarkBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        // 创建画布并将原图绘制到画布上
+        Canvas canvas = new Canvas(watermarkBitmap);
+        canvas.drawBitmap(source, 0, 0, null);
+
+        // 设置水印文本样式
+        Paint paint = new Paint();
+        paint.setColor(Color.BLUE);  // 设置水印文本颜色
+        //paint.setAlpha(100);  // 设置透明度，100代表半透明
+        paint.setTextSize(14f);  // 设置文本大小
+        // paint.setTypeface(Typeface.DEFAULT_BOLD);
+        paint.setAntiAlias(true);  // 设置抗锯齿
+
+        // 获取水印文本的边界框，用于计算文本位置
+        Rect textBounds = new Rect();
+        paint.getTextBounds(watermarkText, 0, watermarkText.length(), textBounds);
+        int textWidth = textBounds.width();
+        int textHeight = textBounds.height();
+
+        // 设置文本的位置（右下角）
+        float x = (width - textWidth)/2;//width - textWidth - 20f;  // 距离右侧20像素
+        float y = (height - textHeight)/2;//height - textHeight - 20f;  // 距离底部20像素
+
+        // 在Bitmap上绘制文本水印
+        canvas.drawText(watermarkText, x, y, paint);
+
+        return watermarkBitmap;
+    }
+
+     // 在Bitmap上添加图片水印
+     private static Bitmap addImageWatermark(Bitmap source, int watermarkResId, Context context) {
+        int width = source.getWidth();
+        int height = source.getHeight();
+
+        // 创建一个新的Bitmap，大小与原始Bitmap相同
+        Bitmap watermarkBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        // 创建画布并将原图绘制到画布上
+        Canvas canvas = new Canvas(watermarkBitmap);
+        canvas.drawBitmap(source, 0, 0, null);
+
+        // 获取水印图片
+        Bitmap watermarkImage = BitmapFactory.decodeResource(context.getResources(), watermarkResId);
+
+        // 设置水印图片的大小（可选）
+        int watermarkWidth = width / 4;  // 水印宽度为原图的1/4
+        int watermarkHeight = watermarkImage.getHeight() * watermarkWidth / watermarkImage.getWidth();  // 保持宽高比
+
+        // 设置水印图片的位置（右下角）
+        float left = width - watermarkWidth - 20f;  // 距离右侧20像素
+        float top = height - watermarkHeight - 20f;  // 距离底部20像素
+
+        // 在Bitmap上绘制水印图片
+        canvas.drawBitmap(Bitmap.createScaledBitmap(watermarkImage, watermarkWidth, watermarkHeight, true), left, top, null);
+
+        return watermarkBitmap;
+    }
     
+
+    // public static void createLinuxDesktopFile(String title ,String packageName,int itemType ){
+    //     createDesktopDir(PATH_ID_DESKTOP);
+    //         try{    
+    //             if(title.contains(".desktop") || itemType == 8 || itemType == 9){
+    //                 return ;
+    //             }
+    
+    //             String documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/桌面/";  
+    //             File ff = new File(documentId);
+    //             if(!ff.exists()){
+    //                 documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/Desktop/";  
+    //             }
+
+    //             String md5 = getMD5(packageName);
+    //             String pathDesktop = documentId+""+ md5+"_fde.desktop";
+    //             File file = new File(pathDesktop);
+    //             if(file.exists()){
+    //                 Log.i(TAG,"bella...pathDesktop is exists :  "+pathDesktop);
+    //                 return ;
+    //             }
+    //             Path desktopFilePath = Paths.get(pathDesktop);
+
+    //             String picPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/.local/share/icons/"+md5+".png" ;
+    //             File filePic = new File(picPath);
+    //             String homeDir = getLinuxHomeDir();
+    //             String linuxPath = homeDir+"/.local/share/icons/"+md5+".png";
+    //             Log.i(TAG,"bella...homeDir :  "+homeDir + ",linuxPath: "+linuxPath);
+    //             File linuxPic = new File(linuxPath);
+    //             if(!linuxPic.exists()){
+    //                 Log.i(TAG,"bella...insert.............md5: "+md5 +  ", linuxPath "+linuxPath + ",packageName:  "+packageName);
+    //             }else{
+    //                 //if pic exists ,return 
+    //             }    
+    
+    //             List<String> lines = List.of(
+    //                 "[Desktop Entry]",
+    //                 "Type=Application",
+    //                 "Name="+title,
+    //                 "Name[zh_CN]="+title,
+    //                 "Categories="+itemType,
+    //                 "Exec=fde_launch "+packageName,
+    //                 "Icon="+linuxPic
+    //             );
+         
+    //             // 写入.desktop文件
+    //             Files.write(desktopFilePath, lines, StandardOpenOption.CREATE);
+    //             file.setExecutable(true);
+ 
+    //         }catch(Exception e){
+    //             e.printStackTrace();
+    //         }
+    // }
+
+    public static Bitmap adaptiveIconToBitmap(AdaptiveIconDrawable adaptiveIconDrawable) {
+        int width = adaptiveIconDrawable.getIntrinsicWidth();
+        int height = adaptiveIconDrawable.getIntrinsicHeight();
+    
+        // 创建一个与 AdaptiveIcon 大小相同的 Bitmap
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+    
+        // 获取前景和背景
+        Drawable background = adaptiveIconDrawable.getBackground();
+        Drawable foreground = adaptiveIconDrawable.getForeground();
+    
+        // 绘制背景和前景
+        if (background != null) {
+            background.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            background.draw(canvas);
+        }else {
+            Log.i("bella","createAllAndroidIconToLinux background is null ...  ");
+        }
+        if (foreground != null) {
+            foreground.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            foreground.draw(canvas);
+        }else {
+            Log.i("bella","createAllAndroidIconToLinux  background is null ....  ");
+        }
+    
+        return bitmap;
+    }
+
+
+    public static boolean containsChinese(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        //is Chinese
+        String regex = "[\\u4e00-\\u9fa5]";
+        return str.matches(".*" + regex + ".*");
+    }
+
 }

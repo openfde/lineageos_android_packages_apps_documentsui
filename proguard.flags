@@ -28,3 +28,4 @@
 # Needed for zip file interactions
 -if class * extends org.apache.commons.compress.archivers.zip.ZipExtraField
 -keep class <1> { <init>(); }
+-keep class com.android.documentsui.receiver.** { *; }

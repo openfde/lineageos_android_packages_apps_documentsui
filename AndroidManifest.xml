@@ -73,16 +73,12 @@
         android:appCategory="productivity"
         android:fullBackupOnly="false"
         android:crossProfile="true">
-        <activity
-            android:name=".ui.OpenLinuxAppActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/DialogActivityTheme"
-            android:exported="false" />
+    
         <activity
             android:name=".ui.RenameDialogActivity"
             android:theme="@style/DialogActivityTheme"
             android:launchMode="singleTask"
-            android:exported="false" />
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.backup.api_key"
@@ -127,6 +123,8 @@
             android:icon="@drawable/launcher_icon"
             android:theme="@android:style/Theme.NoDisplay">
         </activity>
+        
+        </activity>
 
         <activity
             android:name=".inspector.InspectorActivity"
@@ -155,6 +153,9 @@
             android:documentLaunchMode="always"
             android:exported="true"
             android:theme="@style/LauncherTheme">
+            <layout
+                android:minHeight="600dp"
+                android:minWidth="640dp" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -254,6 +255,14 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PRE_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.DesktopFileUpdatePackageReceiver"
+         android:enabled="true"
+         android:exported="true">
+            <intent-filter>
+                <action android:name="com.fde.desktop.file.update"  />
             </intent-filter>
         </receiver>
 

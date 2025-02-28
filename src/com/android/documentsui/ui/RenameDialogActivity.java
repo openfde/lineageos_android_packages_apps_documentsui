@@ -34,6 +34,9 @@ public class RenameDialogActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // Window window = getWindow();
+        // window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        // window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         setTitle("");
         DocumentsApplication.getInstance().setCurrentActivity(this);
         oldFileName = getIntent().getStringExtra("oldFileName");

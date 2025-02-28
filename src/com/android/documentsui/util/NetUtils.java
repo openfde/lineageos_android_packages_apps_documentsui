@@ -12,15 +12,18 @@ import java.nio.charset.StandardCharsets;
 
 import android.util.Log;
 
-
+import org.json.JSONArray;
+import org.json.JSONObject;
+import com.android.documentsui.provider.FileUtils;
 
 
 public class NetUtils {
+    protected static final String TAG = "NetUtils";
 
     public static String getLinuxApp() {
         try {
             URL url = new URL(
-                    "http://127.0.0.1:18080/api/v1/apps?page=" + 1 + "&page_size=" + 100);
+                    "http://127.0.0.1:18080/api/v1/apps?page=" + 1 + "&page_size=" + 200);
             HttpURLConnection connection = (HttpURLConnection) url
                     .openConnection();
 
@@ -46,19 +49,32 @@ public class NetUtils {
             }
             connection.disconnect();
 
-            // Log.i("bella","getLinuxApp res "+res);
-            /*Map<String, Object> mpRes = new Gson().fromJson(res, new TypeToken<Map<String, Object>>() {
-            }.getType());
-            Map<String, Object> mpData = (Map<String, Object>) mpRes.get("data");
-            List<Map<String, Object>> responseList = (List<Map<String, Object>>) mpData.get("data");
-            if (responseList != null) {
-                Log.i("bella", "getLinuxApp responseList " + responseList.size());
-                for (Map<String, Object> mp : responseList) {
-                    // Log.i("bella","getLinuxApp IconPath " + mp.get("IconPath") + " ,Path : "+mp.get("Path")+ " ,IconType : "+mp.get("IconType")+ " ,Name : "+mp.get("Name"));
+            // Log.i(TAG,"getLinuxApp res "+res);
+            try {
+                JSONObject jsonResponse = new JSONObject(res);
+                JSONObject mpRes = jsonResponse.getJSONObject("data");
+                // 获取内层的 "data" 数组
+                JSONArray responseArray = mpRes.getJSONArray("data");
+
+                // 遍历数组并解析每个对象
+                for (int i = 0; i < responseArray.length(); i++) {
+                    JSONObject item = responseArray.getJSONObject(i);
+                    String name = item.getString("Name").toString().replaceAll(" ", "_");;
+                    String exec = item.getString("Path").replaceAll(" %F", "").replaceAll(" %u", "").replaceAll(" %U", "").replaceAll(" ", "");
+                    String IconPath = item.getString("IconPath");
+                    String key = name ;
+                    if(FileUtils.containsChinese(name)){
+                       int lastIndex = exec.lastIndexOf('/');
+                       if(lastIndex > 0){
+                          key = exec.substring(lastIndex+1);
+                       }
+                    }
+                    Log.i(TAG,"FastBitmapDrawable_key: "+key + ",IconPath: "+IconPath + ",exec: "+exec+",name: "+name);
+                    FileUtils.setSystemProperty(key,IconPath);
                 }
-            }*/
-
-
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return res;
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,7 +103,7 @@ public class NetUtils {
 
             // POST参数
             String postParameters = "App=" + name + "&Path=" + exec + "&Display=:0";
-            Log.i("bellaDoc", "gotoLinuxApp postParameters: " + postParameters);
+            Log.i("bella", "gotoLinuxApp postParameters: " + postParameters);
             // 获取输出流并写入参数
             try (OutputStream os = connection.getOutputStream()) {
                 os.write(postParameters.getBytes(StandardCharsets.UTF_8));
@@ -95,7 +111,7 @@ public class NetUtils {
 
             // 获取响应码
             int responseCode = connection.getResponseCode();
-            Log.i("bellaDoc", "gotoLinuxApp Response Code: " + responseCode);
+            Log.i("bella", "gotoLinuxApp Response Code: " + responseCode);
             // 根据需要处理响应内容
             // ...
 
@@ -136,14 +152,20 @@ public class NetUtils {
                 reader.close();
             }
             connection.disconnect();
-/*
+
             Log.i("bella", "getFdeMode res " + res);
-            Map<String, Object> mpRes = new Gson().fromJson(res, new TypeToken<Map<String, Object>>() {
-            }.getType());
-            Map<String, Object> mpData = (Map<String, Object>) mpRes.get("Data");
-            return  mpData.get("FDEMode").toString();
-			*/
-			return res ;
+            try {
+                JSONObject jsonResponse = new JSONObject(res);
+                JSONObject mpData = jsonResponse.getJSONObject("Data");
+                return mpData.getString("FDEMode");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+            // Map<String, Object> mpRes = new Gson().fromJson(res, new TypeToken<Map<String, Object>>() {
+            // }.getType());
+            // Map<String, Object> mpData = (Map<String, Object>) mpRes.get("Data");
+            // return  mpData.get("FDEMode").toString();
         } catch (IOException e) {
             e.printStackTrace();
         }

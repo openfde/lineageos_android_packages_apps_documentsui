@@ -347,6 +347,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
         return derivedType == TYPE_IMAGES
                 || derivedType == TYPE_VIDEO
                 || derivedType == TYPE_AUDIO
+                || derivedType == TYPE_DOWNLOADS
                 || derivedType == TYPE_RECENTS
                 || derivedType == TYPE_DOCUMENTS;
     }

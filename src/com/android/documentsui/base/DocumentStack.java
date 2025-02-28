@@ -125,12 +125,16 @@ public class DocumentStack implements Durable, Parcelable {
     }
 
     public void push(DocumentInfo info) {
+      try {
         checkArgument(!mList.contains(info));
         if (DEBUG) {
             Log.d(TAG, "Adding doc to stack: " + info);
         }
         mList.addLast(info);
         mStackTouched = true;
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     public DocumentInfo pop() {

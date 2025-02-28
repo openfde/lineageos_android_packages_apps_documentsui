@@ -17,9 +17,9 @@ import android.content.ComponentName;
 
 
 import com.android.documentsui.base.Providers;
+import com.android.documentsui.dirlist.AppsRowItemData.AppData;
 import com.android.documentsui.files.FilesActivity;
 import com.android.documentsui.provider.FileUtils;
-import com.android.documentsui.ui.OpenLinuxAppActivity;
 import com.android.documentsui.ui.RenameDialogActivity;
 import com.android.documentsui.util.NetUtils;
 import com.android.documentsui.util.SPUtils;
@@ -50,9 +50,8 @@ public class IpcService extends Service {
     public void onCreate() {
         super.onCreate();
         context = this;
-        Log.i(TAG,"onCreate............1");
         DocumentsApplication.getInstance().setIpcService(this);
-        Log.i(TAG,"onCreate............2");
+      
     }
 
 
@@ -61,7 +60,6 @@ public class IpcService extends Service {
 
         @Override
         public void register( IDataChangedCallback callback){
-             Log.i(TAG,"register............2");
              dataChangedCallback = callback;   
         }
 
@@ -71,30 +69,30 @@ public class IpcService extends Service {
 
             if(FileUtils.OPEN_FILE.equals(method)){
                 finishDialog();
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
-                Uri uri = Uri.parse(path);
-                String mimeType = FileUtils.getMimeType(new File(Providers.PATH_ID_DESKTOP+params));
-                Log.i(TAG,"basicIpcMethon.....path "+path + ",mimeType "+mimeType);
-                if (mimeType == null) {
-                    if (params.contains(".txt") || params.contains(".json")  || params.contains(".md")) {
-                        intent.setDataAndType(uri, "text/plain");
-                    } else {
-                        intent.setDataAndType(uri, "application/*");
-                    }
-                } else if (mimeType.contains("image")) {
-                    intent.setDataAndType(uri, "image/*");
-                }else if(mimeType.contains("plain") || mimeType.contains("json")){
-                    intent.setDataAndType(uri, "text/plain");
-                }else{
-                    intent.setDataAndType(uri, "application/*");
-                }
-                intent.putExtra("docTitle",params);
-                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
-                flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
-                intent.setFlags(flags);
-                context.startActivity(intent);
+                // Intent intent = new Intent(Intent.ACTION_VIEW);
+                // String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
+                // Uri uri = Uri.parse(path);
+                // String mimeType = FileUtils.getMimeType(new File(Providers.PATH_ID_DESKTOP+params));
+                // Log.i(TAG,"basicIpcMethon.....path "+path + ",mimeType "+mimeType);
+                // if (mimeType == null) {
+                //     if (params.contains(".txt") || params.contains(".json")  || params.contains(".md")) {
+                //         intent.setDataAndType(uri, "text/plain");
+                //     } else {
+                //         intent.setDataAndType(uri, "application/*");
+                //     }
+                // } else if (mimeType.contains("image")) {
+                //     intent.setDataAndType(uri, "image/*");
+                // }else if(mimeType.contains("text") || mimeType.contains("plain") || mimeType.contains("json")){
+                //     intent.setDataAndType(uri, "text/plain");
+                // }else{
+                //     intent.setDataAndType(uri, "application/*");
+                // }
+                // intent.putExtra("docTitle",params);
+                // int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                // flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                // flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                // intent.setFlags(flags);
+                // context.startActivity(intent);
             }else if(FileUtils.OPEN_DIR.equals(method)){
                 finishDialog();
                 //   Intent intent = new Intent();
@@ -109,36 +107,13 @@ public class IpcService extends Service {
                 //   startActivity(intent);
 
              try {
-                Intent intent = new Intent();
-                intent.setClass(context, FilesActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("childPath",params);
+                // Intent intent = new Intent();
+                // intent.setClass(context, FilesActivity.class);
+                // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                // intent.putExtra("childPath",params);
                 SPUtils.putDocInfo(context,"getPath",FileUtils.PATH_ID_DESKTOP);
-                context.startActivity(intent);
+                // context.startActivity(intent);
 
-                // // ActivityOptions options = ActivityOptions.makeBasic();
-                // // options.setPendingIntentBackgroundActivityStartMode(ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
-                // // PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE, options.toBundle());
-                // // pendingIntent.send();
-
-                // // Intent intent = new Intent(this, MyActivity.class);
-                // PendingIntent pendingIntent ;
-
-                // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                //     pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-                // } else {
-                //     pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-                // }
-
-        
-                // NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel_id")
-                //         .setContentTitle("My Notification")
-                //         .setContentText("Click to launch Activity")
-                //         .setContentIntent(pendingIntent)
-                //         .setSmallIcon(R.drawable.ic_doc_apk);
-        
-                // NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                // notificationManager.notify(1, builder.build());
              } catch (Exception e) {
                 e.printStackTrace();
              }
@@ -153,27 +128,19 @@ public class IpcService extends Service {
                 if(arrParams.length > 3){
                     fileName = arrParams[3];
                 }
-
+                String path = "content://" + Providers.AUTHORITY_STORAGE + "/document/" + Providers.ROOT_ID_DESKTOP + "%2f" + fileName;
                 if (!"open".equals(type)) {
-                    new AsyncTask<Void, Void, String>() {
-                        @Override
-                        protected String doInBackground(Void... voids) {
-                            return NetUtils.getFdeMode();
-                        }
-
-                        @Override
-                        protected void onPostExecute(String result) {
-                            super.onPostExecute(result);
-                            Intent intent = new Intent();
-                            intent.setClass(context, OpenLinuxAppActivity.class);
-                            intent.putExtra("openParams", params);
-                            intent.putExtra("fdeModel", result);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
-                        }
-                    }.execute();
+                    Uri uri = Uri.parse(path);
+                    Intent targetIntent = new Intent(Intent.ACTION_VIEW);
+                    targetIntent.setDataAndType(uri, "application/vnd.desktop");
+                    targetIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Intent chooser = Intent.createChooser(targetIntent, "选择应用打开desktop文件");
+                    int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                    flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                    flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                    chooser.setFlags(flags);
+                    context.startActivity(chooser);
                 } else {
-                    String path = "content://" + Providers.AUTHORITY_STORAGE + "/document/" + Providers.ROOT_ID_DESKTOP + "%2f" + fileName;
                     Log.i(TAG, "bellaDoc fileName: " + fileName + "   ,path : "+path);
                     Uri uri = Uri.parse(path);
                     Intent shareIntent = new Intent(Intent.ACTION_VIEW);
@@ -192,7 +159,7 @@ public class IpcService extends Service {
                 }
             } else if (FileUtils.DELETE_FILE.equals(method)) {
                 FileUtils.deleteFiles(params);
-                // gotoClientApp("DELETE");
+                gotoClientApp("DELETE_FILE","");
             }else if(FileUtils.NEW_FILE.equals(method)){
                 String fileName = FileUtils.newFile();
                 gotoClientApp("NEW_FILE",fileName);
@@ -272,7 +239,7 @@ public class IpcService extends Service {
             }else if(FileUtils.OP_INIT.equals(method)) {
                 FileUtils.createDesktopDir();
             }else if(FileUtils.OP_CREATE_ANDROID_ICON.equals(method)) {
-                FileUtils.createAllAndroidIconToLinux(context);
+                FileUtils.createAllAndroidIconToLinux(context,params);
             }else if(FileUtils.OP_CREATE_LINUX_ICON.equals(method)) {
                 new Thread(new Runnable() {
                     @Override
