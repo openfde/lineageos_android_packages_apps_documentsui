@@ -25,7 +25,7 @@
     <item>
         <selector>
             <item app:state_highlighted="true">
-                <color android:color="?android:attr/colorControlHighlight"/>
+                <color android:color="#fff"/>
             </item>
             <item
                 app:state_highlighted="false"

@@ -416,6 +416,7 @@ public class RootsFragment extends Fragment {
         RootInfo pictureInfo = null;
         RootInfo videoInfo = null;
         RootInfo downloadInfo = null;
+        RootInfo desktopInfo = null;
 
         for (final RootInfo root : roots) {
             final RootItem item;
@@ -432,6 +433,7 @@ public class RootsFragment extends Fragment {
                 pictureInfo = RootInfo.copyRootInfo(root);
                 videoInfo = RootInfo.copyRootInfo(root);
                 downloadInfo = RootInfo.copyRootInfo(root);
+                desktopInfo = RootInfo.copyRootInfo(root);
                 item = new RootItem(root, mActionHandler, maybeShowBadge);
                 if (item.title.equals(
                         Settings.Global.getString(getContext().getContentResolver(), Settings.Global.DEVICE_NAME))) {
@@ -454,6 +456,11 @@ public class RootsFragment extends Fragment {
         }
 
         if (openQuickFlag == 1) {
+            desktopInfo.documentId = desktopInfo.rootId = Providers.ROOT_ID_DESKTOP;
+            desktopInfo.title = getString(R.string.fde_desktop);
+            desktopInfo.derivedIcon = R.mipmap.icon_desktop;
+            otherProviders.add(new RootItem(desktopInfo, mActionHandler, maybeShowBadge));
+
             musicInfo.documentId = musicInfo.rootId = Providers.ROOT_ID_AUDIO_NEW;
             musicInfo.title = getString(R.string.fde_music);
             musicInfo.derivedIcon = R.mipmap.icon_audio;

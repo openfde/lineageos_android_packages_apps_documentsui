@@ -586,7 +586,8 @@
 
     <!-- Accessibility announcement when switching to list mode of files and directories shown. [CHAR_LIMIT=100] -->
     <string name="list_mode_showing">Showing in list mode.</string>
-<string name="fde_music">Music</string>
+    <string name="fde_desktop">Desktop</string>
+    <string name="fde_music">Music</string>
     <string name="fde_documents">Documents</string>
     <string name="fde_downloads">Downloads</string>
     <string name="fde_videos">Videos</string>
