@@ -31,8 +31,7 @@
         android:layout_height="@dimen/apps_row_app_icon_size"
         android:layout_marginTop="@dimen/apps_row_app_icon_margin_top"
         android:layout_marginBottom="@dimen/apps_row_app_icon_margin_bottom"
-        android:layout_marginStart="@dimen/apps_row_app_icon_margin_horizontal"
-        android:layout_marginEnd="@dimen/apps_row_app_icon_margin_horizontal"/>
+        android:layout_marginStart="@dimen/apps_row_app_icon_margin_horizontal"/>
 
     <TextView
         android:id="@android:id/title"
@@ -43,7 +42,7 @@
         android:textAppearance="@style/AppsItemText"
         android:maxLines="1"
         android:ellipsize="end"
-        android:gravity="center"/>
+        android:gravity="center|left"/>
 
     <TextView
         android:id="@+id/summary"
@@ -54,6 +53,6 @@
         android:textAppearance="@style/AppsItemSubText"
         android:maxLines="1"
         android:ellipsize="end"
-        android:gravity="center"/>
+        android:gravity="center|left"/>
 
 </LinearLayout>

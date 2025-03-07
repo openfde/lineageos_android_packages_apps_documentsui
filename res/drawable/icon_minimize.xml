@@ -10,10 +10,9 @@
       <clip-path
           android:pathData="M6,6h16v16h-16z"/>
       <path
-          android:pathData="M10.939,19L11.47,18.47L13.97,15.97L15.939,14L13.97,12.03L11.47,9.53L10.939,9L12,7.939L12.53,8.47L17.241,13.18Q17.578,13.517 17.578,14Q17.578,14.483 17.241,14.82L15.03,17.03L12.53,19.53L12,20.061L10.939,19Z"
-          android:fillColor="#000000"
-          android:fillAlpha="0.25"
-          android:fillType="evenOdd"/>
+          android:pathData="M9.75,14L18.25,14A0.75,0.75 0,0 1,19 14.75L19,14.75A0.75,0.75 0,0 1,18.25 15.5L9.75,15.5A0.75,0.75 0,0 1,9 14.75L9,14.75A0.75,0.75 0,0 1,9.75 14z"
+          android:fillColor="#262626"
+          android:fillAlpha="0.7"/>
     </group>
   </group>
 </vector>

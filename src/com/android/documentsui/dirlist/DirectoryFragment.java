@@ -878,7 +878,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             return 1;
         }
 
-        int cellWidth = getScaledSize(R.dimen.grid_width);
+        int cellWidth = getScaledSize(R.dimen.grid_bg_width);
         int cellMargin = 2 * getScaledSize(R.dimen.grid_item_margin);
         int viewPadding =
                 (int) ((mRecView.getPaddingLeft() + mRecView.getPaddingRight()) * mLiveScale);

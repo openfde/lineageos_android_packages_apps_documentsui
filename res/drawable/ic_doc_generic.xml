@@ -1,24 +1,67 @@
-<!--
-Copyright (C) 2015 The Android Open Source Project
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:width="24dp"
-        android:height="24dp"
-        android:viewportWidth="24.0"
-        android:viewportHeight="24.0">
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+  <group>
+    <clip-path
+        android:pathData="M10.667,0L53.333,0A10.667,10.667 0,0 1,64 10.667L64,53.333A10.667,10.667 0,0 1,53.333 64L10.667,64A10.667,10.667 0,0 1,0 53.333L0,10.667A10.667,10.667 0,0 1,10.667 0z"/>
     <path
-        android:fillColor="#FF737373"
-        android:pathData="M6 2c-1.1 0,-1.99.9,-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2,-.9 2,-2V8l-6,-6H6zm7 7V3.5L18.5 9H13z"/>
+        android:pathData="M12,51C12,53.761 14.239,56 17,56L47,56C49.761,56 52,53.761 52,51L52,21.87C52,21.595 51.887,21.333 51.688,21.144L44.861,14.671C44.859,14.668 44.855,14.665 44.853,14.662L38,8L32,8L17,8C14.239,8 12,10.239 12,13L12,51Z">
+      <aapt:attr name="android:fillColor">
+        <gradient 
+            android:startX="32"
+            android:startY="8"
+            android:endX="32"
+            android:endY="56"
+            android:type="linear">
+          <item android:offset="0" android:color="#FFF2F4F7"/>
+          <item android:offset="1" android:color="#FFD6D9E0"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+    <group>
+      <clip-path
+          android:pathData="M12,51C12,53.761 14.239,56 17,56L47,56C49.761,56 52,53.761 52,51L52,21.87C52,21.595 51.887,21.333 51.688,21.144L44.861,14.671C44.859,14.668 44.855,14.665 44.853,14.662L38,8L32,8L17,8C14.239,8 12,10.239 12,13L12,51Z"/>
+      <path
+          android:pathData="M12,51C12,53.761 14.239,56 17,56L47,56C49.761,56 52,53.761 52,51L52,21.87C52,21.595 51.887,21.333 51.688,21.144L44.861,14.671C44.859,14.668 44.855,14.665 44.853,14.662L38,8L32,8L17,8C14.239,8 12,10.239 12,13L12,51Z">
+        <aapt:attr name="android:fillColor">
+          <gradient 
+              android:startX="32"
+              android:startY="8"
+              android:endX="32"
+              android:endY="56"
+              android:type="linear">
+            <item android:offset="0" android:color="#FFEDEFF2"/>
+            <item android:offset="1" android:color="#FFD6D9E0"/>
+          </gradient>
+        </aapt:attr>
+      </path>
+      <path
+          android:pathData="M11.4,51Q11.4,53.32 13.04,54.96Q14.68,56.6 17,56.6L47,56.6Q49.319,56.6 50.96,54.96Q52.6,53.32 52.6,51L52.6,21.87Q52.6,21.182 52.101,20.709L45.274,14.236L45.272,14.233L45.269,14.231L38.243,7.4L17,7.4Q14.68,7.4 13.04,9.04Q11.4,10.68 11.4,13L11.4,51ZM17,56C14.239,56 12,53.761 12,51L12,13C12,10.239 14.239,8 17,8L38,8L44.853,14.662C44.855,14.665 44.859,14.668 44.861,14.671L51.688,21.144C51.887,21.333 52,21.595 52,21.87L52,51C52,53.761 49.761,56 47,56L17,56Z"
+          android:fillColor="#000000"
+          android:fillAlpha="0.06"
+          android:fillType="evenOdd"/>
+      <path
+          android:pathData="M38,17C38,19.761 40.239,22 43,22L53,22L38,7L38,17Z">
+        <aapt:attr name="android:fillColor">
+          <gradient 
+              android:startX="45.5"
+              android:startY="7"
+              android:endX="45.5"
+              android:endY="22"
+              android:type="linear">
+            <item android:offset="0" android:color="#FFE3E6EB"/>
+            <item android:offset="1" android:color="#FFD9DCE3"/>
+          </gradient>
+        </aapt:attr>
+      </path>
+      <path
+          android:pathData="M37.5,5.793L37.5,17Q37.5,19.278 39.111,20.889Q40.722,22.5 43,22.5L54.207,22.5L37.5,5.793ZM43,22L53,22L52.5,21.5L38.5,7.5L38,7L38,17C38,19.761 40.239,22 43,22Z"
+          android:fillColor="#000000"
+          android:fillAlpha="0.03"
+          android:fillType="evenOdd"/>
+    </group>
+  </group>
 </vector>

@@ -207,25 +207,25 @@ final class GridDocumentHolder extends DocumentHolder {
 
         // If file is partial, we want to show summary field as that's more relevant than fileSize
         // and date
-        if (mDoc.isPartial()) {
-            final String docSummary = getCursorString(cursor, Document.COLUMN_SUMMARY);
-            mDetails.setVisibility(View.VISIBLE);
-            mDate.setText(null);
-            mDetails.setText(docSummary);
-        } else {
-            if (mDoc.lastModified == -1) {
-                mDate.setText(null);
-            } else {
-                mDate.setText(Shared.formatTime(mContext, mDoc.lastModified));
-            }
-
-            final long docSize = getCursorLong(cursor, Document.COLUMN_SIZE);
-            if (mDoc.isDirectory() || docSize == -1) {
-                mDetails.setVisibility(View.GONE);
-            } else {
-                mDetails.setVisibility(View.VISIBLE);
-                mDetails.setText(Formatter.formatFileSize(mContext, docSize));
-            }
-        }
+//        if (mDoc.isPartial()) {
+//            final String docSummary = getCursorString(cursor, Document.COLUMN_SUMMARY);
+//            mDetails.setVisibility(View.VISIBLE);
+//            mDate.setText(null);
+//            mDetails.setText(docSummary);
+//        } else {
+//            if (mDoc.lastModified == -1) {
+//                mDate.setText(null);
+//            } else {
+//                mDate.setText(Shared.formatTime(mContext, mDoc.lastModified));
+//            }
+//
+//            final long docSize = getCursorLong(cursor, Document.COLUMN_SIZE);
+//            if (mDoc.isDirectory() || docSize == -1) {
+//                mDetails.setVisibility(View.GONE);
+//            } else {
+//                mDetails.setVisibility(View.VISIBLE);
+//                mDetails.setText(Formatter.formatFileSize(mContext, docSize));
+//            }
+//        }
     }
 }

@@ -108,7 +108,7 @@
               android:ellipsize="end"
               android:singleLine="true"
               android:textAlignment="viewStart"
-              android:textAppearance="?android:attr/textAppearanceListItem" />
+              android:textAppearance="@style/Subhead" />
 
         </LinearLayout>
 

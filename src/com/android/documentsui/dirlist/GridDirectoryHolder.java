@@ -83,13 +83,13 @@ final class GridDirectoryHolder extends DocumentHolder {
         super.setSelected(selected, animate);
         float checkAlpha = selected ? 1f : 0f;
 
-        if (animate) {
-            fade(mIconCheck, checkAlpha).start();
-            fade(mIconMime, 1f - checkAlpha).start();
-        } else {
-            mIconCheck.setAlpha(checkAlpha);
-            mIconMime.setAlpha(1f - checkAlpha);
-        }
+//        if (animate) {
+//            fade(mIconCheck, checkAlpha).start();
+//            fade(mIconMime, 1f - checkAlpha).start();
+//        } else {
+//            mIconCheck.setAlpha(checkAlpha);
+//            mIconMime.setAlpha(1f - checkAlpha);
+//        }
     }
 
     @Override

@@ -1,24 +1,57 @@
-<!--
-Copyright (C) 2015 The Android Open Source Project
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:width="24dp"
-        android:height="24dp"
-        android:viewportWidth="24.0"
-        android:viewportHeight="24.0">
-    <path
-        android:fillColor="#FFDB4437"
-        android:pathData="M21 19V5c0,-1.1,-.9,-2,-2,-2H5c-1.1 0,-2 .9,-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2,-.9 2,-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5,-4.5z"/>
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+  <group>
+    <clip-path
+        android:pathData="M10.667,0L53.333,0A10.667,10.667 0,0 1,64 10.667L64,53.333A10.667,10.667 0,0 1,53.333 64L10.667,64A10.667,10.667 0,0 1,0 53.333L0,10.667A10.667,10.667 0,0 1,10.667 0z"/>
+    <group>
+      <clip-path
+          android:pathData="M12,51C12,53.761 14.239,56 17,56L47,56C49.761,56 52,53.761 52,51L52,21.87C52,21.595 51.887,21.333 51.688,21.144L44.861,14.671C44.859,14.668 44.855,14.665 44.853,14.662L38.291,8.283C38.104,8.102 37.854,8 37.594,8L32,8L17,8C14.239,8 12,10.239 12,13L12,51Z"/>
+      <path
+          android:pathData="M12,51C12,53.761 14.239,56 17,56L47,56C49.761,56 52,53.761 52,51L52,21.87C52,21.595 51.887,21.333 51.688,21.144L44.861,14.671C44.859,14.668 44.855,14.665 44.853,14.662L38.291,8.283C38.104,8.102 37.854,8 37.594,8L32,8L17,8C14.239,8 12,10.239 12,13L12,51Z">
+        <aapt:attr name="android:fillColor">
+          <gradient 
+              android:startX="32"
+              android:startY="8"
+              android:endX="32"
+              android:endY="56"
+              android:type="linear">
+            <item android:offset="0" android:color="#FFFFA455"/>
+            <item android:offset="1" android:color="#FFF5810C"/>
+          </gradient>
+        </aapt:attr>
+      </path>
+      <path
+          android:pathData="M38,17C38,19.761 40.239,22 43,22L53,22L38,7L38,17Z">
+        <aapt:attr name="android:fillColor">
+          <gradient 
+              android:startX="45.5"
+              android:startY="7"
+              android:endX="45.5"
+              android:endY="22"
+              android:type="linear">
+            <item android:offset="0" android:color="#FFFF7A1B"/>
+            <item android:offset="1" android:color="#FFE86100"/>
+          </gradient>
+        </aapt:attr>
+      </path>
+      <path
+          android:pathData="M36.389,44.522L31.292,35.749C31.111,35.438 31.119,35.053 31.313,34.75L34.619,29.577C35.008,28.968 35.905,28.991 36.263,29.619L44.185,43.566C44.549,44.206 44.087,45 43.35,45L37.219,45C36.877,45 36.561,44.818 36.389,44.522M27.973,34.135L33.448,43.558C33.82,44.198 33.358,45 32.618,45L21.668,45C20.928,45 20.466,44.198 20.838,43.558L26.313,34.135C26.683,33.498 27.603,33.498 27.973,34.135M27.738,31.588C26.094,31.588 24.762,30.337 24.762,28.794C24.762,27.251 26.094,26 27.738,26C29.382,26 30.714,27.251 30.714,28.794C30.714,30.337 29.382,31.588 27.738,31.588Z">
+        <aapt:attr name="android:fillColor">
+          <gradient 
+              android:startX="32.509"
+              android:startY="26"
+              android:endX="32.509"
+              android:endY="45"
+              android:type="linear">
+            <item android:offset="0" android:color="#D3FFFFFF"/>
+            <item android:offset="1" android:color="#FFFFFFFF"/>
+          </gradient>
+        </aapt:attr>
+      </path>
+    </group>
+  </group>
 </vector>

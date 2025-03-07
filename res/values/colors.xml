@@ -29,6 +29,8 @@
   <color name="white">#FFFFFF</color> <!-- white -->
   <color name="dark_blue">#318BF3</color> <!-- white -->
 
+   <color name="bg_main">#d9F2F4F7</color> <!-- white -->
+
   <color name="chip_background_disable_color">#fff1f3f4</color>
   <color name="menu_search_background">@android:color/transparent</color>
   <color name="item_breadcrumb_background_hovered">#1affffff</color>

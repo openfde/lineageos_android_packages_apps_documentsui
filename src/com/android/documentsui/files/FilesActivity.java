@@ -266,12 +266,16 @@ public void parseFile() {
     private void updateTaskDescription(final Intent intent) {
         int labelRes = intent.getIntExtra(LauncherActivity.TASK_LABEL_RES, -1);
         assert (labelRes > -1);
-        String label = getResources().getString(labelRes);
+        try {
+            String label = getResources().getString(labelRes);
 
-        int iconRes = intent.getIntExtra(LauncherActivity.TASK_ICON_RES, -1);
-        assert (iconRes > -1);
+            int iconRes = intent.getIntExtra(LauncherActivity.TASK_ICON_RES, -1);
+            assert (iconRes > -1);
 
-        setTaskDescription(new TaskDescription(label, iconRes));
+            setTaskDescription(new TaskDescription(label, iconRes));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void presentFileErrors(Bundle icicle, final Intent intent) {

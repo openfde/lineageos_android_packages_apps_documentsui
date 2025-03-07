@@ -22,8 +22,8 @@
      decide to rip these out, please be sure to check out focus and keyboards. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="@dimen/grid_bg_width"
+    android:layout_height="@dimen/grid_bg_height"
     android:orientation="vertical"
     android:layout_margin="4dp"
     android:background="@drawable/grid_item_background"

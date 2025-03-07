@@ -193,10 +193,11 @@ final class GridPhotoHolder extends DocumentHolder {
                 Formatter.formatFileSize(mContext, getCursorLong(cursor, Document.COLUMN_SIZE));
         final String docDate = Shared.formatTime(mContext, mDoc.lastModified);
         if (mIconHelper.shouldShowBadge(mDoc.userId.getIdentifier())) {
-            itemView.setContentDescription((mContext.getText(R.string.a11y_work) + ", ")
-                    + mDoc.displayName + ", " + docSize + ", " + docDate);
+            // itemView.setContentDescription((mContext.getText(R.string.a11y_work) + ", ")
+            //         + mDoc.displayName + ", " + docSize + ", " + docDate);
         } else {
-            itemView.setContentDescription(mDoc.displayName + ", " + docSize + ", " + docDate);
+            // itemView.setContentDescription(mDoc.displayName + ", " + docSize + ", " + docDate);
         }
+        itemView.setContentDescription(mDoc.displayName);
     }
 }

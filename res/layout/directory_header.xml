@@ -20,11 +20,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.android.documentsui.HorizontalBreadcrumb
-        android:id="@+id/horizontal_breadcrumb"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/colorBackground"/>
+   
 
     <!-- used for search chip. -->
     <include layout="@layout/search_chip_row"/>
@@ -34,6 +30,7 @@
         android:theme="@style/TabTheme"
         android:clipToPadding="true"
         android:clipChildren="true"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/profile_tab_padding"
@@ -69,6 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/root_info_header_horizontal_padding"
         android:layout_marginEnd="@dimen/root_info_header_horizontal_padding"
+	    android:visibility="gone"
         android:minHeight="@dimen/root_info_header_height">
 
         <TextView
@@ -79,13 +77,10 @@
             android:textAppearance="@style/SectionHeader"
             android:maxLines="1"
             android:ellipsize="end"
+            android:visibility="gone"
             android:gravity="start|center_vertical"/>
 
-        <androidx.appcompat.widget.ActionMenuView
-            android:id="@+id/sub_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"/>
+
 
     </LinearLayout>
 

@@ -20,26 +20,37 @@ import static com.android.documentsui.base.Shared.EXTRA_BENCHMARK;
 import static com.android.documentsui.base.SharedMinimal.DEBUG;
 import static com.android.documentsui.base.State.MODE_GRID;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.MessageQueue.IdleHandler;
 import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Checkable;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -77,6 +88,7 @@ import com.android.documentsui.sorting.SortController;
 import com.android.documentsui.sorting.SortModel;
 
 import com.google.android.material.appbar.AppBarLayout;
+import android.graphics.drawable.AnimationDrawable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,6 +118,12 @@ public abstract class BaseActivity
     protected NavigationViewManager mNavigator;
     protected SortController mSortController;
     protected ConfigStore mConfigStore;
+    protected TextView txtTitle;
+    EditText editSearch;
+    //ImageView imgLeft,imgRight,imgSwitch,imgSort,imgAllSelected,imgShowHide,imgClose,imgMaximize,imgMinimize,imgFullscreen;
+    ImageView imgView,imgSwitch,imgShowHide;
+    // LinearLayout  layoutLoading;
+    AnimationDrawable animationDrawable ;
 
     private final List<EventListener> mEventListeners = new ArrayList<>();
     private final String mTag;
@@ -217,6 +235,71 @@ public abstract class BaseActivity
         setSupportActionBar(toolbar);
 
         Breadcrumb breadcrumb = findViewById(R.id.horizontal_breadcrumb);
+
+        txtTitle = findViewById(R.id.txtTitle);
+        ImageView imgSort = findViewById(R.id.imgSort);
+        imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
+
+        ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
+        imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
+
+        imgShowHide = findViewById(R.id.imgShowHide);
+        imgShowHide.setOnClickListener(view -> onClickedShowHiddenFiles());
+
+        imgSwitch = findViewById(R.id.imgSwitch);
+           imgSwitch.setOnClickListener(view -> {
+               if(mState.derivedMode == State.MODE_GRID){
+                   setViewMode(State.MODE_LIST);
+               }else {
+                   setViewMode(State.MODE_GRID);
+               }
+           });
+
+        ImageView imgClose = findViewById(R.id.imgClose);
+        imgClose.setOnClickListener(view -> { android.os.Process.killProcess(android.os.Process.myPid());});
+
+        ImageView imgMaximize = findViewById(R.id.imgMaximize);
+        imgMaximize.setOnClickListener(view -> {simulateKeyPress(KeyEvent.KEYCODE_F11);});
+
+        ImageView imgMinimize = findViewById(R.id.imgMinimize);
+        imgMinimize.setOnClickListener(view -> {simulateKeyPress(KeyEvent.KEYCODE_F9);});
+
+        ImageView imgFullscreen = findViewById(R.id.imgFullscreen);
+        imgFullscreen.setOnClickListener(view -> {simulateKeyPress(KeyEvent.KEYCODE_F11);});
+
+
+        editSearch = findViewById(R.id.editSearch);
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String strSearch = s.toString();
+//                startLoading();
+                mSearchManager.onQueryTextChange(strSearch);
+
+            }
+        });
+
+
+
+         //txtTitle;
+         //editSearch;
+         //imgLeft,imgRight,imgSwitch,imgSort,imgAllSelected,imgShowHide,imgClose,imgMaximize,imgMinimize,imgFullscreen;
+        // try {
+        //     imgView = findViewById(R.id.imgView);
+        //     layoutLoading = findViewById(R.id.layoutLoading);
+        //     imgView.setBackgroundResource(R.drawable.frame_animation);
+        //     animationDrawable = (AnimationDrawable)imgView.getBackground();
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
         assert (breadcrumb != null);
         View profileTabsContainer = findViewById(R.id.tabs_container);
         assert (profileTabsContainer != null);
@@ -434,6 +517,16 @@ public abstract class BaseActivity
         super.onPause();
         mLastSelectedUser = getSelectedUser();
     }
+
+     private void simulateKeyPress(int keyCode) {
+         new Thread(new Runnable() {
+             @Override
+             public void run() {
+                 Instrumentation instrumentation = new Instrumentation();
+                 instrumentation.sendKeyDownUpSync(keyCode);
+             }
+         }).start();
+      }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -682,6 +775,15 @@ public abstract class BaseActivity
         }
 
         mState.derivedMode = LocalPreferences.getViewMode(this, mState.stack.getRoot(), MODE_GRID);
+        try {
+            if(mState.derivedMode == MODE_GRID){
+                imgSwitch.setImageResource(R.drawable.icon_list);
+            }else {
+                imgSwitch.setImageResource(R.drawable.icon_grid);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         mNavigator.update();
 
@@ -744,6 +846,9 @@ public abstract class BaseActivity
         boolean showHiddenFiles = !mState.showHiddenFiles;
         Context context = getApplicationContext();
 
+        if(imgShowHide !=null){
+            imgShowHide.setImageResource(showHiddenFiles ? R.drawable.icon_hide_file : R.drawable.icon_show_file);
+        }
         Metrics.logUserAction(showHiddenFiles
                 ? MetricConsts.USER_ACTION_SHOW_HIDDEN_FILES
                 : MetricConsts.USER_ACTION_HIDE_HIDDEN_FILES);
@@ -760,8 +865,14 @@ public abstract class BaseActivity
     void setViewMode(@ViewMode int mode) {
         if (mode == State.MODE_GRID) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_GRID);
+            if(imgSwitch !=null){
+                imgSwitch.setImageResource(R.drawable.icon_list);
+            }
         } else if (mode == State.MODE_LIST) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_LIST);
+            if(imgSwitch !=null){
+                imgSwitch.setImageResource(R.drawable.icon_grid);
+            }
         }
 
         LocalPreferences.setViewMode(this, getCurrentRoot(), mode);
@@ -850,6 +961,7 @@ public abstract class BaseActivity
 
         TextView headerTitle = findViewById(R.id.header_title);
         headerTitle.setText(result);
+        txtTitle.setText(root.title);
     }
 
     private String getHeaderRecentTitle() {

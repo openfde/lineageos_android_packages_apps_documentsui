@@ -111,8 +111,7 @@
                     android:ellipsize="middle"
                     android:singleLine="true"
                     android:textAlignment="viewStart"
-                    android:textAppearance="@style/Subhead"
-                    android:textColor="?android:attr/textColorPrimary"/>
+                    android:textAppearance="@style/Subhead"/>
             </LinearLayout>
 
             <TextView

@@ -24,8 +24,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_root"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="@dimen/grid_bg_width"
+    android:layout_height="@dimen/grid_bg_height"
     android:layout_margin="4dp"
     android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
@@ -38,7 +38,7 @@
         android:elevation="0dp"
         android:duplicateParentState="true"
         app:cardElevation="0dp"
-        app:strokeWidth="1dp"
+        app:strokeWidth="0dp"
         app:strokeColor="?android:strokeColor">
 
         <RelativeLayout
@@ -54,21 +54,24 @@
                 android:id="@+id/thumbnail"
                 android:background="?attr/gridItemTint"
                 android:layout_width="match_parent"
+                android:visibility="visible"
+                android:layout_centerHorizontal="true"
                 android:layout_height="wrap_content">
 
                 <com.android.documentsui.GridItemThumbnail
                     android:id="@+id/icon_thumb"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/grid_item_icon_size"
+                    android:layout_height="@dimen/grid_item_icon_size"
                     android:scaleType="centerCrop"
+                    android:layout_gravity="center"
                     android:contentDescription="@null"
                     android:tint="?attr/gridItemTint"
                     android:tintMode="src_over"/>
 
                 <com.android.documentsui.GridItemThumbnail
                     android:id="@+id/icon_mime_lg"
-                    android:layout_width="@dimen/icon_size"
-                    android:layout_height="@dimen/icon_size"
+                    android:layout_width="@dimen/grid_item_icon_size"
+                    android:layout_height="@dimen/grid_item_icon_size"
                     android:layout_gravity="center"
                     android:scaleType="fitCenter"
                     android:contentDescription="@null"/>
@@ -82,6 +85,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:pointerIcon="hand"
+                android:visibility="gone"
                 android:focusable="true"
                 android:clickable="true">
 
@@ -116,6 +120,7 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:paddingStart="12dp"
+                    android:visibility="gone"
                     android:paddingEnd="8dp">
 
                     <ImageView
@@ -154,6 +159,7 @@
                         android:layout_alignBottom="@android:id/title"
                         android:gravity="center_vertical"
                         android:src="@drawable/ic_briefcase"
+                        android:visibility="gone"
                         android:tint="?android:attr/colorAccent"
                         android:contentDescription="@string/a11y_work"/>
 
@@ -162,7 +168,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
-                        android:layout_toEndOf="@+id/icon_profile_badge"
+                        android:layout_centerInParent="true"
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:textAlignment="viewStart"
@@ -176,6 +182,7 @@
                         android:layout_marginEnd="4dp"
                         android:singleLine="true"
                         android:ellipsize="end"
+                        android:visibility="gone"
                         android:textAlignment="viewStart"
                         android:textAppearance="@style/ItemCaptionText" />
 
@@ -187,6 +194,7 @@
                         android:layout_toEndOf="@id/details"
                         android:singleLine="true"
                         android:ellipsize="end"
+                        android:visibility="gone"
                         android:textAlignment="viewStart"
                         android:textAppearance="@style/ItemCaptionText" />
 

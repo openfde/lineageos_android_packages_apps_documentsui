@@ -14,20 +14,32 @@
      limitations under the License.
 -->
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
+    android:paddingHorizontal="16dp"
+    android:orientation="horizontal"
     android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:src="@drawable/icon_logo"
+        android:layout_width="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@android:id/title"
-        android:paddingStart="64dp"
+        android:paddingStart="6dp"
+        android:layout_toRightOf="@id/imgLogo"
         android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_height="44dp"
+        android:textSize="@dimen/title_text_size"
+        android:text="@string/app_label"
         android:gravity="center_vertical"
         style="@style/DrawerMenuHeader"/>
 
-</LinearLayout>
+</RelativeLayout>

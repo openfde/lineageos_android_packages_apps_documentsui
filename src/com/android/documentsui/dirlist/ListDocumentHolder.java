@@ -108,10 +108,14 @@ final class ListDocumentHolder extends DocumentHolder {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private void setUpdatableWorkProfileIcon(Context context) {
-        DevicePolicyManager dpm = context.getSystemService(DevicePolicyManager.class);
-        Drawable drawable = dpm.getResources().getDrawable(WORK_PROFILE_ICON, SOLID_COLORED, () ->
-                context.getDrawable(R.drawable.ic_briefcase));
-        mIconBadge.setImageDrawable(drawable);
+        try {
+            DevicePolicyManager dpm = context.getSystemService(DevicePolicyManager.class);
+            Drawable drawable = dpm.getResources().getDrawable(WORK_PROFILE_ICON, SOLID_COLORED, () ->
+                    context.getDrawable(R.drawable.ic_briefcase));
+            mIconBadge.setImageDrawable(drawable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

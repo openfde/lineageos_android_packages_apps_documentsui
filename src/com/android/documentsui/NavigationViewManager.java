@@ -276,7 +276,8 @@ public class NavigationViewManager implements AppBarLayout.OnOffsetChangedListen
             String title = mState.stack.size() <= 1
                     ? mEnv.getCurrentRoot().title : mState.stack.getTitle();
             if (VERBOSE) Log.v(TAG, "New toolbar title is: " + title);
-            mToolbar.setTitle(title);
+//            mToolbar.setTitle(title);
+            mToolbar.setTitle(null);
             mBreadcrumb.show(true);
             mBreadcrumb.postUpdate();
         }
