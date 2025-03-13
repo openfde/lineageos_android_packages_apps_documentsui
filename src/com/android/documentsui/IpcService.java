@@ -28,7 +28,7 @@ import com.android.documentsui.util.SPUtils;
 import android.database.ContentObserver;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -76,11 +76,15 @@ public class IpcService extends Service {
             if(FileUtils.OPEN_FILE.equals(method)){
                 finishDialog();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"%2f"+params;
-                Uri uri = Uri.parse(path);
+                String path = FileUtils.PATH_ID_DESKTOP+params;
+                File file = new File(path);
+                Uri uri = FileProvider.getUriForFile(context,"com.android.documentsui.fileprovider",file);
+                // Intent shareIntent = new Intent(Intent.ACTION_VIEW);
+                // String path = "content://"+Providers.AUTHORITY_STORAGE+"/document/"+Providers.ROOT_ID_DESKTOP+"/"+params;
+                // Uri uri = Uri.parse(path);
                 String mimeType = FileUtils.getMimeType(new File(Providers.PATH_ID_DESKTOP+params));
                 if (mimeType == null) {
-                    if (params.contains(".txt") || params.contains(".json")  || params.contains(".md")) {
+                    if (params.contains(".txt") || params.contains(".json")  || params.contains(".md") || params.contains(".doc")|| params.contains(".et")|| params.contains(".xls")|| params.contains(".wps") ) {
                         intent.setDataAndType(uri, "text/plain");
                     } else {
                         intent.setDataAndType(uri, "application/*");
