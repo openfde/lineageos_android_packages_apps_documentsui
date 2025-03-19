@@ -368,6 +368,8 @@ public class NavigationViewManager implements AppBarLayout.OnOffsetChangedListen
         void show(boolean visibility);
 
         void postUpdate();
+
+        int getItemCount();
     }
 
     interface Environment {

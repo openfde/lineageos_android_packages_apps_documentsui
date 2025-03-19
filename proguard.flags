@@ -29,3 +29,14 @@
 -if class * extends org.apache.commons.compress.archivers.zip.ZipExtraField
 -keep class <1> { <init>(); }
 -keep class com.android.documentsui.receiver.** { *; }
+
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @de.greenrobot.event.Subscribe <methods>;
+}
+
+-keep class de.greenrobot.event.** { *; }
+
+-keepclassmembers class * extends de.greenrobot.event.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}

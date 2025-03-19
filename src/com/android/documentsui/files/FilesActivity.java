@@ -20,6 +20,7 @@ import static com.android.documentsui.OperationDialogFragment.DIALOG_TYPE_UNKNOW
 
 import android.app.ActivityManager.TaskDescription;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -62,6 +63,7 @@ import com.android.documentsui.clipping.DocumentClipper;
 import com.android.documentsui.dirlist.AnimationView.AnimationType;
 import com.android.documentsui.dirlist.AppsRowManager;
 import com.android.documentsui.dirlist.DirectoryFragment;
+import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.ui.DialogController;
@@ -80,6 +82,9 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
 
     private static final String TAG = "FilesActivity";
     static final String PREFERENCES_SCOPE = "files";
+
+    String childPath = null ;
+
 
     private Injector<ActionHandler<FilesActivity>> mInjector;
     private ActivityInputHandler mActivityInputHandler;
@@ -126,6 +131,8 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
 
         DocumentClipper clipper = DocumentsApplication.getDocumentClipper(this);
         mInjector.selectionMgr = DocsSelectionHelper.create();
+
+        childPath = getIntent().getStringExtra("childPath");
 
         mInjector.focusManager = new FocusManager(
                 mInjector.features,
@@ -412,22 +419,22 @@ public void parseFile() {
             DirectoryFragment.showRecentsOpen(fm, anim);
         } else {
             // Normal boring directory
-            String getPath = SPUtils.getDocInfo(this,"getPath");
-            if (getPath != null && !"".equals(getPath)) {
+            if (childPath != null && !"".equals(childPath)) {
                 final DocumentInfo documentInfo = cwd;
-                String childPath = getIntent().getStringExtra("childPath");
-                Log.i("bella","getPath "+getPath + ",childPath "+childPath);
                 root.documentId = documentInfo.documentId = "primary:Desktop/"+childPath;
                 root.title  = documentInfo.displayName = childPath;
                 root.authority = documentInfo.authority = "com.android.externalstorage.documents";
                 documentInfo.mimeType = "vnd.android.document/directory";
                 documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary%3ADesktop%2"+childPath);
                 DirectoryFragment.showDirectory(fm, root, documentInfo, AnimationView.ANIM_NONE);
-                SPUtils.putDocInfo(this,"getPath","");
+                childPath = null;
             }else{
                 DirectoryFragment.showDirectory(fm, root, cwd, anim);
             }
         }
+//        Log.i("bella","refreshDirectory title: "+cwd.toString()  +" ,cwd: "+cwd.derivedUri + ",childPath: "+childPath + " "+root.toString());
+
+        SPUtils.putDocInfo(FilesActivity.this,"documentId",cwd.documentId );
     }
 
     @Override

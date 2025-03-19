@@ -468,4 +468,21 @@ public class DocumentInfo implements Durable, Parcelable {
         }
         return doc.derivedUri.toString();
     }
+
+    public  static  DocumentInfo deepCopy(DocumentInfo doc){
+        DocumentInfo documentInfo = new DocumentInfo();
+        documentInfo.documentId = doc.documentId;
+        documentInfo.userId = doc.userId;
+        documentInfo.authority = doc.authority;
+        documentInfo.mimeType = doc.mimeType;
+        documentInfo.displayName = doc.displayName;
+        documentInfo.lastModified = doc.lastModified;
+        documentInfo.flags = doc.flags;
+        documentInfo.summary = doc.summary;
+        documentInfo.size = doc.size;
+        documentInfo.icon = doc.icon;
+        documentInfo.derivedUri = doc.derivedUri;
+
+        return  documentInfo ;
+    }
 }

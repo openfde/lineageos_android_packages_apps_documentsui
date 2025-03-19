@@ -59,6 +59,11 @@ public final class HorizontalBreadcrumb extends RecyclerView implements Breadcru
     }
 
     @Override
+    public int getItemCount() {
+        return mAdapter.getItemCount();
+    }
+
+    @Override
     public void setup(Environment env,
             com.android.documentsui.base.State state,
             IntConsumer listener) {

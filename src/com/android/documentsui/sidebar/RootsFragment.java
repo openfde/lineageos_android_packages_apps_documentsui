@@ -553,6 +553,7 @@ public class RootsFragment extends Fragment {
             Collections.reverse(rootOtherList);
             if (VERBOSE) Log.i(TAG, "bella Adding rootAndroidList roots: " + rootAndroidList);
             // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
+            rootList.add(new MenuTitleItem(getString(R.string.app_label)));
             rootList.add(new DrawerTitleItem(getString(R.string.fde_quick_access), openQuickFlag, isOpen -> {
                 this.openQuickFlag = isOpen ? 1 : 0;
                 onDisplayStateChanged();

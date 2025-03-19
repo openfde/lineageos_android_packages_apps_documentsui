@@ -507,6 +507,7 @@ public class RootInfo implements Durable, Parcelable, Comparable<RootInfo> {
                 + "userId=" + userId
                 + ", authority=" + authority
                 + ", rootId=" + rootId
+                + ", documentId=" + documentId
                 + ", title=" + title
                 + ", isUsb=" + isUsb()
                 + ", isSd=" + isSd()

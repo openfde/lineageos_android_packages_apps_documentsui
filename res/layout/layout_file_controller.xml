@@ -19,7 +19,7 @@
         android:id="@+id/imgRight"
         android:layout_toRightOf="@id/imgLeft"
         android:layout_width="wrap_content"
-        android:src="@drawable/icon_right"
+        android:src="@drawable/icon_right_light"
         android:layout_centerVertical="true"
         android:layout_height="wrap_content"/>
 
@@ -34,42 +34,42 @@
     <ImageView
         android:id="@+id/imgSort"
         android:src="@drawable/icon_sort"
-        android:layout_width="16dp"
+        android:layout_width="@dimen/top_menu_icon_size"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_toLeftOf="@id/imgShowHide"
-        android:layout_marginRight="20dp"
-        android:layout_height="16dp"/>
+        android:layout_marginRight="@dimen/top_menu_icon_margin_right"
+        android:layout_height="@dimen/top_menu_icon_size"/>
 
     <ImageView
         android:id="@+id/imgShowHide"
         android:src="@drawable/icon_show_file"
-        android:layout_width="16dp"
+        android:layout_width="@dimen/top_menu_icon_size"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_toLeftOf="@id/imgAllSelected"
-        android:layout_marginRight="20dp"
-        android:layout_height="16dp"/>
+        android:layout_marginRight="@dimen/top_menu_icon_margin_right"
+        android:layout_height="@dimen/top_menu_icon_size"/>
 
     <ImageView
         android:id="@+id/imgAllSelected"
         android:src="@drawable/icon_all_selected"
-        android:layout_width="16dp"
+        android:layout_width="@dimen/top_menu_icon_size"
         android:layout_toLeftOf="@id/imgSwitch"
         android:layout_centerVertical="true"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="@dimen/top_menu_icon_margin_right"
         android:layout_gravity="center"
-        android:layout_height="16dp"/>
+        android:layout_height="@dimen/top_menu_icon_size"/>
 
     <ImageView
         android:id="@+id/imgSwitch"
-        android:layout_width="16dp"
+        android:layout_width="@dimen/top_menu_icon_size"
         android:layout_toLeftOf="@id/editSearch"
         android:src="@drawable/icon_grid"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="@dimen/top_menu_icon_margin_right"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:layout_height="16dp"/>
+        android:layout_height="@dimen/top_menu_icon_size"/>
 
 
     <EditText
@@ -133,6 +133,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/top_menu_icon_margin_right"
         android:layout_width="wrap_content"/>
 
 

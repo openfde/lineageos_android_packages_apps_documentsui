@@ -20,6 +20,7 @@ import static com.android.documentsui.base.Shared.EXTRA_BENCHMARK;
 import static com.android.documentsui.base.SharedMinimal.DEBUG;
 import static com.android.documentsui.base.State.MODE_GRID;
 
+import android.app.ActivityManager;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
@@ -39,18 +40,13 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -60,6 +56,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.android.documentsui.AbstractActionHandler.CommonAddons;
 import com.android.documentsui.Injector.Injected;
@@ -86,13 +83,16 @@ import com.android.documentsui.roots.ProvidersCache;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.sorting.SortController;
 import com.android.documentsui.sorting.SortModel;
-
 import com.google.android.material.appbar.AppBarLayout;
-import android.graphics.drawable.AnimationDrawable;
+
+import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Stack;
 
 import javax.annotation.Nullable;
 
@@ -121,9 +121,10 @@ public abstract class BaseActivity
     protected TextView txtTitle;
     EditText editSearch;
     //ImageView imgLeft,imgRight,imgSwitch,imgSort,imgAllSelected,imgShowHide,imgClose,imgMaximize,imgMinimize,imgFullscreen;
-    ImageView imgView,imgSwitch,imgShowHide;
+    ImageView imgView, imgSwitch, imgShowHide;
+    ImageView imgLeft, imgRight;
     // LinearLayout  layoutLoading;
-    AnimationDrawable animationDrawable ;
+    AnimationDrawable animationDrawable;
 
     private final List<EventListener> mEventListeners = new ArrayList<>();
     private final String mTag;
@@ -140,6 +141,12 @@ public abstract class BaseActivity
 
     private final DocumentStack mInitialStack = new DocumentStack();
     private UserId mLastSelectedUser = null;
+
+    private  String lastPath ;
+    private Stack<DocumentInfo> lastPathStack = new Stack<>();
+    private Stack<DocumentInfo> nextPathStack = new Stack<>();
+    private  boolean isMax = false;
+
 
     protected void setInitialStack(DocumentStack stack) {
         if (mInitialStack.isInitialized()) {
@@ -166,7 +173,9 @@ public abstract class BaseActivity
 
     protected abstract void refreshDirectory(int anim);
 
-    /** Allows sub-classes to include information in a newly created State instance. */
+    /**
+     * Allows sub-classes to include information in a newly created State instance.
+     */
     protected abstract void includeState(State initialState);
 
     protected abstract void onDirectoryCreated(DocumentInfo doc);
@@ -183,11 +192,32 @@ public abstract class BaseActivity
         mConfigStore = configStore;
     }
 
+    private final LinkedHashMap<Integer, ActivityManager.RunningTaskInfo> mTaskStack =
+            new LinkedHashMap<>();
+
+    private ActivityManager.RunningTaskInfo getTopTaskInLaunchRootTask() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(10);
+
+//        if (mTaskStack.isEmpty()) {
+//            return null;
+//        }
+//        ActivityManager.RunningTaskInfo topTask = null;
+//        Iterator<ActivityManager.RunningTaskInfo> iterator = mTaskStack.values().iterator();
+//        while (iterator.hasNext()) {
+//            topTask = iterator.next();
+//        }
+        return runningTasks.get(0);
+    }
+
     @CallSuper
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Handle shortcut intents
+        EventBus.getDefault().register(this);
         Intent launchIntent = getIntent();
+
+
         if (launchIntent != null) {
             String uriString = launchIntent.getStringExtra("DOCUMENT_URI");
             String mimeType = launchIntent.getStringExtra("DOCUMENT_MIME");
@@ -197,7 +227,7 @@ public abstract class BaseActivity
                 intent.setDataAndType(uri, mimeType);
                 intent.setFlags(
                         Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK |
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(intent);
                 finishAndRemoveTask();
             }
@@ -247,25 +277,68 @@ public abstract class BaseActivity
         imgShowHide.setOnClickListener(view -> onClickedShowHiddenFiles());
 
         imgSwitch = findViewById(R.id.imgSwitch);
-           imgSwitch.setOnClickListener(view -> {
-               if(mState.derivedMode == State.MODE_GRID){
-                   setViewMode(State.MODE_LIST);
-               }else {
-                   setViewMode(State.MODE_GRID);
-               }
-           });
+        imgSwitch.setOnClickListener(view -> {
+            if (mState.derivedMode == State.MODE_GRID) {
+                setViewMode(State.MODE_LIST);
+            } else {
+                setViewMode(State.MODE_GRID);
+            }
+        });
 
         ImageView imgClose = findViewById(R.id.imgClose);
-        imgClose.setOnClickListener(view -> { android.os.Process.killProcess(android.os.Process.myPid());});
+        imgClose.setOnClickListener(view -> {
+             android.os.Process.killProcess(android.os.Process.myPid());
+        });
+
+        imgLeft = findViewById(R.id.imgLeft);
+        imgLeft.setOnClickListener(view -> {
+//            simulateKeyPress(KeyEvent.KEYCODE_BACK);
+            int size = lastPathStack.size();
+            if (size > 1) {
+                DocumentInfo delDocumentInfo = DocumentInfo.deepCopy(lastPathStack.pop());
+                nextPathStack.push(delDocumentInfo);
+                DocumentInfo lastDocumentInfo = DocumentInfo.deepCopy(lastPathStack.peek());
+                popDir();
+//                gotoFilePath(lastDocumentInfo);
+            } else {
+                Log.w(TAG, "It is the first documentInfo  ");
+            }
+            setButtonBackGroup();
+        });
+
+        imgRight = findViewById(R.id.imgRight);
+        imgRight.setOnClickListener(view -> {
+            int size = nextPathStack.size();
+            Log.w(TAG, "nextPathStack size: " + size);
+            if (size > 0) {
+                DocumentInfo nextDocumentInfo = DocumentInfo.deepCopy(nextPathStack.peek());
+                nextPathStack.pop();
+                lastPathStack.push(nextDocumentInfo);
+                pushDir(nextDocumentInfo);
+//                gotoFilePath(nextDocumentInfo);
+            } else {
+                Log.w(TAG, "It is the last documentInfo  ");
+            }
+            setButtonBackGroup();
+        });
 
         ImageView imgMaximize = findViewById(R.id.imgMaximize);
-        imgMaximize.setOnClickListener(view -> {simulateKeyPress(KeyEvent.KEYCODE_F11);});
+        imgMaximize.setOnClickListener(view -> {
+            Intent inte = new Intent("com.fde.fullscreen.ENABLE_OR_DISABLE");
+            inte.putExtra("mode", isMax ? 0 : 1);
+            sendBroadcast(inte);
+            isMax = !isMax ;
+        });
 
         ImageView imgMinimize = findViewById(R.id.imgMinimize);
-        imgMinimize.setOnClickListener(view -> {simulateKeyPress(KeyEvent.KEYCODE_F9);});
+        imgMinimize.setOnClickListener(view -> {
+            simulateKeyPress(KeyEvent.KEYCODE_F9);
+        });
 
         ImageView imgFullscreen = findViewById(R.id.imgFullscreen);
-        imgFullscreen.setOnClickListener(view -> {simulateKeyPress(KeyEvent.KEYCODE_F11);});
+        imgFullscreen.setOnClickListener(view -> {
+            simulateKeyPress(KeyEvent.KEYCODE_F11);
+        });
 
 
         editSearch = findViewById(R.id.editSearch);
@@ -288,10 +361,9 @@ public abstract class BaseActivity
         });
 
 
-
-         //txtTitle;
-         //editSearch;
-         //imgLeft,imgRight,imgSwitch,imgSort,imgAllSelected,imgShowHide,imgClose,imgMaximize,imgMinimize,imgFullscreen;
+        //txtTitle;
+        //editSearch;
+        //imgLeft,imgRight,imgSwitch,imgSort,imgAllSelected,imgShowHide,imgClose,imgMaximize,imgMinimize,imgFullscreen;
         // try {
         //     imgView = findViewById(R.id.imgView);
         //     layoutLoading = findViewById(R.id.layoutLoading);
@@ -478,8 +550,20 @@ public abstract class BaseActivity
         setResult(AppCompatActivity.RESULT_CANCELED);
     }
 
+    private void gotoFilePath( DocumentInfo nextDocumentInfo){
+        DocumentInfo documentInfo = getCurrentDirectory();
+        final FragmentManager fm = getSupportFragmentManager();
+        RootInfo root = getCurrentRoot();
+        root.documentId = documentInfo.documentId = nextDocumentInfo.documentId;
+        root.title = documentInfo.displayName = nextDocumentInfo.displayName;
+        root.authority = documentInfo.authority = "com.android.externalstorage.documents";
+        documentInfo.mimeType = "vnd.android.document/directory";
+        documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", documentInfo.documentId);
+        DirectoryFragment.showDirectory(fm, root, documentInfo, AnimationView.ANIM_NONE);
+    }
+
     private NavigationViewManager getNavigationViewManager(Breadcrumb breadcrumb,
-            View profileTabsContainer) {
+                                                           View profileTabsContainer) {
         if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
             return new NavigationViewManager(this, mDrawer, mState, this, breadcrumb,
                     profileTabsContainer, DocumentsApplication.getUserManagerState(this),
@@ -518,15 +602,15 @@ public abstract class BaseActivity
         mLastSelectedUser = getSelectedUser();
     }
 
-     private void simulateKeyPress(int keyCode) {
-         new Thread(new Runnable() {
-             @Override
-             public void run() {
-                 Instrumentation instrumentation = new Instrumentation();
-                 instrumentation.sendKeyDownUpSync(keyCode);
-             }
-         }).start();
-      }
+    private void simulateKeyPress(int keyCode) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Instrumentation instrumentation = new Instrumentation();
+                instrumentation.sendKeyDownUpSync(keyCode);
+            }
+        }).start();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -563,6 +647,7 @@ public abstract class BaseActivity
         if (mRootsMonitor != null) {
             mRootsMonitor.stop();
         }
+        EventBus.getDefault().unregister(this);
         mPreferencesMonitor.stop();
         mSortController.destroy();
         DocumentsApplication.invalidateUserManagerState(this);
@@ -760,6 +845,24 @@ public abstract class BaseActivity
         }
     }
 
+    private void setButtonBackGroup() {
+        Log.w(TAG, "last nextPathStack " + nextPathStack.size() + " ####  ,lastPathStack " + lastPathStack.size());
+        Log.w(TAG, "last nextPathStack " + nextPathStack.toString());
+        if (nextPathStack.isEmpty() && mState.stack.size() <= 1 ) {
+            imgLeft.setImageResource(R.drawable.icon_left_light);
+            imgRight.setImageResource(R.drawable.icon_right_light);
+        } else if (nextPathStack.isEmpty()) {
+            imgLeft.setImageResource(R.drawable.icon_left);
+            imgRight.setImageResource(R.drawable.icon_right_light);
+        } else if (lastPathStack.isEmpty() || mState.stack.size() <= 1) {
+            imgLeft.setImageResource(R.drawable.icon_left_light);
+            imgRight.setImageResource(R.drawable.icon_right);
+        } else {
+            imgLeft.setImageResource(R.drawable.icon_left);
+            imgRight.setImageResource(R.drawable.icon_right);
+        }
+    }
+
     /**
      * Refreshes the content of the director and the menu/action bar.
      * The current directory name and selection will get updated.
@@ -776,9 +879,9 @@ public abstract class BaseActivity
 
         mState.derivedMode = LocalPreferences.getViewMode(this, mState.stack.getRoot(), MODE_GRID);
         try {
-            if(mState.derivedMode == MODE_GRID){
+            if (mState.derivedMode == MODE_GRID) {
                 imgSwitch.setImageResource(R.drawable.icon_list);
-            }else {
+            } else {
                 imgSwitch.setImageResource(R.drawable.icon_grid);
             }
         } catch (Exception e) {
@@ -787,12 +890,33 @@ public abstract class BaseActivity
 
         mNavigator.update();
 
+
+        Log.i(TAG, "refreshDirectory1 nextPathStack: " + nextPathStack.size() + ",size : "+mState.stack.size());
+
+
         refreshDirectory(anim);
 
         final RootsFragment roots = RootsFragment.get(getSupportFragmentManager());
         if (roots != null) {
             roots.onCurrentRootChanged();
         }
+
+
+        DocumentInfo cwd = getCurrentDirectory();
+        RootInfo r = getCurrentRoot();
+        String currentPath = cwd.documentId;
+        Log.i(TAG, "refreshDirectory1 lastPathStack " + lastPathStack +", nextPathStack : " + nextPathStack);
+
+        if(!nextPathStack.contains(cwd) && !lastPathStack.contains(cwd)){
+            nextPathStack.clear();
+        }
+
+        if(anim  != AnimationView.ANIM_LEAVE && !lastPathStack.contains(cwd)){
+            lastPathStack.push(cwd);
+        }
+        Log.i(TAG,"refreshDirectory1  ,lastPath "+lastPath +", currentPath: "+currentPath);
+
+        setButtonBackGroup();
 
         String appName = getString(R.string.files_label);
         String currentTitle = getTitle() != null ? getTitle().toString() : "";
@@ -805,13 +929,16 @@ public abstract class BaseActivity
         if (newTitle != null) {
             // Causes talkback to announce the activity's new title
             setTitle(newTitle);
+            txtTitle.setText(newTitle);
         }
 
         invalidateOptionsMenu();
         mSortController.onViewModeChanged(mState.derivedMode);
         mSearchManager.updateChips(getCurrentRoot().derivedMimeTypes);
         mAppsRowManager.updateView(this);
+        lastPath = cwd.documentId;
     }
+
 
     private final List<String> getExcludedAuthorities() {
         List<String> authorities = new ArrayList<>();
@@ -846,7 +973,7 @@ public abstract class BaseActivity
         boolean showHiddenFiles = !mState.showHiddenFiles;
         Context context = getApplicationContext();
 
-        if(imgShowHide !=null){
+        if (imgShowHide != null) {
             imgShowHide.setImageResource(showHiddenFiles ? R.drawable.icon_hide_file : R.drawable.icon_show_file);
         }
         Metrics.logUserAction(showHiddenFiles
@@ -865,12 +992,12 @@ public abstract class BaseActivity
     void setViewMode(@ViewMode int mode) {
         if (mode == State.MODE_GRID) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_GRID);
-            if(imgSwitch !=null){
+            if (imgSwitch != null) {
                 imgSwitch.setImageResource(R.drawable.icon_list);
             }
         } else if (mode == State.MODE_LIST) {
             Metrics.logUserAction(MetricConsts.USER_ACTION_LIST);
-            if(imgSwitch !=null){
+            if (imgSwitch != null) {
                 imgSwitch.setImageResource(R.drawable.icon_grid);
             }
         }
@@ -961,7 +1088,7 @@ public abstract class BaseActivity
 
         TextView headerTitle = findViewById(R.id.header_title);
         headerTitle.setText(result);
-        txtTitle.setText(root.title);
+//        txtTitle.setText(root.title);
     }
 
     private String getHeaderRecentTitle() {
@@ -1126,6 +1253,16 @@ public abstract class BaseActivity
         return false;
     }
 
+    protected  boolean pushDir(DocumentInfo documentInfo){
+            final DirectoryFragment fragment = getDirectoryFragment();
+            if (fragment != null) {
+                fragment.stopScroll();
+            }
+            mState.stack.push(documentInfo);
+            refreshCurrentRootAndDirectory(AnimationView.ANIM_LEAVE);
+            return true;
+    }
+
     protected boolean focusSidebar() {
         RootsFragment rf = RootsFragment.get(getSupportFragmentManager());
         assert (rf != null);
@@ -1176,5 +1313,17 @@ public abstract class BaseActivity
          * @param uri Uri of the loaded directory. If recents, then null.
          */
         void onDirectoryLoaded(@Nullable Uri uri);
+    }
+
+    @Subscribe
+    public void onMessageEvent(MessageEvent event) {
+        String method = event.getMethod();
+        String message = event.getMessage();
+        Log.i(TAG, "onMessageEvent message " + message + ",method " + method);
+        if (message.equals("RESET")) {
+            lastPathStack.clear();
+            nextPathStack.clear();
+        }
+
     }
 }
