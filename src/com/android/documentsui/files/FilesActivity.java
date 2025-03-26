@@ -36,6 +36,7 @@ import com.android.documentsui.dirlist.AnimationView;
 
 import androidx.annotation.CallSuper;
 import androidx.fragment.app.FragmentManager;
+import android.view.Window;
 
 import com.android.documentsui.AbstractActionHandler;
 import com.android.documentsui.ActionModeController;
@@ -115,7 +116,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     @Override
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
-
+        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         MessageBuilder messages = new MessageBuilder(this);
         Features features = Features.create(this);
 

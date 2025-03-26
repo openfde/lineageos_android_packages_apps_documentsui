@@ -10,7 +10,7 @@ import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import android.view.Window;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
@@ -33,6 +33,7 @@ public class RenameDialogActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // Window window = getWindow();
         // window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -42,7 +43,6 @@ public class RenameDialogActivity extends Activity {
         oldFileName = getIntent().getStringExtra("oldFileName");
         setContentView(R.layout.dialog_file_rename);
         initView();
-
     }
 
     private void initView(){

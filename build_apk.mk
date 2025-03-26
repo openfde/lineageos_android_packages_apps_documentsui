@@ -3,7 +3,6 @@ LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_STATIC_JAVA_LIBRARIES += guava \
         apache-commons-compress \
-        eventbusa \
         docsui-statsd
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
@@ -13,7 +12,6 @@ LOCAL_STATIC_ANDROID_LIBRARIES := \
         androidx.legacy_legacy-support-v13 \
         androidx.transition_transition \
         androidx.recyclerview_recyclerview \
-        eventbusa \
         androidx.recyclerview_recyclerview-selection \
         com.google.android.material_material
 

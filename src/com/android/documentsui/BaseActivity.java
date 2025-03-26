@@ -87,14 +87,17 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
+import android.view.Window;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Stack;
-
+import android.view.WindowManager;
+import android.view.MotionEvent;
 import javax.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 public abstract class BaseActivity
         extends AppCompatActivity implements CommonAddons, NavigationViewManager.Environment {
@@ -125,6 +128,7 @@ public abstract class BaseActivity
     ImageView imgLeft, imgRight;
     // LinearLayout  layoutLoading;
     AnimationDrawable animationDrawable;
+    CoordinatorLayout rootView;
 
     private final List<EventListener> mEventListeners = new ArrayList<>();
     private final String mTag;
@@ -147,6 +151,8 @@ public abstract class BaseActivity
     private Stack<DocumentInfo> nextPathStack = new Stack<>();
     private  boolean isMax = false;
 
+    private float dX;
+    private float dY;
 
     protected void setInitialStack(DocumentStack stack) {
         if (mInitialStack.isInitialized()) {
@@ -214,10 +220,9 @@ public abstract class BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Handle shortcut intents
+        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         EventBus.getDefault().register(this);
         Intent launchIntent = getIntent();
-
-
         if (launchIntent != null) {
             String uriString = launchIntent.getStringExtra("DOCUMENT_URI");
             String mimeType = launchIntent.getStringExtra("DOCUMENT_MIME");
@@ -266,99 +271,114 @@ public abstract class BaseActivity
 
         Breadcrumb breadcrumb = findViewById(R.id.horizontal_breadcrumb);
 
-        txtTitle = findViewById(R.id.txtTitle);
-        ImageView imgSort = findViewById(R.id.imgSort);
-        imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
+        try {
+            rootView = findViewById(R.id.coordinator_layout);
+            txtTitle = findViewById(R.id.txtTitle);
+            ImageView imgSort = findViewById(R.id.imgSort);
+            imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
 
-        ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
-        imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
+            ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
+            imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
 
-        imgShowHide = findViewById(R.id.imgShowHide);
-        imgShowHide.setOnClickListener(view -> onClickedShowHiddenFiles());
+            imgShowHide = findViewById(R.id.imgShowHide);
+            imgShowHide.setOnClickListener(view -> onClickedShowHiddenFiles());
 
-        imgSwitch = findViewById(R.id.imgSwitch);
-        imgSwitch.setOnClickListener(view -> {
-            if (mState.derivedMode == State.MODE_GRID) {
-                setViewMode(State.MODE_LIST);
-            } else {
-                setViewMode(State.MODE_GRID);
+            imgSwitch = findViewById(R.id.imgSwitch);
+            imgSwitch.setOnClickListener(view -> {
+                if (mState.derivedMode == State.MODE_GRID) {
+                    setViewMode(State.MODE_LIST);
+                } else {
+                    setViewMode(State.MODE_GRID);
+                }
+            });
+
+            ImageView imgClose = findViewById(R.id.imgClose);
+            imgClose.setOnClickListener(view -> {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            });
+
+            imgLeft = findViewById(R.id.imgLeft);
+            imgLeft.setOnClickListener(view -> {
+    //            simulateKeyPress(KeyEvent.KEYCODE_BACK);
+                int size = lastPathStack.size();
+                if (size > 1) {
+                    DocumentInfo delDocumentInfo = DocumentInfo.deepCopy(lastPathStack.pop());
+                    nextPathStack.push(delDocumentInfo);
+                    DocumentInfo lastDocumentInfo = DocumentInfo.deepCopy(lastPathStack.peek());
+                    popDir();
+    //                gotoFilePath(lastDocumentInfo);
+                } else {
+                    Log.w(TAG, "It is the first documentInfo  ");
+                }
+                setButtonBackGroup();
+            });
+
+            imgRight = findViewById(R.id.imgRight);
+            imgRight.setOnClickListener(view -> {
+                int size = nextPathStack.size();
+                Log.w(TAG, "nextPathStack size: " + size);
+                if (size > 0) {
+                    DocumentInfo nextDocumentInfo = DocumentInfo.deepCopy(nextPathStack.peek());
+                    nextPathStack.pop();
+                    lastPathStack.push(nextDocumentInfo);
+                    pushDir(nextDocumentInfo);
+    //                gotoFilePath(nextDocumentInfo);
+                } else {
+                    Log.w(TAG, "It is the last documentInfo  ");
+                }
+                setButtonBackGroup();
+            });
+
+            ImageView imgMaximize = findViewById(R.id.imgMaximize);
+            imgMaximize.setOnClickListener(view -> {
+                Intent inte = new Intent("com.fde.fullscreen.ENABLE_OR_DISABLE");
+                inte.putExtra("mode", isMax ? 0 : 1);
+                sendBroadcast(inte);
+                isMax = !isMax ;
+            });
+
+            ImageView imgMinimize = findViewById(R.id.imgMinimize);
+            imgMinimize.setOnClickListener(view -> {
+                simulateKeyPress(KeyEvent.KEYCODE_F9);
+            });
+
+            ImageView imgFullscreen = findViewById(R.id.imgFullscreen);
+            imgFullscreen.setOnClickListener(view -> {
+                simulateKeyPress(KeyEvent.KEYCODE_F11);
+            });
+
+
+            editSearch = findViewById(R.id.editSearch);
+            editSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String strSearch = s.toString();
+    //                startLoading();
+                    mSearchManager.onQueryTextChange(strSearch);
+
+                }
+            });
+
+            assert (breadcrumb != null);
+            View profileTabsContainer = findViewById(R.id.tabs_container);
+            assert (profileTabsContainer != null);
+
+            mNavigator = getNavigationViewManager(breadcrumb, profileTabsContainer);
+            AppBarLayout appBarLayout = findViewById(R.id.app_bar);
+            if (appBarLayout != null) {
+                appBarLayout.addOnOffsetChangedListener(mNavigator);
             }
-        });
-
-        ImageView imgClose = findViewById(R.id.imgClose);
-        imgClose.setOnClickListener(view -> {
-             android.os.Process.killProcess(android.os.Process.myPid());
-        });
-
-        imgLeft = findViewById(R.id.imgLeft);
-        imgLeft.setOnClickListener(view -> {
-//            simulateKeyPress(KeyEvent.KEYCODE_BACK);
-            int size = lastPathStack.size();
-            if (size > 1) {
-                DocumentInfo delDocumentInfo = DocumentInfo.deepCopy(lastPathStack.pop());
-                nextPathStack.push(delDocumentInfo);
-                DocumentInfo lastDocumentInfo = DocumentInfo.deepCopy(lastPathStack.peek());
-                popDir();
-//                gotoFilePath(lastDocumentInfo);
-            } else {
-                Log.w(TAG, "It is the first documentInfo  ");
-            }
-            setButtonBackGroup();
-        });
-
-        imgRight = findViewById(R.id.imgRight);
-        imgRight.setOnClickListener(view -> {
-            int size = nextPathStack.size();
-            Log.w(TAG, "nextPathStack size: " + size);
-            if (size > 0) {
-                DocumentInfo nextDocumentInfo = DocumentInfo.deepCopy(nextPathStack.peek());
-                nextPathStack.pop();
-                lastPathStack.push(nextDocumentInfo);
-                pushDir(nextDocumentInfo);
-//                gotoFilePath(nextDocumentInfo);
-            } else {
-                Log.w(TAG, "It is the last documentInfo  ");
-            }
-            setButtonBackGroup();
-        });
-
-        ImageView imgMaximize = findViewById(R.id.imgMaximize);
-        imgMaximize.setOnClickListener(view -> {
-            Intent inte = new Intent("com.fde.fullscreen.ENABLE_OR_DISABLE");
-            inte.putExtra("mode", isMax ? 0 : 1);
-            sendBroadcast(inte);
-            isMax = !isMax ;
-        });
-
-        ImageView imgMinimize = findViewById(R.id.imgMinimize);
-        imgMinimize.setOnClickListener(view -> {
-            simulateKeyPress(KeyEvent.KEYCODE_F9);
-        });
-
-        ImageView imgFullscreen = findViewById(R.id.imgFullscreen);
-        imgFullscreen.setOnClickListener(view -> {
-            simulateKeyPress(KeyEvent.KEYCODE_F11);
-        });
-
-
-        editSearch = findViewById(R.id.editSearch);
-        editSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String strSearch = s.toString();
-//                startLoading();
-                mSearchManager.onQueryTextChange(strSearch);
-
-            }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         //txtTitle;
@@ -372,15 +392,7 @@ public abstract class BaseActivity
         // } catch (Exception e) {
         //     e.printStackTrace();
         // }
-        assert (breadcrumb != null);
-        View profileTabsContainer = findViewById(R.id.tabs_container);
-        assert (profileTabsContainer != null);
-
-        mNavigator = getNavigationViewManager(breadcrumb, profileTabsContainer);
-        AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-        if (appBarLayout != null) {
-            appBarLayout.addOnOffsetChangedListener(mNavigator);
-        }
+        
 
         SearchManagerListener searchListener = new SearchManagerListener() {
             /**
@@ -1326,4 +1338,5 @@ public abstract class BaseActivity
         }
 
     }
+
 }
