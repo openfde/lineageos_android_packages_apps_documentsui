@@ -49,8 +49,13 @@
                 android:orientation="vertical"
                 android:elevation="8dp">
 
-                <include 
-                    layout="@layout/layout_file_controller"/>
+                <Toolbar
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="#c7F7F7F7">
+                    <include
+                        layout="@layout/layout_file_controller"/>
+                </Toolbar>
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
