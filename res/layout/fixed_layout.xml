@@ -52,6 +52,7 @@
                 <Toolbar
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
+		    android:tag="drag"
                     android:background="#c7F7F7F7">
                     <include
                         layout="@layout/layout_file_controller"/>
