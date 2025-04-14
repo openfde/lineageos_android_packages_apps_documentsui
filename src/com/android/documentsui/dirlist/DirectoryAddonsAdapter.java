@@ -212,17 +212,17 @@ final class DirectoryAddonsAdapter extends DocumentsAdapter {
         // folders and documents.
         // TODO: This code makes assumptions about the model, namely, that it performs a
         // bucketed sort where directories will always be ordered before other files. CBB.
-        Model model = mEnv.getModel();
-        for (int i = 0; i < model.getModelIds().length; i++) {
-            if (!isDirectory(model, i)) {
-                // If the break is the first thing in the list, then there are actually no
-                // directories. In that case, don't insert a break at all.
-                if (i > 0) {
-                    mBreakPosition = i + (mHeaderMessage.shouldShow() ? 1 : 0);
-                }
-                break;
-            }
-        }
+        // Model model = mEnv.getModel();
+        // for (int i = 0; i < model.getModelIds().length; i++) {
+        //     if (!isDirectory(model, i)) {
+        //         // If the break is the first thing in the list, then there are actually no
+        //         // directories. In that case, don't insert a break at all.
+        //         if (i > 0) {
+        //             mBreakPosition = i + (mHeaderMessage.shouldShow() ? 1 : 0);
+        //         }
+        //         break;
+        //     }
+        // }
     }
 
     @Override

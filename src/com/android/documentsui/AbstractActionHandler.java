@@ -242,9 +242,10 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
         // Multi-window necessitates we pick how we are launched.
         // By default we'd be launched in-place above the existing app.
         // By setting launch-to-side ActivityManager will open us to side.
-        if (mActivity.isInMultiWindowMode()) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        }
+        // if (mActivity.isInMultiWindowMode()) {
+        //     intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        // }
+         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
 
         mActivity.startActivity(intent);
     }

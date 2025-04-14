@@ -242,6 +242,9 @@ public class NavigationViewManager implements AppBarLayout.OnOffsetChangedListen
     }
 
     public UserId getSelectedUser() {
+        if (mProfileTabs == null || mProfileTabs.getSelectedUser() == null) {
+            return UserId.CURRENT_USER;
+        }
         return mProfileTabs.getSelectedUser();
     }
 

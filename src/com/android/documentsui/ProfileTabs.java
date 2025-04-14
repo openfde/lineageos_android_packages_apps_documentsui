@@ -242,10 +242,14 @@ public class ProfileTabs implements ProfileTabsAddons {
      * current user.
      */
     public UserId getSelectedUser() {
-        if (mTabs.getTabCount() > 1 && mTabs.getSelectedTabPosition() >= 0) {
-            return (UserId) mTabs.getTabAt(mTabs.getSelectedTabPosition()).getTag();
+        try {
+            if (mTabs.getTabCount() > 1 && mTabs.getSelectedTabPosition() >= 0) {
+                return (UserId) mTabs.getTabAt(mTabs.getSelectedTabPosition()).getTag();
+            }
+            return UserId.CURRENT_USER;
+        } catch (Exception e) {
+            return UserId.CURRENT_USER;
         }
-        return UserId.CURRENT_USER;
     }
 
     private boolean shouldShow() {

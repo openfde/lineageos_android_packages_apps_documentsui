@@ -507,48 +507,51 @@ public abstract class BaseActivity
                     mState.action);
         }
 
-        mNavigator.setSearchBarClickListener(v -> {
-            mSearchManager.onSearchBarClicked();
-            mNavigator.update();
-        });
-
-        mNavigator.setProfileTabsListener(userId -> {
-            // There are several possible cases that may trigger this callback.
-            // 1. A user click on tab layout.
-            // 2. A user click on tab layout, when filter is checked. (searching = true)
-            // 3. A user click on a open a dir of a different user in search (stack size > 1)
-            // 4. After tab layout is initialized.
-
-            if (!mState.stack.isInitialized()) {
-                return;
-            }
-
-            // Reload the roots when the selected user is changed.
-            // After reloading, we have visually same roots in the drawer. But they are
-            // different by holding different userId. Next time when user select a root, it can
-            // bring the user to correct root doc.
-            final RootsFragment roots = RootsFragment.get(getSupportFragmentManager());
-            if (roots != null) {
-                roots.onSelectedUserChanged();
-            }
-
-            if (mState.stack.size() <= 1) {
-                // We do not load cross-profile root if the stack contains two documents. The
-                // stack may contain >1 docs when the user select a folder of the other user in
-                // search. In that case, we don't want to reload the root. The whole stack
-                // and the root will be updated in openFolderInSearchResult.
-
-                // When a user filters files by search chips on the root doc, we will be in
-                // searching mode and with stack size 1 (0 if rootDoc cannot be loaded).
-                // The activity will clear search on root picked. If we don't clear the search,
-                // user may see the search result screen show up briefly and then get cleared.
-                mSearchManager.cancelSearch();
-                // When a profile with user property SHOW_IN_QUIET_MODE_HIDDEN is currently
-                // selected, and it becomes unavailable, we reset the roots to recents.
-                // We do not reset it to recents when pick activity is due to ACTION_CREATE_DOCUMENT
-                mInjector.actions.loadCrossProfileRoot(getCurrentRoot(), userId);
-            }
-        });
+        if(mNavigator !=null){
+            mNavigator.setSearchBarClickListener(v -> {
+                mSearchManager.onSearchBarClicked();
+                mNavigator.update();
+            });
+    
+            mNavigator.setProfileTabsListener(userId -> {
+                // There are several possible cases that may trigger this callback.
+                // 1. A user click on tab layout.
+                // 2. A user click on tab layout, when filter is checked. (searching = true)
+                // 3. A user click on a open a dir of a different user in search (stack size > 1)
+                // 4. After tab layout is initialized.
+    
+                if (!mState.stack.isInitialized()) {
+                    return;
+                }
+    
+                // Reload the roots when the selected user is changed.
+                // After reloading, we have visually same roots in the drawer. But they are
+                // different by holding different userId. Next time when user select a root, it can
+                // bring the user to correct root doc.
+                final RootsFragment roots = RootsFragment.get(getSupportFragmentManager());
+                if (roots != null) {
+                    roots.onSelectedUserChanged();
+                }
+    
+                if (mState.stack.size() <= 1) {
+                    // We do not load cross-profile root if the stack contains two documents. The
+                    // stack may contain >1 docs when the user select a folder of the other user in
+                    // search. In that case, we don't want to reload the root. The whole stack
+                    // and the root will be updated in openFolderInSearchResult.
+    
+                    // When a user filters files by search chips on the root doc, we will be in
+                    // searching mode and with stack size 1 (0 if rootDoc cannot be loaded).
+                    // The activity will clear search on root picked. If we don't clear the search,
+                    // user may see the search result screen show up briefly and then get cleared.
+                    mSearchManager.cancelSearch();
+                    // When a profile with user property SHOW_IN_QUIET_MODE_HIDDEN is currently
+                    // selected, and it becomes unavailable, we reset the roots to recents.
+                    // We do not reset it to recents when pick activity is due to ACTION_CREATE_DOCUMENT
+                    mInjector.actions.loadCrossProfileRoot(getCurrentRoot(), userId);
+                }
+            });
+        }
+       
 
         mSortController = SortController.create(this, mState.derivedMode, mState.sortModel);
 
@@ -629,7 +632,10 @@ public abstract class BaseActivity
         boolean showMenu = super.onCreateOptionsMenu(menu);
 
         getMenuInflater().inflate(R.menu.activity, menu);
-        mNavigator.update();
+        if(mNavigator !=null){
+            mNavigator.update();
+        }
+        
         boolean fullBarSearch = getResources().getBoolean(R.bool.full_bar_search_view);
         boolean showSearchBar = getResources().getBoolean(R.bool.show_search_bar);
         mSearchManager.install(menu, fullBarSearch, showSearchBar);
@@ -728,13 +734,17 @@ public abstract class BaseActivity
 
     @Override
     public void setRootsDrawerOpen(boolean open) {
-        mNavigator.revealRootsDrawer(open);
+        if(mNavigator !=null){
+            mNavigator.revealRootsDrawer(open);
+        }
     }
 
     @Override
     public void setRootsDrawerLocked(boolean locked) {
         mDrawer.setLocked(locked);
-        mNavigator.update();
+        if(mNavigator !=null){
+            mNavigator.update();
+        }
     }
 
     @Override
@@ -843,7 +853,10 @@ public abstract class BaseActivity
     // TODO: make navigator listen to state
     @Override
     public final void updateNavigator() {
-        mNavigator.update();
+        if(mNavigator !=null){
+            mNavigator.update();
+        }
+       
     }
 
     @Override
@@ -860,18 +873,22 @@ public abstract class BaseActivity
     private void setButtonBackGroup() {
         Log.w(TAG, "last nextPathStack " + nextPathStack.size() + " ####  ,lastPathStack " + lastPathStack.size());
         Log.w(TAG, "last nextPathStack " + nextPathStack.toString());
-        if (nextPathStack.isEmpty() && mState.stack.size() <= 1 ) {
-            imgLeft.setImageResource(R.drawable.icon_left_light);
-            imgRight.setImageResource(R.drawable.icon_right_light);
-        } else if (nextPathStack.isEmpty()) {
-            imgLeft.setImageResource(R.drawable.icon_left);
-            imgRight.setImageResource(R.drawable.icon_right_light);
-        } else if (lastPathStack.isEmpty() || mState.stack.size() <= 1) {
-            imgLeft.setImageResource(R.drawable.icon_left_light);
-            imgRight.setImageResource(R.drawable.icon_right);
-        } else {
-            imgLeft.setImageResource(R.drawable.icon_left);
-            imgRight.setImageResource(R.drawable.icon_right);
+        try {
+            if (nextPathStack.isEmpty() && mState.stack.size() <= 1 ) {
+                imgLeft.setImageResource(R.drawable.icon_left_light);
+                imgRight.setImageResource(R.drawable.icon_right_light);
+            } else if (nextPathStack.isEmpty()) {
+                imgLeft.setImageResource(R.drawable.icon_left);
+                imgRight.setImageResource(R.drawable.icon_right_light);
+            } else if (lastPathStack.isEmpty() || mState.stack.size() <= 1) {
+                imgLeft.setImageResource(R.drawable.icon_left_light);
+                imgRight.setImageResource(R.drawable.icon_right);
+            } else {
+                imgLeft.setImageResource(R.drawable.icon_left);
+                imgRight.setImageResource(R.drawable.icon_right);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -900,7 +917,9 @@ public abstract class BaseActivity
             e.printStackTrace();
         }
 
-        mNavigator.update();
+        if(mNavigator !=null){
+            mNavigator.update();
+        }
 
 
         Log.i(TAG, "refreshDirectory1 nextPathStack: " + nextPathStack.size() + ",size : "+mState.stack.size());
@@ -1181,7 +1200,12 @@ public abstract class BaseActivity
 
     @Override
     public UserId getSelectedUser() {
-        return mNavigator.getSelectedUser();
+        try {
+            return mNavigator.getSelectedUser();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return UserId.CURRENT_USER;
+        }
     }
 
     public RootInfo getCurrentRoot() {
