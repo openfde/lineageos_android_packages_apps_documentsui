@@ -18,6 +18,7 @@ package com.android.documentsui.files;
 
 import static com.android.documentsui.OperationDialogFragment.DIALOG_TYPE_UNKNOWN;
 
+import android.app.ActivityManager;
 import android.app.ActivityManager.TaskDescription;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -29,6 +30,7 @@ import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -358,7 +360,7 @@ public void parseFile() {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        android.os.Process.killProcess(android.os.Process.myPid());
+        // android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override

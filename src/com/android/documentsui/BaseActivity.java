@@ -294,7 +294,13 @@ public abstract class BaseActivity
 
             ImageView imgClose = findViewById(R.id.imgClose);
             imgClose.setOnClickListener(view -> {
-                android.os.Process.killProcess(android.os.Process.myPid());
+                try{
+                    ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                    List<ActivityManager.AppTask> tasks = activityManager.getAppTasks();
+                    tasks.get(0).finishAndRemoveTask();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
             });
 
             imgLeft = findViewById(R.id.imgLeft);
