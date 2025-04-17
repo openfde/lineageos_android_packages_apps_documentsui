@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.util.Log;
 import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.IpcService;
+import org.json.JSONObject;
 
 public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
 
@@ -16,17 +17,29 @@ public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-        String type = intent.getStringExtra("mode");
+        String mode = intent.getStringExtra("mode");
         String path = intent.getStringExtra("path");
+        String packageName = intent.getStringExtra("packageName");
+        String data = intent.getStringExtra("data");
 
-        Log.i(TAG, "MediaProvider--DesktopFileUpdate---onReceive--action " + action + ",type: " + type + ",path: " + path);
+       try {
+        if(data !=null && !"".equals(data)){
+            JSONObject jsonObject = new JSONObject(data);
+            mode = jsonObject.getString("OpCode");
+            path = jsonObject.getString("FileName");
+        }
+      
+        Log.i(TAG, "MediaProvider--DesktopFileUpdate---onReceive--action " + action + ",mode: " + mode + ",path: " + path);
 
         IpcService ipcService = DocumentsApplication.getInstance().getIpcService();
         if (ipcService != null) {
-            ipcService.gotoClientApp("UPDATE_DESKTOP", type + "###" + path);
+            ipcService.gotoClientApp("UPDATE_DESKTOP", mode + "###" + path);
         } else {
             Log.i(TAG, "ipcService is null");
         }
+       } catch (Exception e) {
+        e.printStackTrace();
+       }
 
     }
 
