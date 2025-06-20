@@ -350,7 +350,6 @@ public class ActionHandler<T extends FragmentActivity & AbstractActionHandler.Co
     @Override
     public void shareSelectedDocuments() {
         Metrics.logUserAction(MetricConsts.USER_ACTION_SHARE);
-
         Selection<String> selection = getStableSelection();
         if (selection.isEmpty()) {
             return;
@@ -368,9 +367,11 @@ public class ActionHandler<T extends FragmentActivity & AbstractActionHandler.Co
         if (docs.size() == 1) {
             intent = new Intent(Intent.ACTION_SEND);
             DocumentInfo doc = docs.get(0);
-            intent.setType(doc.mimeType);
+            //intent.setType(doc.mimeType);
+            intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_STREAM, doc.getDocumentUri());
-
+            // intent.putExtra(Intent.EXTRA_STREAM, "content://com.android.externalstorage.documents/document/primary%3ADownload%2Fscreen-20250220-145503.mp4");
+            // Log.w(TAG, "shareSelectedDocuments....33......: doc "+doc + " , doc.getDocumentUri() "+doc.getDocumentUri());
         } else if (docs.size() > 1) {
             intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
 

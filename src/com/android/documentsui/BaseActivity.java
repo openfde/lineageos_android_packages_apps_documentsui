@@ -792,6 +792,9 @@ public abstract class BaseActivity
     }
 
     protected ProfileTabsAddons getProfileTabsAddon() {
+        if(mNavigator == null){
+            return null ;
+        }
         return mNavigator.getProfileTabsAddons();
     }
 
@@ -963,7 +966,7 @@ public abstract class BaseActivity
         }
 
         String newTitle = mState.stack.getTitle();
-        if (newTitle != null) {
+        if (newTitle != null && txtTitle !=null) {
             // Causes talkback to announce the activity's new title
             setTitle(newTitle);
             txtTitle.setText(newTitle);

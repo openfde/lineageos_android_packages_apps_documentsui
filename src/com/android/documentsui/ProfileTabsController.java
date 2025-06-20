@@ -35,7 +35,12 @@ public class ProfileTabsController extends SelectionObserver<String> {
             SelectionTracker<String> selectionMgr,
             ProfileTabsAddons profileTabsAddons) {
         mSelectionMgr = checkNotNull(selectionMgr);
-        mProfileTabsAddons = checkNotNull(profileTabsAddons);
+        if(profileTabsAddons == null ){
+            mProfileTabsAddons = null ;
+        }else{
+            mProfileTabsAddons = checkNotNull(profileTabsAddons);
+        }
+        
     }
 
     @Override
@@ -49,6 +54,8 @@ public class ProfileTabsController extends SelectionObserver<String> {
     }
 
     private void onSelectionUpdated() {
-        mProfileTabsAddons.setEnabled(mSelectionMgr.getSelection().isEmpty());
+        if(mProfileTabsAddons != null){
+            mProfileTabsAddons.setEnabled(mSelectionMgr.getSelection().isEmpty());
+        }
     }
 }

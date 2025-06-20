@@ -342,6 +342,8 @@ public class ProvidersCache implements ProvidersAccess, LookupApplicationName {
         }
 
         final Uri rootsUri = DocumentsContract.buildRootsUri(authority);
+
+        Log.w(TAG, "rootsUri： " + rootsUri + ",authority "+authority);
         if (!forceRefresh) {
             // Look for roots data that we might have cached for ourselves in the
             // long-lived system process.

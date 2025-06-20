@@ -295,8 +295,13 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawer.update();
-        mNavigator.update();
+      try {
+          mDrawer.update();
+          mNavigator.update();
+      } catch (Exception e) {
+        // TODO: handle exception
+        e.printStackTrace();
+      }
     }
 
     @Override
