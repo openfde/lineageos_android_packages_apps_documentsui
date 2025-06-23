@@ -1247,6 +1247,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
      * Paste selection files from the primary clip into the current window.
      */
     public void pasteFromClipboard() {
+        android.util.Log.d(TAG, "pasteFromClipboard: ");
         Metrics.logUserAction(MetricConsts.USER_ACTION_PASTE_CLIPBOARD);
         // Since we are pasting into the current window, we already have the destination in the
         // stack. No need for a destination DocumentInfo.
@@ -1264,6 +1265,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     public void pasteIntoFolder() {
+        android.util.Log.d(TAG, "pasteIntoFolder: ");
         if (mSelectionMgr.getSelection().isEmpty()) {
             return;
         }
