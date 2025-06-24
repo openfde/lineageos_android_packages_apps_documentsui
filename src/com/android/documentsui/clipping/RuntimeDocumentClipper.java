@@ -186,7 +186,15 @@ final class RuntimeDocumentClipper implements DocumentClipper {
         // Persists clip items and gets the slot they were saved under.
         int tag = mClipStore.persistUris(uris);
         bundle.putInt(OP_JUMBO_SELECTION_TAG, tag);
+        String[] str = clipTypes.toArray(new String[0]);
 
+        android.util.Log.d(TAG, "createJumboClipData: bundle" + OP_TYPE_KEY + "=opType:" + opType
+            + " " + OP_JUMBO_SELECTION_SIZE + "=size:" + uris.size() + " " + OP_JUMBO_SELECTION_TAG + "=tag:" + tag);
+
+
+        for(String s: str){
+            android.util.Log.d(TAG, "createJumboClipData: s:" +s);
+        }
         ClipDescription description = new ClipDescription(
                 "", // Currently "label" is not displayed anywhere in the UI.
                 clipTypes.toArray(new String[0]));
