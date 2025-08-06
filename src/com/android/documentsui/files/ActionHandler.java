@@ -545,6 +545,7 @@ public class ActionHandler<T extends FragmentActivity & AbstractActionHandler.Co
 
         Intent intent = Intent.createChooser(buildViewIntent(doc), null);
         intent.putExtra(Intent.EXTRA_AUTO_LAUNCH_SINGLE_CHOICE, false);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             doc.userId.startActivityAsUser(mActivity, intent);
         } catch (ActivityNotFoundException e) {

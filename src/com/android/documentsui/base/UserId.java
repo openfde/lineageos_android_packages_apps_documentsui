@@ -191,6 +191,7 @@ public final class UserId {
      */
     public void startActivityAsUser(Context context, Intent intent) {
        try {
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivityAsUser(intent, mUserHandle);
        } catch (Exception e) {
          e.printStackTrace();

@@ -125,6 +125,12 @@
             android:label="@string/launcher_label"
             android:icon="@drawable/launcher_icon"
             android:theme="@android:style/Theme.NoDisplay">
+
+            <layout
+                android:defaultWidth="960dp"
+                android:defaultHeight="800dp"
+                android:minWidth="960dp"
+                android:minHeight="800dp" />
         </activity>
 
         <activity
@@ -141,6 +147,7 @@
             android:label="@string/launcher_label"
             android:exported="true"
             android:icon="@drawable/launcher_icon" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
