@@ -37,6 +37,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Objects;
+import android.util.Log;
 /**
  * Representation of a {@link UserHandle}.
  */
@@ -191,6 +192,8 @@ public final class UserId {
      */
     public void startActivityAsUser(Context context, Intent intent) {
        try {
+        Log.w("UserId","startActivityAsUser.......");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivityAsUser(intent, mUserHandle);
        } catch (Exception e) {
          e.printStackTrace();

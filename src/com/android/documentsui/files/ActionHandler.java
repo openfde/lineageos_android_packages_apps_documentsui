@@ -538,7 +538,7 @@ public class ActionHandler<T extends FragmentActivity & AbstractActionHandler.Co
     @Override
     public void showChooserForDoc(DocumentInfo doc) {
         assert(!doc.isDirectory());
-
+        Log.w(TAG,"startActivityAsUser...showChooserForDoc....");
         if (manageDocument(doc)) {
             Log.w(TAG, "Open with is not yet supported for managed doc.");
             return;
@@ -546,6 +546,7 @@ public class ActionHandler<T extends FragmentActivity & AbstractActionHandler.Co
 
         Intent intent = Intent.createChooser(buildViewIntent(doc), null);
         intent.putExtra(Intent.EXTRA_AUTO_LAUNCH_SINGLE_CHOICE, false);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             doc.userId.startActivityAsUser(mActivity, intent);
         } catch (ActivityNotFoundException e) {
