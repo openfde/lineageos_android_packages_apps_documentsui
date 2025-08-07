@@ -286,6 +286,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".receiver.DesktopFileUpdatePackageReceiver"
+         android:enabled="true"
+         android:exported="true">
+            <intent-filter>
+                <action android:name="com.fde.desktop.file.update"  />
+            </intent-filter>
+        </receiver>
+
         <!-- Run FileOperationService in a separate process so that we can use FileLock class to
             wait until jumbo clip is done writing to disk before reading it. See ClipStorage for
             details. -->
