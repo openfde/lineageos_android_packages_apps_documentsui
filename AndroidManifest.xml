@@ -123,7 +123,11 @@
             android:name=".files.LauncherActivity"
             android:label="@string/launcher_label"
             android:icon="@drawable/launcher_icon"
-            android:theme="@android:style/Theme.NoDisplay">        
+            android:theme="@android:style/Theme.NoDisplay">      
+            
+            <layout
+                android:minHeight="1000dp"
+                android:minWidth="1000dp" />
         </activity>
 
         <activity
@@ -157,7 +161,7 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:theme="@style/LauncherTheme">
             <layout
-                android:minHeight="600dp"
+                android:minHeight="1000dp"
                 android:minWidth="1000dp" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

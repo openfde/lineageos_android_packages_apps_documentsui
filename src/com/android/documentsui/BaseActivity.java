@@ -648,9 +648,13 @@ public abstract class BaseActivity
 
         final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
         // If size is 0, it means the menu has not inflated and it should only do once.
-        if (subMenuView.getMenu().size() == 0) {
+        try {
+            if (subMenuView != null && subMenuView.getMenu()!= null &&  subMenuView.getMenu().size() == 0) {
             subMenuView.setOnMenuItemClickListener(this::onOptionsItemSelected);
             getMenuInflater().inflate(R.menu.sub_menu, subMenuView.getMenu());
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return showMenu;
@@ -661,8 +665,12 @@ public abstract class BaseActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         mSearchManager.showMenu(mState.stack);
-        final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
-        mInjector.menuManager.updateSubMenu(subMenuView.getMenu());
+        try {
+            final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
+            mInjector.menuManager.updateSubMenu(subMenuView.getMenu());
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         return true;
     }
 
@@ -1045,8 +1053,12 @@ public abstract class BaseActivity
         LocalPreferences.setViewMode(this, getCurrentRoot(), mode);
         mState.derivedMode = mode;
 
-        final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
-        mInjector.menuManager.updateSubMenu(subMenuView.getMenu());
+        try {
+            final ActionMenuView subMenuView = findViewById(R.id.sub_menu);
+            mInjector.menuManager.updateSubMenu(subMenuView.getMenu());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         DirectoryFragment dir = getDirectoryFragment();
         if (dir != null) {

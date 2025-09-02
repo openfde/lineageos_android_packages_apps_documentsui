@@ -101,7 +101,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE" };
     public FilesActivity() {
-        super(R.layout.files_activity, TAG);
+        super(R.layout.fixed_layout, TAG);
     }
 
     // make these methods visible in this package to work around compiler bug http://b/62218600
