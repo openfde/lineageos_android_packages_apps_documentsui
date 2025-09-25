@@ -20,6 +20,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import java.io.File;
+
+import android.os.Environment;
+import android.net.Uri;
 import com.android.documentsui.DocumentsApplication;
 
 /**
@@ -32,5 +36,15 @@ public class BootReceiver extends BroadcastReceiver {
         // kicked off a task to load roots, so this broadcast is finished once
         // that first pass is done.
         DocumentsApplication.getProvidersCache(context).setBootCompletedResult(goAsync());
+
+        triggerSystemMediaScan(context);
+    }
+
+    public void triggerSystemMediaScan(Context context) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File externalDir = Environment.getExternalStorageDirectory();
+        Uri contentUri = Uri.fromFile(externalDir);
+        mediaScanIntent.setData(contentUri);
+        context.sendBroadcast(mediaScanIntent);
     }
 }
