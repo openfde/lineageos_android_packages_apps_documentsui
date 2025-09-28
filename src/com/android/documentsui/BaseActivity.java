@@ -84,6 +84,7 @@ import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.sorting.SortController;
 import com.android.documentsui.sorting.SortModel;
 import com.google.android.material.appbar.AppBarLayout;
+import com.android.documentsui.util.Utils;
 
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
@@ -98,6 +99,8 @@ import android.view.WindowManager;
 import android.view.MotionEvent;
 import javax.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import java.io.File;
+import android.os.Environment;
 
 public abstract class BaseActivity
         extends AppCompatActivity implements CommonAddons, NavigationViewManager.Environment {
@@ -216,13 +219,23 @@ public abstract class BaseActivity
         return runningTasks.get(0);
     }
 
+   public void triggerSystemMediaScan(Context context) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File externalDir = Environment.getExternalStorageDirectory();
+        Uri contentUri = Uri.fromFile(externalDir);
+        mediaScanIntent.setData(contentUri);
+        context.sendBroadcast(mediaScanIntent);
+    }
+
     @CallSuper
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Handle shortcut intents
-        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
+        // setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         EventBus.getDefault().register(this);
         Intent launchIntent = getIntent();
+        //triggerSystemMediaScan(this);
+        isMax = Utils.isFreeformMaximized(this);
         if (launchIntent != null) {
             String uriString = launchIntent.getStringExtra("DOCUMENT_URI");
             String mimeType = launchIntent.getStringExtra("DOCUMENT_MIME");
@@ -337,9 +350,12 @@ public abstract class BaseActivity
 
             ImageView imgMaximize = findViewById(R.id.imgMaximize);
             imgMaximize.setOnClickListener(view -> {
+                boolean isMaximized = Utils.isFreeformMaximized(this);
                 Intent inte = new Intent("com.fde.fullscreen.ENABLE_OR_DISABLE");
-                inte.putExtra("mode", isMax ? 0 : 1);
+                inte.putExtra("mode", isMaximized ? 1 : 0);
                 sendBroadcast(inte);
+               
+                Log.w(TAG, "imgMaximize: isMaximized: "+isMaximized + " isMax: "+isMax );
                 isMax = !isMax ;
             });
 
@@ -352,6 +368,12 @@ public abstract class BaseActivity
             imgFullscreen.setOnClickListener(view -> {
                 simulateKeyPress(KeyEvent.KEYCODE_F11);
             });
+
+
+            imgMinimize.setVisibility(View.INVISIBLE);
+            imgFullscreen.setVisibility(View.INVISIBLE);
+            imgMaximize.setVisibility(View.INVISIBLE);
+            imgClose.setVisibility(View.INVISIBLE);
 
 
             editSearch = findViewById(R.id.editSearch);

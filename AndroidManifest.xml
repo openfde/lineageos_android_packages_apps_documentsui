@@ -127,7 +127,7 @@
             
             <layout
                 android:minHeight="800dp"
-                android:minWidth="1000dp" />
+                android:minWidth="600dp" />
         </activity>
 
         <activity

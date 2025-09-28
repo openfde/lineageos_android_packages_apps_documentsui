@@ -33,7 +33,7 @@ public class RenameDialogActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
+        // setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // Window window = getWindow();
         // window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
