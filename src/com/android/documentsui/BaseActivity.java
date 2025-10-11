@@ -377,6 +377,7 @@ public abstract class BaseActivity
 
 
             editSearch = findViewById(R.id.editSearch);
+            editSearch.requestFocus();
             editSearch.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -388,7 +389,7 @@ public abstract class BaseActivity
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String strSearch = s.toString();
+                    String strSearch = s.toString().trim();
     //                startLoading();
                     mSearchManager.onQueryTextChange(strSearch);
 
