@@ -428,7 +428,7 @@ public void parseFile() {
                 root.title  = documentInfo.displayName = childPath;
                 root.authority = documentInfo.authority = "com.android.externalstorage.documents";
                 documentInfo.mimeType = "vnd.android.document/directory";
-                documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary%3ADesktop%2"+childPath);
+                documentInfo.derivedUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents",  documentInfo.documentId);
                 DirectoryFragment.showDirectory(fm, root, documentInfo, AnimationView.ANIM_NONE);
                 childPath = null;
             }else{
