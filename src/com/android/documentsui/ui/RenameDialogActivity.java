@@ -20,9 +20,10 @@ import com.android.documentsui.R;
 import com.android.documentsui.provider.FileUtils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
+import android.graphics.drawable.ColorDrawable;
 import java.io.File;
-
+import android.graphics.Color;
+import android.view.WindowManager;
 public class RenameDialogActivity extends Activity {
     TextView txtOk;
     TextView txtCancel;
@@ -33,10 +34,10 @@ public class RenameDialogActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
+        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // Window window = getWindow();
-        // window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Window window = getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         // window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         setTitle("");
         DocumentsApplication.getInstance().setCurrentActivity(this);
