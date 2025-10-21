@@ -177,14 +177,17 @@ public class IpcService extends Service {
                 SPUtils.putDocInfo(context, FileUtils.FILE_DESKTOP_NAME, "");
             }else if(FileUtils.RENAME_FILE.equals(method) || FileUtils.RENAME_DIR.equals(method) ){
                 try {
-//                    gotoClientApp("RENAME",params);
-//                    renameDialog(FileUtils.PATH_ID_DESKTOP+arrFileName[0]);
 
-                    Intent intent = new Intent();
-                    intent.setClass(context, RenameDialogActivity.class);
-                    intent.putExtra("oldFileName",params);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
+                    // Intent intent = new Intent();
+                    // intent.setClass(context, RenameDialogActivity.class);
+                    // intent.putExtra("oldFileName",params);
+                    // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    // context.startActivity(intent);
+                    String oldFileName = params.split("###")[0];
+                    String newFileName = params.split("###")[1];
+                    File file = new File(FileUtils.PATH_ID_DESKTOP + oldFileName);
+                    file.renameTo(new File(FileUtils.PATH_ID_DESKTOP + newFileName));
+                    gotoClientApp("RENAME",oldFileName +"###"+newFileName);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
