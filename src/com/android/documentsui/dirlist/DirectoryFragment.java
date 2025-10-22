@@ -162,6 +162,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     private Handler handler = new Handler();
 
+    private static final long DOUBLE_CLICK_TIME_DELTA = 400; //
+    private static long lastClickTime = 0;
+
     int posSelect = -1 ;
     int lastSelect = -1 ;
     @Injected
@@ -772,6 +775,14 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private boolean onItemActivated(ItemDetails<String> item, MotionEvent e) {
         if (((DocumentItemDetails) item).inPreviewIconHotspot(e)) {
             return mActions.previewItem(item);
+        }
+
+        long currentTime = System.currentTimeMillis();
+        long subTime = currentTime - lastClickTime;
+        if (subTime  < DOUBLE_CLICK_TIME_DELTA ) {
+        }else{
+            lastClickTime = currentTime;
+            return false ;
         }
 
         return mActions.openItem(
