@@ -90,5 +90,10 @@
             android:title="@string/menu_add_shortcut"
             android:visible="false"
             app:showAsAction="never"/>
+        <item
+            android:id="@+id/option_menu_open_the_terminal"
+            android:title="@string/menu_open_the_terminal"
+            android:visible="false"
+            app:showAsAction="never"/>    
     </group>
 </menu>

@@ -931,6 +931,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private boolean handleMenuItemClick(MenuItem item) {
+        Log.w(TAG, "handleMenuItemClick: " + item);
         if (mInjector.pickResult != null) {
             mInjector.pickResult.increaseActionCount();
         }
@@ -938,6 +939,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         mSelectionMgr.copySelection(selection);
 
         final int id = item.getItemId();
+        Log.w(TAG, "handleMenuItemClick id: " + id);
         if (id == R.id.action_menu_select || id == R.id.dir_menu_open) {
             openDocuments(selection);
             mActionModeController.finishActionMode();
@@ -1033,9 +1035,39 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
             mActions.showAddShortcutDialog(documentInfo);
             return true;
+        }else if(id == R.id.action_menu_open_the_terminal || id == R.id.dir_menu_open_the_terminal){
+            DocumentInfo documentInfo = selection.isEmpty()
+                    ? mActivity.getCurrentDirectory()
+                    : mModel.getDocuments(selection).get(0);
+            Log.w(TAG, "handleMenuItemClick--action_open_the_terminal: " + documentInfo);
+                if(documentInfo == null){
+                    return false;
+                }
+                String name = documentInfo.documentId;
+                if(documentInfo.documentId.contains("primary:")){
+                    name  = documentInfo.documentId.replace("primary:","");
+                }
+                String params = name+"###"+"open_terminal"+"###open###"+"";
+                Log.w(TAG, "handleMenuItemClick--action_open_the_terminal params: " + params);
+                // String path = FileUtils.PATH_ID_DESKTOP+fileName;
+                // File file = new File(path);
+                Uri uri = documentInfo.derivedUri;//FileProvider.getUriForFile(Launcher.this,ImageActionUtils.AUTHORITY,file);
+                Intent shareIntent = new Intent(Intent.ACTION_VIEW);
+                shareIntent.setDataAndType(uri, "application/vnd.desktop");
+                shareIntent.putExtra("fromOther", "Launcher");
+                shareIntent.putExtra("vnc_activity_name", "");
+                shareIntent.putExtra("App", "");
+                shareIntent.putExtra("openParams", params);
+                shareIntent.putExtra("docTitle", "");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+                flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+                shareIntent.setFlags(flags);
+                startActivity(shareIntent);
         }
         if (DEBUG) {
-            Log.d(TAG, "Unhandled menu item selected: " + item);
+            Log.d(TAG, "Unhandled menu item selected: " + item + ",R.id.action_menu_open_the_terminal "+R.id.action_menu_open_the_terminal + ",  "+R.id.dir_menu_open_the_terminal+ ",  "+R.id.option_menu_open_the_terminal);
         }
         return false;
     }

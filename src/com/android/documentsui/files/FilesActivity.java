@@ -353,7 +353,7 @@ public void parseFile() {
         // TODO: Rather than just disappearing, maybe we should inform
         // the user what has happened, let them close us. Less surprising.
         if (mProviders.getRootBlocking(root.userId, root.authority, root.rootId) == null) {
-            finish();
+           // finish();
         }
     }
 
@@ -380,6 +380,7 @@ public void parseFile() {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.w(TAG, "onOptionsItemSelected: " + item);
         DirectoryFragment dir;
         final int id = item.getItemId();
         if (id == R.id.option_menu_create_dir) {
@@ -396,6 +397,8 @@ public void parseFile() {
         } else if (id == R.id.option_menu_add_shortcut) {
             assert(canCreateDirectory());
             mInjector.actions.showAddShortcutDialog(getCurrentDirectory());
+        }else if(id == R.id.option_menu_open_the_terminal){
+            Log.w(TAG, "onOptionsItemSelected--option_menu_open_the_terminal: " + item);
         } else {
             return super.onOptionsItemSelected(item);
         }

@@ -60,5 +60,8 @@
         <item
             android:id="@+id/dir_menu_add_shortcut"
             android:title="@string/menu_add_shortcut" />
+        <item
+            android:id="@+id/dir_menu_open_the_terminal"
+            android:title="@string/menu_open_the_terminal" />    
     </group>
 </menu>

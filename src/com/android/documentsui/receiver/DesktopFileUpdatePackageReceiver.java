@@ -9,6 +9,7 @@ import android.util.Log;
 import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.IpcService;
 import org.json.JSONObject;
+import com.android.documentsui.provider.FileUtils;
 
 public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
 
@@ -23,22 +24,30 @@ public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
         String data = intent.getStringExtra("data");
 
        try {
-        if(data !=null && !"".equals(data)){
-            JSONObject jsonObject = new JSONObject(data);
-            mode = jsonObject.getString("OpCode");
-            path = jsonObject.getString("FileName");
-        }
-      
-        Log.i(TAG, "MediaProvider--DesktopFileUpdate---onReceive--action " + action + ",mode: " + mode + ",path: " + path);
+            if(data !=null && !"".equals(data)){
+                JSONObject jsonObject = new JSONObject(data);
+                mode = jsonObject.getString("OpCode");
+                path = jsonObject.getString("FileName");
+            }
+        
+            Log.i(TAG, "MediaProvider--DesktopFileUpdate---onReceive--action " + action + ",mode: " + mode + ",path: " + path + " ,desktop path: "+FileUtils.getDesktopPath()) ;
 
-        IpcService ipcService = DocumentsApplication.getInstance().getIpcService();
-        if (ipcService != null) {
-            ipcService.gotoClientApp("UPDATE_DESKTOP", mode + "###" + path);
-        } else {
-            Log.i(TAG, "ipcService is null");
-        }
+            FileUtils.triggerSystemMediaScan(context, path);
+
+            if(!path.contains(FileUtils.getDesktopShortPath())){
+                Log.i(TAG, "not desktop path , return");
+                return;
+            }
+
+
+            IpcService ipcService = DocumentsApplication.getInstance().getIpcService();
+            if (ipcService != null) {
+                ipcService.gotoClientApp("UPDATE_DESKTOP", mode + "###" + path);
+            } else {
+                Log.i(TAG, "ipcService is null");
+            }
        } catch (Exception e) {
-        e.printStackTrace();
+            e.printStackTrace();
        }
 
     }

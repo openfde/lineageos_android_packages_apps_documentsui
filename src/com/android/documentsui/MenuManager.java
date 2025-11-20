@@ -75,6 +75,7 @@ public abstract class MenuManager {
         updateViewInOwner(menu.findItem(R.id.action_menu_view_in_owner), selection);
         updateSort(menu.findItem(R.id.action_menu_sort));
         updateAddLauncherShortcut(menu.findItem(R.id.action_menu_add_shortcut), selection);
+        updateAddLauncherOpenTerminal(menu.findItem(R.id.action_menu_open_the_terminal), selection);
 
         Menus.disableHiddenItems(menu);
     }
@@ -99,6 +100,8 @@ public abstract class MenuManager {
         updateLauncher(mOptionMenu.findItem(R.id.option_menu_launcher));
         updateShowHiddenFiles(mOptionMenu.findItem(R.id.option_menu_show_hidden_files));
         updateAddLauncherShortcut(mOptionMenu.findItem(R.id.option_menu_add_shortcut));
+        updateAddLauncherOpenTerminal(mOptionMenu.findItem(R.id.option_menu_open_the_terminal));
+        
 
         Menus.disableHiddenItems(mOptionMenu);
         mSearchManager.updateMenu();
@@ -207,6 +210,7 @@ public abstract class MenuManager {
         MenuItem delete = menu.findItem(R.id.dir_menu_delete);
         MenuItem inspect = menu.findItem(R.id.dir_menu_inspect);
         MenuItem addLauncherShortcut = menu.findItem(R.id.dir_menu_add_shortcut);
+        MenuItem addLauncherOpenTerminal = menu.findItem(R.id.dir_menu_open_the_terminal);
 
         final boolean canCopy =
                 selectionDetails.size() > 0 && !selectionDetails.containsPartialFiles();
@@ -217,6 +221,7 @@ public abstract class MenuManager {
 
         Menus.setEnabledAndVisible(inspect, selectionDetails.size() == 1);
         Menus.setEnabledAndVisible(addLauncherShortcut, selectionDetails.size() == 1);
+        Menus.setEnabledAndVisible(addLauncherOpenTerminal, true);
     }
 
     /**
@@ -232,6 +237,7 @@ public abstract class MenuManager {
         MenuItem createDir = menu.findItem(R.id.dir_menu_create_dir);
         MenuItem inspect = menu.findItem(R.id.dir_menu_inspect);
         MenuItem addLauncherShortcut = menu.findItem(R.id.dir_menu_add_shortcut);
+        MenuItem addLauncherOpenTerminal = menu.findItem(R.id.dir_menu_open_the_terminal);
 
         Menus.setEnabledAndVisible(paste,
                 mDirDetails.hasItemsToPaste() && mDirDetails.canCreateDoc());
@@ -240,6 +246,7 @@ public abstract class MenuManager {
         updateCreateDir(createDir);
         updateInspect(inspect);
         updateAddLauncherShortcut(addLauncherShortcut);
+        updateAddLauncherOpenTerminal(addLauncherOpenTerminal);
     }
 
     /**
@@ -344,6 +351,10 @@ public abstract class MenuManager {
         Menus.setEnabledAndVisible(addLauncherShortcut, false);
     }
 
+    protected void updateAddLauncherOpenTerminal(MenuItem addLauncherOpenTerminal) {
+        Menus.setEnabledAndVisible(addLauncherOpenTerminal, true);
+    }
+
     /**
      * This method is called for action mode, when a selection exists.
      */
@@ -386,6 +397,11 @@ public abstract class MenuManager {
     protected void updateAddLauncherShortcut(MenuItem addLauncherShortcut,
             SelectionDetails selectionDetails) {
         Menus.setEnabledAndVisible(addLauncherShortcut, false);
+    }
+
+    protected void updateAddLauncherOpenTerminal(MenuItem addLauncherOpenTerminal,
+            SelectionDetails selectionDetails) {
+        Menus.setEnabledAndVisible(addLauncherOpenTerminal, true);
     }
 
     protected void updateLauncher(MenuItem launcher) {

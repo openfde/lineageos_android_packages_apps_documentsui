@@ -85,4 +85,8 @@
         android:id="@+id/action_menu_add_shortcut"
         android:title="@string/menu_add_shortcut"
         android:showAsAction="never" />
+    <item
+        android:id="@+id/action_menu_open_the_terminal"
+        android:title="@string/menu_open_the_terminal"
+        android:showAsAction="never" />    
 </menu>

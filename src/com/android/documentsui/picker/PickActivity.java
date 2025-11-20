@@ -377,6 +377,7 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
             mState.derivedMode = visualMimes ? State.MODE_GRID : State.MODE_LIST;
         } else {
             // Normal boring directory
+            Log.w(TAG,"bella_doc showDirectory.refreshDirectory............. cwd "+cwd.toString());
             DirectoryFragment.showDirectory(fm, root, cwd, anim);
         }
 
