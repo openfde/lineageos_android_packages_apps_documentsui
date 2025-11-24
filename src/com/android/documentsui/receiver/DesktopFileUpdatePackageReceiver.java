@@ -9,6 +9,8 @@ import android.util.Log;
 import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.IpcService;
 import org.json.JSONObject;
+import com.android.documentsui.provider.FileUtils;
+
 
 public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
     private static final String TAG = "DesktopFileUpdatePackageReceiver";
