@@ -74,15 +74,7 @@
                     <TextView
                         android:id="@+id/searchbar_title"
                         android:layout_width="match_parent"
-                        android:layout_height="?android:attr/actionBarSize"
-                        android:layout_marginStart="@dimen/search_bar_text_margin_start"
-                        android:layout_marginEnd="@dimen/search_bar_text_margin_end"
-                        android:drawableStart="@drawable/ic_menu_search"
-                        android:drawablePadding="@dimen/search_bar_icon_padding"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/search_bar_icon_padding"
-                        android:text="@string/search_bar_hint"
-                        android:textAppearance="@style/SearchBarTitle" />
+                        android:layout_height="?android:attr/actionBarSize"/>
 
                 </androidx.appcompat.widget.Toolbar>
 
