@@ -30,7 +30,7 @@ public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
             }  
             Log.d(TAG, "MediaProvider--DesktopFileUpdate---onReceive--action " + action + ",mode: " + mode + ",path: " + path + " ,desktop path: "+FileUtils.getDesktopPath()) ;
             FileUtils.triggerSystemMediaScan(context, path);
-            if(!path.contains(FileUtils.DESKTOP) && path.contains(FileUtils.DESKTOP_CH)){
+            if(!path.contains(FileUtils.DESKTOP) && !path.contains(FileUtils.DESKTOP_CH)){
                 Log.w(TAG, "path not contains desktop");
                 return;
             }
