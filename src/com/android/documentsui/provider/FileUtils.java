@@ -66,7 +66,8 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 import android.os.Environment;
-
+import android.os.Handler;
+import android.os.Looper;
 
 public class FileUtils {
 
@@ -1138,15 +1139,21 @@ public class FileUtils {
 /**
  *  scan media file update db  
  */
-    public static void triggerSystemMediaScan(Context context,String filePath) {
+    public static void triggerSystemMediaScan(final Context context,final String filePath) {
         try{
-            Log.i(TAG, "triggerSystemMediaScan filePath 1: " + filePath);
-            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            File externalDir = new File(Environment.getExternalStorageDirectory() +"/"+filePath);
-            Uri contentUri = Uri.fromFile(externalDir);
-            mediaScanIntent.setData(contentUri);
-            context.sendBroadcast(mediaScanIntent);
-            Log.i(TAG, "triggerSystemMediaScan contentUri 2: " + contentUri.toString());
+             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "triggerSystemMediaScan filePath 1: " + filePath);
+                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    File externalDir = new File(Environment.getExternalStorageDirectory() +"/"+filePath);
+                    Uri contentUri = Uri.fromFile(externalDir);
+                    mediaScanIntent.setData(contentUri);
+                    context.sendBroadcast(mediaScanIntent);
+                    Log.i(TAG, "triggerSystemMediaScan contentUri 2: " + contentUri.toString());
+                }
+            }, 100 * 3);
+            
         }catch(Exception e){
             e.printStackTrace();
         }
