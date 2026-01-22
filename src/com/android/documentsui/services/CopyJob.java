@@ -283,10 +283,14 @@ class CopyJob extends ResolvedResourcesJob {
             // Query root info here instead of using stack.root because the number there may be
             // stale.
             root = cache.getRootOneshot(root.userId, root.authority, root.rootId, true);
-            if (root.availableBytes >= 0) {
-                available = (batchSize <= root.availableBytes);
-            } else {
-                Log.w(TAG, root.toString() + " doesn't provide available bytes.");
+            try {
+                if (root !=null && root.availableBytes >= 0) {
+                    available = (batchSize <= root.availableBytes);
+                } else {
+                    Log.d(TAG,  "root is null or  doesn't provide available bytes.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
