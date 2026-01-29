@@ -125,7 +125,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
 import java.util.List;
-
+import android.app.WallpaperManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 /**
  * Display the documents inside a single directory.
  */
@@ -133,6 +135,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     static final int TYPE_NORMAL = 1;
     static final int TYPE_RECENT_OPEN = 2;
+    static final int SET_WALLPAPER = 9001;
 
     @IntDef(flag = true, value = {
             REQUEST_COPY_DESTINATION
@@ -723,6 +726,9 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             mInjector.menuManager.inflateContextMenuForContainer(
                     menu, inflater, mSelectionMetadata);
         } else {
+            if(modelId.endsWith(".png".toLowerCase())|| modelId.endsWith(".jpg".toLowerCase())){
+                menu.add(R.id.menu_open_group,SET_WALLPAPER,0,getString(R.string.menu_set_as_wallpaper));
+            }
             mInjector.menuManager.inflateContextMenuForDocs(
                     menu, inflater, mSelectionMetadata);
         }
@@ -948,6 +954,34 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         } else if (id == R.id.dir_menu_open_in_new_window) {
             mActions.openSelectedInNewWindow();
             return true;
+         }else if(id == SET_WALLPAPER){
+            try {
+                DocumentInfo doc = selection.isEmpty()
+                        ? mActivity.getCurrentDirectory()
+                        : mModel.getDocuments(selection).get(0);
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
+                String  path = doc.derivedUri.getLastPathSegment();
+                if(path.startsWith("primary:")){
+                    path = path.replace("primary:","/mnt/sdcard/");
+                }
+                Bitmap wallpaperBitmap = BitmapFactory.decodeFile(path);
+                int w = wallpaperBitmap.getWidth();
+                int h = wallpaperBitmap.getHeight();
+                if (w != 0 && h != 0) {
+                    if (w > h) {
+                        wallpaperManager.suggestDesiredDimensions(w, h);
+                    } else {
+                        wallpaperManager.suggestDesiredDimensions(h, w);
+                    }
+                } else {
+                    wallpaperManager.suggestDesiredDimensions(1920, 1080);
+                }
+                wallpaperManager.setBitmap(wallpaperBitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return  true;
         } else if (id == R.id.action_menu_share || id == R.id.dir_menu_share) {
             mActions.shareSelectedDocuments();
             return true;
