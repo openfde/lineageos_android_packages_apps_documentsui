@@ -936,26 +936,8 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         }
     }
 
-    private boolean handleMenuItemClick(MenuItem item) {
-        if (mInjector.pickResult != null) {
-            mInjector.pickResult.increaseActionCount();
-        }
-        MutableSelection<String> selection = new MutableSelection<>();
-        mSelectionMgr.copySelection(selection);
-
-        final int id = item.getItemId();
-        if (id == R.id.action_menu_select || id == R.id.dir_menu_open) {
-            openDocuments(selection);
-            mActionModeController.finishActionMode();
-            return true;
-        } else if (id == R.id.action_menu_open_with || id == R.id.dir_menu_open_with) {
-            showChooserForDoc(selection);
-            return true;
-        } else if (id == R.id.dir_menu_open_in_new_window) {
-            mActions.openSelectedInNewWindow();
-            return true;
-         }else if(id == SET_WALLPAPER){
-            try {
+    private void setWallpaper(MutableSelection<String> selection){
+         try {
                 DocumentInfo doc = selection.isEmpty()
                         ? mActivity.getCurrentDirectory()
                         : mModel.getDocuments(selection).get(0);
@@ -980,7 +962,33 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             } catch (IOException e) {
                 e.printStackTrace();
             }
+    }
 
+    private boolean handleMenuItemClick(MenuItem item) {
+        if (mInjector.pickResult != null) {
+            mInjector.pickResult.increaseActionCount();
+        }
+        MutableSelection<String> selection = new MutableSelection<>();
+        mSelectionMgr.copySelection(selection);
+
+        final int id = item.getItemId();
+        if (id == R.id.action_menu_select || id == R.id.dir_menu_open) {
+            openDocuments(selection);
+            mActionModeController.finishActionMode();
+            return true;
+        } else if (id == R.id.action_menu_open_with || id == R.id.dir_menu_open_with) {
+            showChooserForDoc(selection);
+            return true;
+        } else if (id == R.id.dir_menu_open_in_new_window) {
+            mActions.openSelectedInNewWindow();
+            return true;
+         }else if(id == SET_WALLPAPER){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    setWallpaper(selection);
+                }
+            }).start();
             return  true;
         } else if (id == R.id.action_menu_share || id == R.id.dir_menu_share) {
             mActions.shareSelectedDocuments();
