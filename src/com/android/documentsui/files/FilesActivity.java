@@ -118,7 +118,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     @Override
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
-        // setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
+        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         MessageBuilder messages = new MessageBuilder(this);
         Features features = Features.create(this);
 

@@ -101,6 +101,9 @@ import javax.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import java.io.File;
 import android.os.Environment;
+import android.openfde.AppTaskControllerProxy;
+import android.openfde.AppTaskStatusListener;
+import java.lang.ref.WeakReference;
 
 public abstract class BaseActivity
         extends AppCompatActivity implements CommonAddons, NavigationViewManager.Environment {
@@ -126,7 +129,7 @@ public abstract class BaseActivity
     protected ConfigStore mConfigStore;
     protected TextView txtTitle;
     EditText editSearch;
-    //ImageView imgLeft,imgRight,imgSwitch,imgSort,imgAllSelected,imgShowHide,imgClose,imgMaximize,imgMinimize,imgFullscreen;
+    ImageView imgMaximize,imgFullscreen;
     ImageView imgView, imgSwitch, imgShowHide;
     ImageView imgLeft, imgRight;
     // LinearLayout  layoutLoading;
@@ -153,6 +156,8 @@ public abstract class BaseActivity
     private Stack<DocumentInfo> lastPathStack = new Stack<>();
     private Stack<DocumentInfo> nextPathStack = new Stack<>();
     private  boolean isMax = false;
+
+    AppTaskControllerProxy appTaskController ;
 
     private float dX;
     private float dY;
@@ -231,7 +236,7 @@ public abstract class BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Handle shortcut intents
-        // setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
+        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         EventBus.getDefault().register(this);
         Intent launchIntent = getIntent();
         //triggerSystemMediaScan(this);
@@ -285,6 +290,19 @@ public abstract class BaseActivity
         Breadcrumb breadcrumb = findViewById(R.id.horizontal_breadcrumb);
 
         try {
+            appTaskController = AppTaskControllerProxy.create();
+                    appTaskController.initCustomCaption(new WeakReference<>(this),false, new AppTaskStatusListener() {
+                        @Override
+                        public void onStatusChanged(int windowingMode, boolean isSystemBarVisible) {
+                            if(imgMaximize !=null){
+                                imgMaximize.setImageResource(windowingMode == 5 ? R.drawable.window_normal_button :R.drawable.window_maximize_button);
+                            }
+                            if(imgFullscreen !=null){
+                                imgFullscreen.setImageResource(isSystemBarVisible ? R.drawable.window_full_screen_button :R.drawable.window_exit_full_screen_button);
+                            }    
+                        }
+                    });
+
             rootView = findViewById(R.id.coordinator_layout);
             txtTitle = findViewById(R.id.txtTitle);
             ImageView imgSort = findViewById(R.id.imgSort);
@@ -307,13 +325,7 @@ public abstract class BaseActivity
 
             ImageView imgClose = findViewById(R.id.imgClose);
             imgClose.setOnClickListener(view -> {
-                try{
-                    ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-                    List<ActivityManager.AppTask> tasks = activityManager.getAppTasks();
-                    tasks.get(0).finishAndRemoveTask();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
+                appTaskController.closeTask();
             });
 
             imgLeft = findViewById(R.id.imgLeft);
@@ -348,32 +360,26 @@ public abstract class BaseActivity
                 setButtonBackGroup();
             });
 
-            ImageView imgMaximize = findViewById(R.id.imgMaximize);
+            imgMaximize = findViewById(R.id.imgMaximize);
             imgMaximize.setOnClickListener(view -> {
-                boolean isMaximized = Utils.isFreeformMaximized(this);
-                Intent inte = new Intent("com.fde.fullscreen.ENABLE_OR_DISABLE");
-                inte.putExtra("mode", isMaximized ? 1 : 0);
-                sendBroadcast(inte);
-               
-                Log.w(TAG, "imgMaximize: isMaximized: "+isMaximized + " isMax: "+isMax );
-                isMax = !isMax ;
+                appTaskController.maximizeOrNot();
             });
 
             ImageView imgMinimize = findViewById(R.id.imgMinimize);
             imgMinimize.setOnClickListener(view -> {
-                simulateKeyPress(KeyEvent.KEYCODE_F9);
+                appTaskController.minimize();
             });
 
-            ImageView imgFullscreen = findViewById(R.id.imgFullscreen);
+            imgFullscreen = findViewById(R.id.imgFullscreen);
             imgFullscreen.setOnClickListener(view -> {
-                simulateKeyPress(KeyEvent.KEYCODE_F11);
+                appTaskController.enterOrExitFullscreen();
             });
 
 
-            imgMinimize.setVisibility(View.INVISIBLE);
-            imgFullscreen.setVisibility(View.INVISIBLE);
-            imgMaximize.setVisibility(View.INVISIBLE);
-            imgClose.setVisibility(View.INVISIBLE);
+            // imgMinimize.setVisibility(View.INVISIBLE);
+            // imgFullscreen.setVisibility(View.INVISIBLE);
+            // imgMaximize.setVisibility(View.INVISIBLE);
+            // imgClose.setVisibility(View.INVISIBLE);
 
 
             editSearch = findViewById(R.id.editSearch);
