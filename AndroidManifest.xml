@@ -72,6 +72,7 @@
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:allowBackup="true"
+        android:debuggable="true"
         android:usesCleartextTraffic="true"
         android:backupAgent=".prefs.BackupAgent"
         android:appCategory="productivity"

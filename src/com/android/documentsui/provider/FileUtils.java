@@ -65,6 +65,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
+import de.greenrobot.event.EventBus;
+import com.android.documentsui.MessageEvent;
 
 public class FileUtils {
 
@@ -254,6 +256,7 @@ public class FileUtils {
             throw new FileNotFoundException("Failed to copy document: " + sourceDocumentId +
                     ". " + e.getMessage());
         }
+        EventBus.getDefault().post(new MessageEvent("","UPDATE"));
         return newFile.getAbsolutePath();
     }
 
@@ -281,7 +284,7 @@ public class FileUtils {
         } catch (Exception e) {
             throw new FileNotFoundException("Failed to rename document. Error: " + e.getMessage());
         }
-
+        EventBus.getDefault().post(new MessageEvent("","UPDATE"));
         return destFile.getAbsolutePath();
     }
 
