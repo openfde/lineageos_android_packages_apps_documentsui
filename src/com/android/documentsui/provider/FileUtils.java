@@ -67,10 +67,18 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 import de.greenrobot.event.EventBus;
 import com.android.documentsui.MessageEvent;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 
 public class FileUtils {
 
     public static final String DESKTOP = "Desktop";
+
+    public static final String DESKTOP_CH = "桌面";
+
+    public static final String VOLUMES = "/volumes/";
+
     public static final String PATH_ID_DESKTOP = "/mnt/sdcard/" + DESKTOP + "/";
 
     public static final String OPEN_DIR = "OPEN_DIR";
@@ -388,7 +396,7 @@ public class FileUtils {
     }
 
     public static String readFile() {
-        String filePath = "/volumes/.fde_path_key";
+        String filePath = VOLUMES+".fde_path_key";
         String content = "";
         try {
             content = new String(Files.readAllBytes(Paths.get(filePath)));
@@ -437,7 +445,7 @@ public class FileUtils {
     }
 
     public static String findFileDir(String findPath) {
-        String rootPath = "/volumes" + "/" + getLinuxUUID() + getLinuxHomeDir();
+        String rootPath = VOLUMES+ getLinuxUUID() + getLinuxHomeDir();
         final File parent = new File(rootPath);
         String resPath = "";
         for (File file : parent.listFiles()) {
@@ -937,7 +945,7 @@ public class FileUtils {
 
     public static void createAllAndroidIconToLinux(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
-        String rootPath = "/volumes" + "/" + getLinuxUUID() + getLinuxHomeDir() + "/.local/share/icons/";
+        String rootPath = VOLUMES+ getLinuxUUID() + getLinuxHomeDir() + "/.local/share/icons/";
 
 
         if ("".equals(packageName)) {
@@ -1065,60 +1073,6 @@ public class FileUtils {
         return watermarkBitmap;
     }
 
-
-    // public static void createLinuxDesktopFile(String title ,String packageName,int itemType ){
-    //     createDesktopDir(PATH_ID_DESKTOP);
-    //         try{    
-    //             if(title.contains(".desktop") || itemType == 8 || itemType == 9){
-    //                 return ;
-    //             }
-
-    //             String documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/桌面/";  
-    //             File ff = new File(documentId);
-    //             if(!ff.exists()){
-    //                 documentId =  "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/Desktop/";  
-    //             }
-
-    //             String md5 = getMD5(packageName);
-    //             String pathDesktop = documentId+""+ md5+"_fde.desktop";
-    //             File file = new File(pathDesktop);
-    //             if(file.exists()){
-    //                 Log.i(TAG,"bella...pathDesktop is exists :  "+pathDesktop);
-    //                 return ;
-    //             }
-    //             Path desktopFilePath = Paths.get(pathDesktop);
-
-    //             String picPath = "/volumes"+"/"+getLinuxUUID()+getLinuxHomeDir()+"/.local/share/icons/"+md5+".png" ;
-    //             File filePic = new File(picPath);
-    //             String homeDir = getLinuxHomeDir();
-    //             String linuxPath = homeDir+"/.local/share/icons/"+md5+".png";
-    //             Log.i(TAG,"bella...homeDir :  "+homeDir + ",linuxPath: "+linuxPath);
-    //             File linuxPic = new File(linuxPath);
-    //             if(!linuxPic.exists()){
-    //                 Log.i(TAG,"bella...insert.............md5: "+md5 +  ", linuxPath "+linuxPath + ",packageName:  "+packageName);
-    //             }else{
-    //                 //if pic exists ,return 
-    //             }    
-
-    //             List<String> lines = List.of(
-    //                 "[Desktop Entry]",
-    //                 "Type=Application",
-    //                 "Name="+title,
-    //                 "Name[zh_CN]="+title,
-    //                 "Categories="+itemType,
-    //                 "Exec=fde_launch "+packageName,
-    //                 "Icon="+linuxPic
-    //             );
-
-    //             // 写入.desktop文件
-    //             Files.write(desktopFilePath, lines, StandardOpenOption.CREATE);
-    //             file.setExecutable(true);
-
-    //         }catch(Exception e){
-    //             e.printStackTrace();
-    //         }
-    // }
-
     public static Bitmap adaptiveIconToBitmap(AdaptiveIconDrawable adaptiveIconDrawable) {
         int width = adaptiveIconDrawable.getIntrinsicWidth();
         int height = adaptiveIconDrawable.getIntrinsicHeight();
@@ -1158,6 +1112,53 @@ public class FileUtils {
         return str.matches(".*" + regex + ".*");
     }
 
+/**
+ *  get desktop path
+ */
+    public static String getDesktopPath(){
+        String desktopPath = PATH_ID_DESKTOP;
+        String documentId =  VOLUMES +getLinuxUUID()+getLinuxHomeDir()+"/"+DESKTOP_CH+"/";  
+        File ff = new File(documentId);
+        if(!ff.exists()){
+            desktopPath  = getLinuxHomeDir()+"/"+DESKTOP+"/";
+        }else{
+            desktopPath  = getLinuxHomeDir()+"/"+DESKTOP_CH+"/";
+        }
+       return desktopPath ;
+    }
 
+    public static String getDesktopShortPath(){
+        String desktopPath = DESKTOP;
+        String documentId =  VOLUMES +getLinuxUUID()+getLinuxHomeDir()+"/"+DESKTOP_CH+"/";  
+        File ff = new File(documentId);
+        if(!ff.exists()){
+            desktopPath  = DESKTOP;
+        }else{
+            desktopPath  = DESKTOP_CH;
+        }
+        return desktopPath ;
+    }
 
+/**
+ *  scan media file update db  
+ */
+    public static void triggerSystemMediaScan(final Context context,final String filePath) {
+        try{
+             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(TAG, "triggerSystemMediaScan filePath 1: " + filePath);
+                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    File externalDir = new File(Environment.getExternalStorageDirectory() +"/"+filePath);
+                    Uri contentUri = Uri.fromFile(externalDir);
+                    mediaScanIntent.setData(contentUri);
+                    context.sendBroadcast(mediaScanIntent);
+                    Log.i(TAG, "triggerSystemMediaScan contentUri 2: " + contentUri.toString());
+                }
+            }, 100 * 3);
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 }

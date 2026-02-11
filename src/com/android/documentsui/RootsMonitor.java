@@ -128,30 +128,30 @@ final class RootsMonitor<T extends Activity & CommonAddons> {
 
         @Override
         protected void finish(RootInfo defaultRoot) {
-            if (defaultRoot == null) {
-                return;
-            }
+            // if (defaultRoot == null) {
+            //     return;
+            // }
 
-            // If the activity has been launched for the specific root and it is removed, finish the
-            // activity.
-            final Uri uri = mOwner.getIntent().getData();
-            if (uri != null && uri.equals(mCurrentRoot.getUri())) {
-                mOwner.finish();
-                return;
-            }
+            // // If the activity has been launched for the specific root and it is removed, finish the
+            // // activity.
+            // final Uri uri = mOwner.getIntent().getData();
+            // if (uri != null && uri.equals(mCurrentRoot.getUri())) {
+            //     mOwner.finish();
+            //     return;
+            // }
 
-            // Clean action mode before changing root.
-            mActionModeFinisher.run();
+            // // Clean action mode before changing root.
+            // mActionModeFinisher.run();
 
-            // Clear entire backstack and start in new root.
-            mState.stack.changeRoot(defaultRoot);
-            mSearchMgr.update(mState.stack);
+            // // Clear entire backstack and start in new root.
+            // mState.stack.changeRoot(defaultRoot);
+            // mSearchMgr.update(mState.stack);
 
-            if (defaultRoot.isRecents()) {
-                mOwner.refreshCurrentRootAndDirectory(AnimationView.ANIM_NONE);
-            } else {
-                mActions.openContainerDocument(mDefaultRootDocument);
-            }
+            // if (defaultRoot.isRecents()) {
+            //     mOwner.refreshCurrentRootAndDirectory(AnimationView.ANIM_NONE);
+            // } else {
+            //     mActions.openContainerDocument(mDefaultRootDocument);
+            // }
         }
     }
 }

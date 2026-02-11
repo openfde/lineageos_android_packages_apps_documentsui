@@ -9,11 +9,11 @@ import android.util.Log;
 import com.android.documentsui.DocumentsApplication;
 import com.android.documentsui.IpcService;
 import org.json.JSONObject;
+import com.android.documentsui.provider.FileUtils;
+
 
 public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
-
     private static final String TAG = "DesktopFileUpdatePackageReceiver";
-
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
@@ -23,24 +23,26 @@ public class DesktopFileUpdatePackageReceiver extends BroadcastReceiver {
         String data = intent.getStringExtra("data");
 
        try {
-        if(data !=null && !"".equals(data)){
-            JSONObject jsonObject = new JSONObject(data);
-            mode = jsonObject.getString("OpCode");
-            path = jsonObject.getString("FileName");
-        }
-      
-        Log.i(TAG, "MediaProvider--DesktopFileUpdate---onReceive--action " + action + ",mode: " + mode + ",path: " + path);
-
-        IpcService ipcService = DocumentsApplication.getInstance().getIpcService();
-        if (ipcService != null) {
-            ipcService.gotoClientApp("UPDATE_DESKTOP", mode + "###" + path);
-        } else {
-            Log.i(TAG, "ipcService is null");
-        }
+            if(data !=null && !"".equals(data)){
+                JSONObject jsonObject = new JSONObject(data);
+                mode = jsonObject.getString("OpCode");
+                path = jsonObject.getString("FileName");
+            }  
+            Log.d(TAG, "MediaProvider--DesktopFileUpdate---onReceive--action " + action + ",mode: " + mode + ",path: " + path + " ,desktop path: "+FileUtils.getDesktopPath()) ;
+            FileUtils.triggerSystemMediaScan(context, path);
+            if(!path.contains(FileUtils.DESKTOP) && !path.contains(FileUtils.DESKTOP_CH)){
+                Log.w(TAG, "path not contains desktop");
+                return;
+            }
+            IpcService ipcService = DocumentsApplication.getInstance().getIpcService();
+            if (ipcService != null) {
+                ipcService.gotoClientApp("UPDATE_DESKTOP", mode + "###" + path);
+            } else {
+                Log.e(TAG, "ipcService is null");
+            }
        } catch (Exception e) {
-        e.printStackTrace();
+            e.printStackTrace();
        }
 
     }
-
 }
