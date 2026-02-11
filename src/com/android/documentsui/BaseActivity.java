@@ -236,7 +236,6 @@ public abstract class BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Handle shortcut intents
-        setWindowDecorationStatus(Window.WINDOW_DECORATION_FORCE_HIDE);
         EventBus.getDefault().register(this);
         Intent launchIntent = getIntent();
         //triggerSystemMediaScan(this);
@@ -291,7 +290,7 @@ public abstract class BaseActivity
 
         try {
             appTaskController = AppTaskControllerProxy.create();
-                    appTaskController.initCustomCaption(new WeakReference<>(this),false, new AppTaskStatusListener() {
+                    appTaskController.initCustomCaption(new WeakReference<>(this),true, new AppTaskStatusListener() {
                         @Override
                         public void onStatusChanged(int windowingMode, boolean isSystemBarVisible) {
                             if(imgMaximize !=null){
@@ -301,7 +300,7 @@ public abstract class BaseActivity
                                 imgFullscreen.setImageResource(isSystemBarVisible ? R.drawable.window_full_screen_button :R.drawable.window_exit_full_screen_button);
                             }    
                         }
-                    });
+            });
 
             rootView = findViewById(R.id.coordinator_layout);
             txtTitle = findViewById(R.id.txtTitle);
@@ -750,21 +749,21 @@ public abstract class BaseActivity
     }
 
     private void setContainer() {
-        View root = findViewById(R.id.coordinator_layout);
-        root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        root.setOnApplyWindowInsetsListener((v, insets) -> {
-            root.setPadding(insets.getSystemWindowInsetLeft(),
-                    insets.getSystemWindowInsetTop(), insets.getSystemWindowInsetRight(), 0);
+        // View root = findViewById(R.id.coordinator_layout);
+        // root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        //         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        // root.setOnApplyWindowInsetsListener((v, insets) -> {
+        //     root.setPadding(insets.getSystemWindowInsetLeft(),
+        //             insets.getSystemWindowInsetTop(), insets.getSystemWindowInsetRight(), 0);
 
-            View saveContainer = findViewById(R.id.container_save);
-            saveContainer.setPadding(0, 0, 0, insets.getSystemWindowInsetBottom());
+        //     View saveContainer = findViewById(R.id.container_save);
+        //     saveContainer.setPadding(0, 0, 0, insets.getSystemWindowInsetBottom());
 
-            View rootsContainer = findViewById(R.id.container_roots);
-            rootsContainer.setPadding(0, 0, 0, insets.getSystemWindowInsetBottom());
+        //     View rootsContainer = findViewById(R.id.container_roots);
+        //     rootsContainer.setPadding(0, 0, 0, insets.getSystemWindowInsetBottom());
 
-            return insets.consumeSystemWindowInsets();
-        });
+        //     return insets.consumeSystemWindowInsets();
+        // });
 
         getWindow().setNavigationBarDividerColor(Color.TRANSPARENT);
         if (Build.VERSION.SDK_INT >= 29) {
@@ -1409,8 +1408,13 @@ public abstract class BaseActivity
         if (message.equals("RESET")) {
             lastPathStack.clear();
             nextPathStack.clear();
+        }else if (message.equals("UPDATE")) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    refreshCurrentRootAndDirectory(AnimationView.ANIM_LEAVE);
+                }
+            });
         }
-
     }
-
 }

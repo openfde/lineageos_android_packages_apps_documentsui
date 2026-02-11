@@ -35,6 +35,8 @@ import org.json.JSONObject;
 import com.android.documentsui.R;
 import android.os.Bundle;
 import android.content.Intent;
+import de.greenrobot.event.EventBus;
+import com.android.documentsui.MessageEvent;
 
 public class LinuxRootProvider extends DocumentsProvider {
 
@@ -128,6 +130,7 @@ public class LinuxRootProvider extends DocumentsProvider {
         } else {
             throw new FileNotFoundException("Failed to delete document with id " + documentId);
         }
+        EventBus.getDefault().post(new MessageEvent("","UPDATE"));
     }
 
     @Override
@@ -139,7 +142,7 @@ public class LinuxRootProvider extends DocumentsProvider {
         getContext().getContentResolver().notifyChange(
                 DocumentsContract.buildDocumentUri(AUTHORITY, documentId),
                 null, false);
-
+        EventBus.getDefault().post(new MessageEvent("","UPDATE"));
         return file.getPath();
     }
 

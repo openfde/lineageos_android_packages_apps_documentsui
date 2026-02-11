@@ -89,7 +89,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+import java.text.Collator;
+import java.util.Locale;
 import android.provider.Settings;
 
 
@@ -384,6 +385,10 @@ public class RootsFragment extends Fragment {
         }
     }
 
+    public  boolean isChinese(char c) {
+        return String.valueOf(c).matches("[\\u4e00-\\u9fa5]");
+    }
+
     /**
      * If the package name of other providers or apps capable of handling the original intent
      * include the preferred root source, it will have higher order than others.
@@ -550,7 +555,26 @@ public class RootsFragment extends Fragment {
                 this.openStorageFlag = isOpen ? 1 : 0;
                 onDisplayStateChanged();
             }));
-            Collections.reverse(rootOtherList);
+            
+            Collator collator = Collator.getInstance(Locale.CHINA);
+            Collections.sort(rootOtherList, (a, b) -> {
+
+                boolean aChinese = isChinese(a.title.charAt(0));
+                boolean bChinese = isChinese(b.title.charAt(0));
+
+                if (aChinese && !bChinese) return -1;
+                if (!aChinese && bChinese) return 1;
+
+                if (aChinese && bChinese) {
+                    return collator.compare(a, b); 
+                } else {
+                    return Character.compare(
+                            Character.toUpperCase(a.title.charAt(0)),
+                            Character.toUpperCase(b.title.charAt(0))
+                    );
+                }
+            });
+
             if (VERBOSE) Log.i(TAG, "bella Adding rootAndroidList roots: " + rootAndroidList);
             // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
             rootList.add(new MenuTitleItem(getString(R.string.app_label)));
