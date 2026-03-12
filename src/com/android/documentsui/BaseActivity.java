@@ -83,6 +83,7 @@ import com.android.documentsui.roots.ProvidersCache;
 import com.android.documentsui.sidebar.RootsFragment;
 import com.android.documentsui.sorting.SortController;
 import com.android.documentsui.sorting.SortModel;
+import com.android.documentsui.picker.PickActivity;
 import com.google.android.material.appbar.AppBarLayout;
 import com.android.documentsui.util.Utils;
 
@@ -290,16 +291,20 @@ public abstract class BaseActivity
 
         try {
             appTaskController = AppTaskControllerProxy.create();
-                    appTaskController.initCustomCaption(new WeakReference<>(this),true, new AppTaskStatusListener() {
-                        @Override
-                        public void onStatusChanged(int windowingMode, boolean isSystemBarVisible) {
-                            if(imgMaximize !=null){
-                                imgMaximize.setImageResource(windowingMode == 5 ? R.drawable.window_normal_button :R.drawable.window_maximize_button);
-                            }
-                            if(imgFullscreen !=null){
-                                imgFullscreen.setImageResource(isSystemBarVisible ? R.drawable.window_full_screen_button :R.drawable.window_exit_full_screen_button);
-                            }    
-                        }
+            boolean isHide = true ;
+            if(this instanceof PickActivity){
+                isHide = false;
+            }
+            appTaskController.initCustomCaption(new WeakReference<>(this),isHide, new AppTaskStatusListener() {
+                @Override
+                public void onStatusChanged(int windowingMode, boolean isSystemBarVisible) {
+                    if(imgMaximize !=null){
+                        imgMaximize.setImageResource(windowingMode == 5 ? R.drawable.window_normal_button :R.drawable.window_maximize_button);
+                    }
+                    if(imgFullscreen !=null){
+                        imgFullscreen.setImageResource(isSystemBarVisible ? R.drawable.window_full_screen_button :R.drawable.window_exit_full_screen_button);
+                    }    
+                }
             });
 
             rootView = findViewById(R.id.coordinator_layout);
