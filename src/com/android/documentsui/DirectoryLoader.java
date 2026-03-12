@@ -70,6 +70,8 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
     private final Bundle mQueryArgs;
     private final boolean mPhotoPicking;
 
+    private static final String HOME_URI = "content://com.android.externalstorage.documents/root/primary/search?query=&manage=true";
+
     @Nullable
     private DocumentInfo mDoc;
     private CancellationSignal mSignal;
@@ -223,9 +225,14 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             try (ContentProviderClient userClient =
                          DocumentsApplication.acquireUnstableProviderOrThrow(
                                  userId.getContentResolver(getContext()), authority)) {
-                Cursor c = userClient.query(mUri, /* projection= */null, queryArgs, mSignal);
+                String strUrl =  mUri.toString();
+                if(strUrl.contains("search?")){
+                    strUrl = HOME_URI;
+                }
+                Uri decodedUri = Uri.parse(Uri.decode(strUrl));
+                Cursor c = userClient.query(decodedUri, /* projection= */null, queryArgs, mSignal);
                 if (c != null) {
-                    cursors.add(new RootCursorWrapper(userId, mUri.getAuthority(), mRoot.rootId,
+                    cursors.add(new RootCursorWrapper(userId, decodedUri.getAuthority(), mRoot.rootId,
                             c, /* maxCount= */-1));
                 }
             } catch (RemoteException e) {
