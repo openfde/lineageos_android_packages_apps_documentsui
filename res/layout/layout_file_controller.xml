@@ -33,7 +33,7 @@
 
     <ImageView
         android:id="@+id/imgSort"
-        android:src="@drawable/icon_sort"
+        android:src="@drawable/selector_icon_sort"
         android:layout_width="@dimen/top_menu_icon_size"
         android:layout_centerVertical="true"
         android:layout_gravity="center"

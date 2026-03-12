@@ -729,6 +729,13 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             if(modelId.endsWith(".png".toLowerCase())|| modelId.endsWith(".jpg".toLowerCase())){
                 menu.add(R.id.menu_open_group,SET_WALLPAPER,0,getString(R.string.menu_set_as_wallpaper));
             }
+            
+            if(modelId.endsWith(".zip".toLowerCase())|| modelId.endsWith(".rar".toLowerCase())|| modelId.endsWith(".gz".toLowerCase())){
+                menu.add(R.id.menu_open_group,R.id.action_menu_extract_to,0,getString(R.string.menu_extract));
+            }else{
+                menu.add(R.id.menu_open_group,R.id.action_menu_compress,0,getString(R.string.menu_compress));
+            }
+            
             mInjector.menuManager.inflateContextMenuForDocs(
                     menu, inflater, mSelectionMetadata);
         }
@@ -783,13 +790,13 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             return mActions.previewItem(item);
         }
 
-        long currentTime = System.currentTimeMillis();
-        long subTime = currentTime - lastClickTime;
-        if (subTime  < DOUBLE_CLICK_TIME_DELTA ) {
-        }else{
-            lastClickTime = currentTime;
-            return false ;
-        }
+        // long currentTime = System.currentTimeMillis();
+        // long subTime = currentTime - lastClickTime;
+        // if (subTime  < DOUBLE_CLICK_TIME_DELTA ) {
+        // }else{
+        //     lastClickTime = currentTime;
+        //     return false ;
+        // }
 
         return mActions.openItem(
                 item,
@@ -1067,14 +1074,14 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         } else if (id == R.id.action_menu_sort) {
             mActions.showSortDialog();
             return true;
-        } else if (id == R.id.action_menu_add_shortcut || id == R.id.dir_menu_add_shortcut) {
-            assert selection.size() <= 1;
-            DocumentInfo documentInfo = selection.isEmpty()
-                    ? mActivity.getCurrentDirectory()
-                    : mModel.getDocuments(selection).get(0);
+        // } else if (id == R.id.action_menu_add_shortcut || id == R.id.dir_menu_add_shortcut) {
+        //     assert selection.size() <= 1;
+        //     DocumentInfo documentInfo = selection.isEmpty()
+        //             ? mActivity.getCurrentDirectory()
+        //             : mModel.getDocuments(selection).get(0);
 
-            mActions.showAddShortcutDialog(documentInfo);
-            return true;
+        //     mActions.showAddShortcutDialog(documentInfo);
+        //     return true;
         }
         if (DEBUG) {
             Log.d(TAG, "Unhandled menu item selected: " + item);

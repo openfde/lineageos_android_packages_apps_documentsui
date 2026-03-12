@@ -74,7 +74,7 @@ public abstract class MenuManager {
         updateInspect(menu.findItem(R.id.action_menu_inspect), selection);
         updateViewInOwner(menu.findItem(R.id.action_menu_view_in_owner), selection);
         updateSort(menu.findItem(R.id.action_menu_sort));
-        updateAddLauncherShortcut(menu.findItem(R.id.action_menu_add_shortcut), selection);
+        // updateAddLauncherShortcut(menu.findItem(R.id.action_menu_add_shortcut), selection);
 
         Menus.disableHiddenItems(menu);
     }
@@ -98,7 +98,7 @@ public abstract class MenuManager {
         updateSort(mOptionMenu.findItem(R.id.option_menu_sort));
         updateLauncher(mOptionMenu.findItem(R.id.option_menu_launcher));
         updateShowHiddenFiles(mOptionMenu.findItem(R.id.option_menu_show_hidden_files));
-        updateAddLauncherShortcut(mOptionMenu.findItem(R.id.option_menu_add_shortcut));
+        // updateAddLauncherShortcut(mOptionMenu.findItem(R.id.option_menu_add_shortcut));
 
         Menus.disableHiddenItems(mOptionMenu);
         mSearchManager.updateMenu();
@@ -206,7 +206,7 @@ public abstract class MenuManager {
         MenuItem copy = menu.findItem(R.id.dir_menu_copy_to_clipboard);
         MenuItem delete = menu.findItem(R.id.dir_menu_delete);
         MenuItem inspect = menu.findItem(R.id.dir_menu_inspect);
-        MenuItem addLauncherShortcut = menu.findItem(R.id.dir_menu_add_shortcut);
+        // MenuItem addLauncherShortcut = menu.findItem(R.id.dir_menu_add_shortcut);
 
         final boolean canCopy =
                 selectionDetails.size() > 0 && !selectionDetails.containsPartialFiles();
@@ -216,7 +216,7 @@ public abstract class MenuManager {
         Menus.setEnabledAndVisible(delete, canDelete);
 
         Menus.setEnabledAndVisible(inspect, selectionDetails.size() == 1);
-        Menus.setEnabledAndVisible(addLauncherShortcut, selectionDetails.size() == 1);
+        // Menus.setEnabledAndVisible(addLauncherShortcut, selectionDetails.size() == 1);
     }
 
     /**
@@ -231,7 +231,7 @@ public abstract class MenuManager {
         MenuItem deselectAll = menu.findItem(R.id.dir_menu_deselect_all);
         MenuItem createDir = menu.findItem(R.id.dir_menu_create_dir);
         MenuItem inspect = menu.findItem(R.id.dir_menu_inspect);
-        MenuItem addLauncherShortcut = menu.findItem(R.id.dir_menu_add_shortcut);
+        // MenuItem addLauncherShortcut = menu.findItem(R.id.dir_menu_add_shortcut);
 
         Menus.setEnabledAndVisible(paste,
                 mDirDetails.hasItemsToPaste() && mDirDetails.canCreateDoc());
@@ -239,7 +239,7 @@ public abstract class MenuManager {
         updateDeselectAll(deselectAll, selectionDetails);
         updateCreateDir(createDir);
         updateInspect(inspect);
-        updateAddLauncherShortcut(addLauncherShortcut);
+        // updateAddLauncherShortcut(addLauncherShortcut);
     }
 
     /**

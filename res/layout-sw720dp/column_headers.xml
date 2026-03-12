@@ -20,7 +20,7 @@
     android:id="@+id/table_header"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/doc_header_height"
+    android:layout_height="@dimen/list_item_thumbnail_size"
     android:background="@drawable/sort_widget_background"
     android:visibility="gone">
 
@@ -29,7 +29,7 @@
         android:layout_height="match_parent"
         android:baselineAligned="false"
         android:gravity="center_vertical"
-        android:minHeight="@dimen/list_item_height"
+        android:minHeight="@dimen/list_item_thumbnail_size"
         android:paddingStart="@dimen/list_item_padding"
         android:paddingEnd="@dimen/list_item_width"
         android:orientation="horizontal">

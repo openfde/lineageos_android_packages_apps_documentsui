@@ -393,9 +393,9 @@ public void parseFile() {
             mInjector.actions.selectAllFiles();
         } else if (id == R.id.option_menu_inspect) {
             mInjector.actions.showInspector(getCurrentDirectory());
-        } else if (id == R.id.option_menu_add_shortcut) {
-            assert(canCreateDirectory());
-            mInjector.actions.showAddShortcutDialog(getCurrentDirectory());
+        // } else if (id == R.id.option_menu_add_shortcut) {
+        //     assert(canCreateDirectory());
+        //     mInjector.actions.showAddShortcutDialog(getCurrentDirectory());
         } else {
             return super.onOptionsItemSelected(item);
         }
