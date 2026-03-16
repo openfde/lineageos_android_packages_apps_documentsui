@@ -965,6 +965,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private boolean handleMenuItemClick(MenuItem item) {
+        mActivity.updateFocus();
         if (mInjector.pickResult != null) {
             mInjector.pickResult.increaseActionCount();
         }

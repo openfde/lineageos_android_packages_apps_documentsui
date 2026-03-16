@@ -748,6 +748,12 @@ public abstract class BaseActivity
         return state;
     }
 
+    public void updateFocus(){
+        if(editSearch !=null){
+            editSearch.clearFocus();
+        }
+    }
+
     private void setContainer() {
         // View root = findViewById(R.id.coordinator_layout);
         // root.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -1303,6 +1309,10 @@ public abstract class BaseActivity
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        boolean isCtrlPressed = event.isCtrlPressed();
+        if (isCtrlPressed ||  event.getKeyCode() == KeyEvent.KEYCODE_V) {
+            updateFocus();
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             mInjector.debugHelper.debugCheck(event.getDownTime(), event.getKeyCode());
         }
