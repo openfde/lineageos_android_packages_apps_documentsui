@@ -228,12 +228,18 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
                 String strUrl =  mUri.toString();
                 if(strUrl.contains("search?")){
                     strUrl = HOME_URI;
-                }
-                Uri decodedUri = Uri.parse(Uri.decode(strUrl));
-                Cursor c = userClient.query(decodedUri, /* projection= */null, queryArgs, mSignal);
-                if (c != null) {
-                    cursors.add(new RootCursorWrapper(userId, decodedUri.getAuthority(), mRoot.rootId,
-                            c, /* maxCount= */-1));
+                    Uri decodedUri = Uri.parse(Uri.decode(strUrl));
+                    Cursor c = userClient.query(decodedUri, /* projection= */null, queryArgs, mSignal);
+                    if (c != null) {
+                        cursors.add(new RootCursorWrapper(userId, decodedUri.getAuthority(), mRoot.rootId,
+                                c, /* maxCount= */-1));
+                    }
+                }else{
+                    Cursor c = userClient.query(mUri, /* projection= */null, queryArgs, mSignal);
+                    if (c != null) {
+                        cursors.add(new RootCursorWrapper(userId, mUri.getAuthority(), mRoot.rootId,
+                                c, /* maxCount= */-1));
+                    }
                 }
             } catch (RemoteException e) {
                 Log.d(TAG, "Failed to query for user " + userId, e);
