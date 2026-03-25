@@ -70,6 +70,7 @@ import com.android.documentsui.MessageEvent;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import java.util.Locale;
 
 public class FileUtils {
 
@@ -1160,5 +1161,9 @@ public class FileUtils {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static boolean isChineseSystem() {
+        return Locale.getDefault().getLanguage().equals("zh");
     }
 }

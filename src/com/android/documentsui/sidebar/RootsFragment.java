@@ -92,7 +92,7 @@ import java.util.Objects;
 import java.text.Collator;
 import java.util.Locale;
 import android.provider.Settings;
-
+import com.android.documentsui.provider.FileUtils;
 
 /**
  * Display list of known storage backend roots.
@@ -575,6 +575,9 @@ public class RootsFragment extends Fragment {
                 }
             });
 
+            if(!FileUtils.isChineseSystem()){
+                Collections.reverse(rootOtherList);
+            }
             if (VERBOSE) Log.i(TAG, "bella Adding rootAndroidList roots: " + rootAndroidList);
             // rootList.add(new TitleItem(R.layout.item_linux_header,"Linux"));
             rootList.add(new MenuTitleItem(getString(R.string.app_label)));
