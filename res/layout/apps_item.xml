@@ -25,7 +25,7 @@
     android:background="@drawable/generic_ripple_background"
     android:gravity="center_horizontal">
 
-    <ImageViewe
+    <ImageView
         android:id="@+id/app_icon"
         android:layout_width="@dimen/apps_row_app_icon_size"
         android:layout_height="@dimen/apps_row_app_icon_size"
