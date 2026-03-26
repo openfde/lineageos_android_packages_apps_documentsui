@@ -62,7 +62,7 @@ public class IconUtils {
      * @return drawable of mime type files from system default
      */
     public static Drawable loadMimeIcon(Context context, String mimeType) {
-        if (mimeType == null) return null;
+        if (mimeType == null) return context.getDrawable(R.drawable.ic_doc_generic);;
         return context.getContentResolver().getTypeInfo(mimeType).getIcon().loadDrawable(context);
     }
 
