@@ -122,7 +122,7 @@ final class GridPhotoHolder extends DocumentHolder {
 
     @Override
     public void bindPreviewIcon(boolean show, Function<View, Boolean> clickCallback) {
-        mPreviewIcon.setVisibility(show ? View.VISIBLE : View.GONE);
+        // mPreviewIcon.setVisibility(show ? View.VISIBLE : View.GONE);
         if (show) {
             mPreviewIcon.setContentDescription(
                     getPreviewIconContentDescription(
@@ -134,7 +134,7 @@ final class GridPhotoHolder extends DocumentHolder {
 
     @Override
     public void bindBriefcaseIcon(boolean show) {
-        mIconBadge.setVisibility(show ? View.VISIBLE : View.GONE);
+        // mIconBadge.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -144,7 +144,7 @@ final class GridPhotoHolder extends DocumentHolder {
         Drawable drawable = userIdToBadgeMap.get(UserId.of(userIdIdentifier));
         ImageView icon = mIconBadge.findViewById(R.id.icon_id);
         icon.setImageDrawable(drawable);
-        mIconBadge.setVisibility(show ? View.VISIBLE : View.GONE);
+        // mIconBadge.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override

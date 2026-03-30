@@ -71,11 +71,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+
+
 public class PickActivity extends BaseActivity implements ActionHandler.Addons {
 
     static final String PREFERENCES_SCOPE = "picker";
 
     private static final String TAG = "PickActivity";
+
+    String callingPackage ;
 
     private Injector<ActionHandler<PickActivity>> mInjector;
     private SharedInputHandler mSharedInputHandler;
@@ -99,6 +106,15 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
     public void onCreate(Bundle icicle) {
         setTheme(R.style.DocumentsTheme);
         Features features = Features.create(this);
+
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+        if (!tasks.isEmpty()) {
+            ComponentName callingActivity = tasks.get(0).topActivity;
+            callingPackage = callingActivity.getPackageName();
+            Log.d(TAG, "callingPackage: " + callingPackage);
+        }
+
 
         mInjector = new Injector<>(
                 features,
@@ -409,6 +425,19 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
         final FragmentManager fm = getSupportFragmentManager();
         // Do not inline-open archives, as otherwise it would be impossible to pick
         // archive files. Note, that picking files inside archives is not supported.
+
+        if(callingPackage.contains("com.android.gallery3d")){
+            Intent intent = getIntent();
+            ComponentName componentName2 = new ComponentName("com.android.gallery3d", "com.fde.gallery.ui.activity.PicturePreviewActivity");
+            intent.setComponent(componentName2);
+            intent.setData(doc.derivedUri);
+            startActivity(intent);
+            setResult(RESULT_OK, intent);
+            finish();
+            return;
+        }
+
+
         if (doc.isDirectory()) {
             mInjector.actions.openContainerDocument(doc);
             mSearchManager.recordHistory();

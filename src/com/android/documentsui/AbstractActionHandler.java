@@ -316,6 +316,11 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
             }
         }
 
+        if(mSelectionMgr == null){
+            Log.d("bella","mSelectionMgr is null");
+            return;
+        }
+
         // Only select things currently visible in the adapter.
         boolean changed = mSelectionMgr.setItemsSelected(enabled, true);
         if (changed) {

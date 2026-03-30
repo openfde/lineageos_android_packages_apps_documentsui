@@ -26,13 +26,14 @@
     android:layout_height="@dimen/grid_bg_height"
     android:orientation="vertical"
     android:layout_margin="4dp"
-    android:background="@drawable/grid_item_background"
     android:elevation="@dimen/grid_item_elevation"
+    android:clickable="false"
     android:focusable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="false"
         android:duplicateParentState="true">
 
         <!-- Main item thumbnail. Comprised of two overlapping images, the
@@ -41,22 +42,26 @@
 
         <FrameLayout
             android:id="@+id/thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="72dp"
+            android:layout_centerInParent="true"
+            android:layout_height="72dp">
 
             <com.android.documentsui.GridItemThumbnail
                 android:id="@+id/icon_thumb"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:scaleType="centerCrop"
+                android:clickable="true"
+                android:visibility="visible"
                 android:contentDescription="@null"
                 android:tint="?attr/gridItemTint"
                 android:tintMode="src_over"/>
 
             <com.android.documentsui.GridItemThumbnail
                 android:id="@+id/icon_mime_lg"
-                android:layout_width="@dimen/icon_size"
-                android:layout_height="@dimen/icon_size"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:clickable="false"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
                 android:contentDescription="@null"/>
@@ -67,6 +72,7 @@
             android:layout_width="@dimen/button_touch_size"
             android:layout_height="@dimen/button_touch_size"
             android:layout_alignParentTop="true"
+            android:visibility="gone"
             android:layout_alignParentStart="true"
             android:pointerIcon="hand">
 
@@ -76,6 +82,7 @@
                 android:alpha="0"
                 android:layout_width="@dimen/check_icon_size"
                 android:layout_height="@dimen/check_icon_size"
+                android:clickable="false"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
                 android:contentDescription="@null"/>
@@ -89,6 +96,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:pointerIcon="hand"
+            android:visibility="gone"
             android:focusable="true"
             android:clickable="true">
 
@@ -97,9 +105,11 @@
                 android:layout_height="@dimen/zoom_icon_size"
                 android:padding="2dp"
                 android:layout_gravity="center"
+                android:src="@drawable/ic_zoom_out"
+                android:visibility="gone"
+                android:clickable="false"
                 android:background="@drawable/circle_button_background"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_zoom_out"/>
+                android:scaleType="fitCenter"/>
 
         </FrameLayout>
 
@@ -107,6 +117,7 @@
             android:id="@+id/icon_profile_badge"
             android:layout_width="@dimen/button_touch_size"
             android:layout_height="@dimen/button_touch_size"
+            android:visibility="gone"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:pointerIcon="hand">
@@ -118,6 +129,7 @@
                 android:src="@drawable/ic_briefcase_white"
                 android:tint="?android:attr/colorAccent"
                 android:padding="5dp"
+                android:clickable="false"
                 android:background="@drawable/circle_button_background"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
@@ -133,6 +145,8 @@
             android:layout_alignLeft="@id/thumbnail"
             android:layout_alignRight="@id/thumbnail"
             android:contentDescription="@null"
+            android:clickable="false"
+            android:visibility="gone"
             android:background="@drawable/item_doc_grid_border"
             android:duplicateParentState="true"/>
 
