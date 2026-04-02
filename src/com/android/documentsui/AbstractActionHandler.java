@@ -333,6 +333,38 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
         mSelectionMgr.clearSelection();
     }
 
+    /**
+     * 判断全选的方法
+     */
+    @Override
+    public boolean isAllSelected() {
+        Model model = mInjector.getModel();
+        int totalEnabledCount = 0;
+        int selectedCount = 0;
+
+        // 统计所有启用的文件数量
+        for (String id : model.getModelIds()) {
+            Cursor cursor = model.getItem(id);
+            if (cursor == null) {
+                Log.w(TAG, "Skipping selection. Can't obtain cursor for modeId: " + id);
+                continue;
+            }
+            String docMimeType = getCursorString(
+                    cursor, DocumentsContract.Document.COLUMN_MIME_TYPE);
+            int docFlags = getCursorInt(cursor, DocumentsContract.Document.COLUMN_FLAGS);
+            if (mInjector.config.isDocumentEnabled(docMimeType, docFlags, mState)) {
+                totalEnabledCount++;
+                if (mSelectionMgr.isSelected(id)) {
+                    selectedCount++;
+                }
+            }
+        }
+
+        // 如果没有启用的文件，返回 false
+        return totalEnabledCount > 0 && selectedCount == totalEnabledCount;
+    }
+
+
     @Override
     public void showCreateDirectoryDialog() {
         Metrics.logUserAction(MetricConsts.USER_ACTION_CREATE_DIR);
