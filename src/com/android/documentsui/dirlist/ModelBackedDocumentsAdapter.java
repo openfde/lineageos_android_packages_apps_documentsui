@@ -39,6 +39,7 @@ import com.android.documentsui.roots.RootCursorWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.android.documentsui.R;
 
 /**
  * Adapts from dirlist.Model to something RecyclerView understands.
@@ -153,6 +154,12 @@ final class ModelBackedDocumentsAdapter extends DocumentsAdapter {
             holder.bindProfileIcon(mIconHelper.shouldShowBadge(userIdIdentifier), userIdIdentifier);
         } else {
             holder.bindBriefcaseIcon(mIconHelper.shouldShowBadge(userIdIdentifier));
+        }
+
+        if(MODE_LIST == mEnv.getDisplayState().derivedMode && position % 2 == 0){
+            holder.itemView.setBackgroundResource(R.drawable.list_item_grep_background);
+        } else {
+            holder.itemView.setBackgroundResource(R.drawable.list_item_background);
         }
 
         mEnv.onBindDocumentHolder(holder, cursor);

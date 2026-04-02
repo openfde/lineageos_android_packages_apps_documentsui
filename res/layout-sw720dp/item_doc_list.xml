@@ -38,8 +38,8 @@
             android:pointerIcon="hand"
             android:layout_width="@dimen/list_item_width"
             android:layout_height="@dimen/list_item_height"
-            android:paddingBottom="@dimen/list_item_icon_padding"
-            android:paddingTop="@dimen/list_item_icon_padding"
+            android:paddingBottom="@dimen/icon_padding"
+            android:paddingTop="@dimen/icon_padding"
             android:paddingEnd="16dp"
             android:paddingStart="@dimen/list_item_padding" >
 
@@ -90,7 +90,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.4"
+                android:layout_weight="0.6"
                 android:layout_marginEnd="12dp"
                 android:orientation="horizontal">
 
@@ -131,7 +131,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                android:layout_weight="0.2"
+                android:layout_weight="0.1"
                 android:ellipsize="end"
                 android:minWidth="70dp"
                 android:singleLine="true"
