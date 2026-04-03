@@ -36,6 +36,7 @@ import com.android.documentsui.base.EventHandler;
 import com.android.documentsui.base.Menus;
 import com.android.documentsui.ui.MessageBuilder;
 
+import de.greenrobot.event.EventBus;
 /**
  * A controller that listens to selection changes and manages life cycles of action modes.
  */
@@ -72,36 +73,37 @@ public class ActionModeController extends SelectionObserver<String>
 
     @Override
     public void onSelectionChanged() {
-        mSelectionMgr.copySelection(mSelected);
-        if (mSelected.size() > 0) {
-            if (mActionMode == null) {
-                if (DEBUG) {
-                    Log.d(TAG, "Starting action mode.");
-                }
-                mActionMode = mActivity.startActionMode(this);
-                final View closeButton =
-                        mActivity.findViewById(androidx.appcompat.R.id.action_mode_close_button);
-                if (closeButton != null) {
-                    closeButton.setContentDescription(mActivity.getString(android.R.string.cancel));
-                }
-            }
-            updateActionMenu();
-        } else {
-            if (mActionMode != null) {
-                if (DEBUG) {
-                    Log.d(TAG, "Finishing action mode.");
-                }
-                mActionMode.finish();
-            }
-        }
-
-        if (mActionMode != null) {
-            assert(!mSelected.isEmpty());
-            final String title = mMessages.getQuantityString(
-                    R.plurals.elements_selected, mSelected.size());
-            mActionMode.setTitle(title);
-            mActivity.getWindow().setTitle(title);
-        }
+        EventBus.getDefault().post(new MessageEvent("","UPDATE_SELECT"));
+//        mSelectionMgr.copySelection(mSelected);
+//        if (mSelected.size() > 0) {
+//            if (mActionMode == null) {
+//                if (DEBUG) {
+//                    Log.d(TAG, "Starting action mode.");
+//                }
+//                mActionMode = mActivity.startActionMode(this);
+//                final View closeButton =
+//                        mActivity.findViewById(androidx.appcompat.R.id.action_mode_close_button);
+//                if (closeButton != null) {
+//                    closeButton.setContentDescription(mActivity.getString(android.R.string.cancel));
+//                }
+//            }
+//            updateActionMenu();
+//        } else {
+//            if (mActionMode != null) {
+//                if (DEBUG) {
+//                    Log.d(TAG, "Finishing action mode.");
+//                }
+//                mActionMode.finish();
+//            }
+//        }
+//
+//        if (mActionMode != null) {
+//            assert(!mSelected.isEmpty());
+//            final String title = mMessages.getQuantityString(
+//                    R.plurals.elements_selected, mSelected.size());
+//            mActionMode.setTitle(title);
+//            mActivity.getWindow().setTitle(title);
+//        }
     }
 
     @Override

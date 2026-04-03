@@ -116,6 +116,8 @@ public interface ActionHandler {
      */
     void deselectAllFiles();
 
+    boolean isAllSelected();
+
     void showCreateDirectoryDialog();
 
     void showInspector(DocumentInfo doc);

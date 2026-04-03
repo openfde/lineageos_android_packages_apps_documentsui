@@ -87,8 +87,11 @@ import com.android.documentsui.picker.PickActivity;
 import com.google.android.material.appbar.AppBarLayout;
 import com.android.documentsui.util.Utils;
 
+
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
+
+
 import android.view.Window;
 
 import java.util.ArrayList;
@@ -136,6 +139,8 @@ public abstract class BaseActivity
     // LinearLayout  layoutLoading;
     AnimationDrawable animationDrawable;
     CoordinatorLayout rootView;
+
+    ImageView imgAllSelected;
 
     private final List<EventListener> mEventListeners = new ArrayList<>();
     private final String mTag;
@@ -312,8 +317,16 @@ public abstract class BaseActivity
             ImageView imgSort = findViewById(R.id.imgSort);
             imgSort.setOnClickListener(view -> getInjector().actions.showSortDialog());
 
-            ImageView imgAllSelected = findViewById(R.id.imgAllSelected);
-            imgAllSelected.setOnClickListener(view -> getInjector().actions.selectAllFiles());
+            imgAllSelected = findViewById(R.id.imgAllSelected);
+            imgAllSelected.setOnClickListener(view -> {
+                if(!getInjector().actions.isAllSelected()){
+                    getInjector().actions.selectAllFiles();
+                    imgAllSelected.setImageResource(R.drawable.icon_all_unselected);
+                }else {
+                    getInjector().actions.deselectAllFiles();
+                    imgAllSelected.setImageResource(R.drawable.icon_all_selected);
+                }
+            });
 
             imgShowHide = findViewById(R.id.imgShowHide);
             imgShowHide.setOnClickListener(view -> onClickedShowHiddenFiles());
@@ -757,6 +770,7 @@ public abstract class BaseActivity
         if(editSearch !=null){
             editSearch.clearFocus();
         }
+
     }
 
     private void setContainer() {
@@ -1428,6 +1442,13 @@ public abstract class BaseActivity
                 @Override
                 public void run() {
                     refreshCurrentRootAndDirectory(AnimationView.ANIM_LEAVE);
+                }
+            });
+        }else if (message.equals("UPDATE_SELECT")) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    imgAllSelected.setImageResource(R.drawable.icon_all_selected);
                 }
             });
         }
