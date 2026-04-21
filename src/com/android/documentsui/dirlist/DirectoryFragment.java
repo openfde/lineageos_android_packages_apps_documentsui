@@ -50,11 +50,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
-
+import android.content.res.Configuration;
 import androidx.annotation.DimenRes;
 import androidx.annotation.FractionRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -219,6 +220,8 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
 
     private Handler mHandler;
     private Runnable mProviderTestRunnable;
+    private long lastScreenWidthDp;
+    private long lastScreenHeightDp;
 
     // Note, we use !null to indicate that selection was restored (from rotation).
     // So don't fiddle with this field unless you've got the bigger picture in mind.
@@ -1487,6 +1490,41 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     public void stopScroll() {
         if (mRecView != null) {
             mRecView.stopScroll();
+        }
+    }
+
+        @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        try{
+            if(newConfig.screenWidthDp != lastScreenWidthDp  || newConfig.screenHeightDp != lastScreenHeightDp){
+                if (mRecView != null && mLayout != null) {
+                    mRecView.setAlpha(0f);
+                    int firstVisiblePosition = mLayout.findFirstVisibleItemPosition();
+                    View firstVisibleView = mLayout.findViewByPosition(firstVisiblePosition);
+                    final int  offset = firstVisibleView.getTop() - mRecView.getPaddingTop();
+
+                    mHandler.post(() -> {
+                        updateLayout(mState.derivedMode);
+                        mAdapter.notifyDataSetChanged();
+
+                        if (firstVisiblePosition >= 0) {
+                            mRecView.scrollToPosition(firstVisiblePosition);
+                            mLayout.scrollToPositionWithOffset(firstVisiblePosition, offset);
+                        }
+                        
+                        mRecView.animate()
+                                .alpha(1f)
+                                .setDuration(50)
+                                .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
+                                .start();
+                    });
+                }
+             }
+            lastScreenWidthDp = newConfig.screenWidthDp;
+            lastScreenHeightDp = newConfig.screenHeightDp;
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 
