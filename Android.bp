@@ -42,6 +42,7 @@ java_defaults {
         "com.google.android.material_material",
         "guava",
         "eventbus3",
+        "baselibcomp",
         "modules-utils-build_system",
     ],
 

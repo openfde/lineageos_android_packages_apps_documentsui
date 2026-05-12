@@ -25,6 +25,9 @@
 
     <TextView
         android:id="@+id/txtTitle"
+        android:maxEms="5"
+        android:singleLine="true"
+        android:textColor="#666"
         android:layout_toRightOf="@id/imgRight"
         android:layout_width="wrap_content"
         style="@style/DrawerMenuHeader"
@@ -39,6 +42,7 @@
         android:layout_gravity="center"
         android:layout_toLeftOf="@id/imgShowHide"
         android:layout_marginRight="@dimen/top_menu_icon_margin_right"
+        android:background="@drawable/img_bg"
         android:layout_height="@dimen/top_menu_icon_size"/>
 
     <ImageView
@@ -47,6 +51,7 @@
         android:layout_width="@dimen/top_menu_icon_size"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
+        android:background="@drawable/img_bg"
         android:layout_toLeftOf="@id/imgAllSelected"
         android:layout_marginRight="@dimen/top_menu_icon_margin_right"
         android:layout_height="@dimen/top_menu_icon_size"/>
@@ -58,6 +63,7 @@
         android:layout_toLeftOf="@id/imgSwitch"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/top_menu_icon_margin_right"
+        android:background="@drawable/img_bg"
         android:layout_gravity="center"
         android:layout_height="@dimen/top_menu_icon_size"/>
 
@@ -67,6 +73,7 @@
         android:layout_toLeftOf="@id/editSearch"
         android:src="@drawable/icon_grid"
         android:layout_marginRight="@dimen/top_menu_icon_margin_right"
+        android:background="@drawable/img_bg"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_height="@dimen/top_menu_icon_size"/>
@@ -92,53 +99,21 @@
         android:layout_marginHorizontal="14dp"
         android:background="#D8D8D8"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/imgFullscreen"
+        android:layout_toLeftOf="@id/layout_right_btn"
         android:layout_height="18dp"/>
 
 
-    <ImageView
-        android:id="@+id/imgFullscreen"
-        android:layout_gravity="center_vertical|end"
-        android:src="@drawable/window_full_screen_button"
-        android:duplicateParentState="true"
-        android:layout_height="@dimen/top_menu_icon_size"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/imgMinimize"
-        android:padding="@dimen/top_menu_icon_padding"
-        android:layout_width="@dimen/top_menu_icon_size"/>
 
-    <ImageView
-        android:id="@+id/imgMinimize"
-        android:layout_gravity="center_vertical|end"
-        android:src="@drawable/window_mini_button"
-        android:duplicateParentState="true"
-        android:layout_height="@dimen/top_menu_icon_size"
-        android:layout_toLeftOf="@id/imgMaximize"
-        android:layout_centerVertical="true"
-        android:padding="@dimen/top_menu_icon_padding"
-        android:layout_width="@dimen/top_menu_icon_size"/>
-
-    <ImageView
-        android:id="@+id/imgMaximize"
-        android:layout_gravity="center_vertical|end"
-        android:src="@drawable/window_normal_button"
-        android:duplicateParentState="true"
-        android:layout_height="@dimen/top_menu_icon_size"
-        android:layout_toLeftOf="@id/imgClose"
-        android:layout_centerVertical="true"
-        android:padding="@dimen/top_menu_icon_padding"
-        android:layout_width="@dimen/top_menu_icon_size"/>
-
-    <ImageView
-        android:id="@+id/imgClose"
-        android:src="@drawable/window_close_button"
-        android:duplicateParentState="true"
-        android:layout_height="@dimen/top_menu_icon_size"
+    <include
+        android:id="@+id/layout_right_btn"
+        android:layout_width="156dp"
         android:layout_alignParentRight="true"
-        android:padding="@dimen/top_menu_icon_padding"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/top_menu_icon_margin_right"
-        android:layout_width="@dimen/top_menu_icon_size"/>
+        android:layout_marginRight="-8dp"
+        android:layout_height="match_parent"
+        layout="@layout/layout_custom_title_right"
+        />
+
+
 
 
 </RelativeLayout>
