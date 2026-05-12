@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//android_library_import {
-//    name: "eventbusa",
-//    aars: ["eventbus-3.3.0.aar"],
-//}
+android_library_import {
+    name: "baselibcomp",
+    aars: ["baselib.aar"],
+}
 
 
 java_import {
