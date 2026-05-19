@@ -431,6 +431,7 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
             ComponentName componentName2 = new ComponentName("com.android.gallery3d", "com.fde.gallery.ui.activity.PicturePreviewActivity");
             intent.setComponent(componentName2);
             intent.setData(doc.derivedUri);
+            intent.putExtra("documentId", doc.documentId);
             startActivity(intent);
             setResult(RESULT_OK, intent);
             finish();
