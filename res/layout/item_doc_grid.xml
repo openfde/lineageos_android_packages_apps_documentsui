@@ -62,10 +62,10 @@
                     android:id="@+id/icon_thumb"
                     android:layout_width="@dimen/grid_item_icon_size"
                     android:layout_height="@dimen/grid_item_icon_size"
-                    android:scaleType="centerCrop"
                     android:layout_gravity="center"
                     android:contentDescription="@null"
                     android:tint="?attr/gridItemTint"
+                    android:scaleType="centerInside"
                     android:tintMode="src_over"/>
 
                 <com.android.documentsui.GridItemThumbnail
@@ -73,7 +73,7 @@
                     android:layout_width="@dimen/grid_item_icon_size"
                     android:layout_height="@dimen/grid_item_icon_size"
                     android:layout_gravity="center"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerInside"
                     android:contentDescription="@null"/>
 
             </FrameLayout>
@@ -146,9 +146,9 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="12dp">
+                    android:paddingBottom="0dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="0dp">
 
                     <ImageView
                         android:id="@+id/icon_profile_badge"
@@ -165,13 +165,13 @@
 
                     <TextView
                         android:id="@android:id/title"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_centerInParent="true"
-                        android:singleLine="true"
+                        android:maxLines="2"
                         android:ellipsize="end"
-                        android:textAlignment="viewStart"
+                        android:textAlignment="center"
                         android:textAppearance="@style/CardPrimaryText"/>
 
                     <TextView

@@ -43,6 +43,14 @@
                 android:layout_width="200dp"
                 android:layout_height="match_parent" />
 
+            <View
+                android:id="@+id/resize_handle"
+                android:layout_width="3dp"
+                android:layout_height="match_parent"
+                android:background="@color/bg_main"
+                android:pointerIcon="horizontal_double_arrow"
+                android:visibility="visible" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

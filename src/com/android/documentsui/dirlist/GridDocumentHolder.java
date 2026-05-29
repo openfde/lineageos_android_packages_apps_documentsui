@@ -28,7 +28,10 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.provider.DocumentsContract.Document;
+import android.text.Layout;
+import android.text.TextPaint;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -202,8 +205,38 @@ final class GridDocumentHolder extends DocumentHolder {
 
         mIconHelper.load(mDoc, mIconThumb, mIconMimeLg, mIconMimeSm);
 
-        mTitle.setText(mDoc.displayName, TextView.BufferType.SPANNABLE);
+//        mTitle.setText(mDoc.displayName, TextView.BufferType.SPANNABLE);
+
+        mTitle.setText(mDoc.displayName);
         mTitle.setVisibility(View.VISIBLE);
+
+        mTitle.post(() -> {
+            try {
+                Layout layout = mTitle.getLayout();
+                if (layout == null) {
+                    return;
+                }
+                int lastLine = layout.getLineCount() - 1;
+                boolean isEllipsized =layout.getEllipsisCount(lastLine) > 0;
+                if(isEllipsized){
+                    TextPaint paint = mTitle.getPaint();
+                    float width = mTitle.getWidth()- mTitle.getPaddingLeft() - mTitle.getPaddingRight();
+                    int total = mTitle.getText().length();
+                    int end = mDoc.displayName.lastIndexOf(".");
+                    String text = mDoc.displayName;
+                    int count = paint.breakText(text,true, width, null );
+                    int start = count*2-7 ;
+                    if(start <= 0){
+                        start = count;
+                    }
+                    String strStart = mDoc.displayName.substring(0,start);
+                    String strEnd = mDoc.displayName.substring(end,total);
+                    mTitle.setText(strStart+ ".."+strEnd);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         // If file is partial, we want to show summary field as that's more relevant than fileSize
         // and date

@@ -25,7 +25,7 @@
 
     <TextView
         android:id="@+id/txtTitle"
-        android:maxEms="5"
+        android:maxEms="10"
         android:singleLine="true"
         android:textColor="#666"
         android:layout_toRightOf="@id/imgRight"

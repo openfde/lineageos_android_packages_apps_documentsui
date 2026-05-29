@@ -133,7 +133,7 @@ public class LastAccessedProvider extends ContentProvider {
             values.put(Columns.STACK, rawStack);
         }
         values.put(Columns.EXTERNAL, 0);
-        resolver.insert(buildLastAccessed(packageName), values);
+//        resolver.insert(buildLastAccessed(packageName), values);
     }
 
     @Override

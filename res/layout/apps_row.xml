@@ -29,12 +29,14 @@
         android:textAppearance="@style/SortTitle"
         android:text="@string/apps_row_title"
         android:textAllCaps="true"
+        android:visibility="visible"
         android:gravity="center"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
+        android:visibility="visible"
         android:scrollbars="none">
         <LinearLayout
             android:id="@+id/apps_group"

@@ -22,30 +22,30 @@
     <style name="SectionHeader" parent="@android:style/TextAppearance.Material.Medium">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textAllCaps">true</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="SortList" parent="@style/TextAppearance.AppCompat.Subhead">
         <item name="android:textColor">@color/sort_list_text</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="SearchBarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textSize">@dimen/search_bar_text_size</item>
-        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="SearchChipText">
         <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="AppsItemText">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">12sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="AppsItemSubText">
@@ -54,14 +54,12 @@
     </style>
 
     <style name="AutoCompleteText" parent="@style/TextAppearance.AppCompat.Medium">
-        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="CardPrimaryText" parent="@style/TextAppearance.AppCompat.Subhead">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:layout_marginTop">9dp</item>
-        <item name="android:layout_marginBottom">9dp</item>
         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
@@ -70,19 +68,19 @@
     </style>
 
     <style name="ToolbarTitle" parent="@android:style/TextAppearance.Material.Title">
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="DrawerMenuTitle" parent="@android:style/TextAppearance.Material.Title">
         <item name="android:textSize">24sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="DrawerMenuHeader" parent="@android:style/TextAppearance.Material.Subhead">
-        <item name="android:textColor">#66000000</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="android:textSize">12sp</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="DrawerMenuPrimary" parent="android:style/TextAppearance.Material.Body2">
@@ -103,19 +101,19 @@
 
     <style name="MaterialButtonTextAppearance" parent="@style/TextAppearance.MaterialComponents.Button">
         <item name="android:textAllCaps">@bool/config_button_all_caps</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="BreadcrumbText" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
         <item name="android:textColor">@color/horizontal_breadcrumb_color</item>
         <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="EmptyStateTitleText">
         <item name="android:textColor">@color/empty_state_text_color</item>
         <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="EmptyStateMessageText">
@@ -126,12 +124,12 @@
     <style name="EmptyStateButtonTextAppearance">
         <item name="android:textColor">?android:attr/colorAccent</item>
         <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="TabTextAppearance" parent="@android:style/TextAppearance.Material.Medium">
         <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_65_medium_65_medium</item>
+        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="ItemCaptionText" parent="@android:style/TextAppearance.Material.Caption">
@@ -141,17 +139,14 @@
 
     <style name="MenuItemTextAppearance" parent="@android:style/TextAppearance.Material.Body2">
         <item name="android:textSize">14sp</item>
-        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="Subhead" parent="@android:style/TextAppearance.Material.Subhead">
-        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:textSize">14sp</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
 
     <style name="Body1" parent="@android:style/TextAppearance.Material.Body1">
-        <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
+         <item name="fontFamily">@font/alibaba_puhui_55_regular_55_regular</item>
     </style>
-
 </resources>

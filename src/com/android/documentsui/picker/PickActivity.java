@@ -426,17 +426,20 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
         // Do not inline-open archives, as otherwise it would be impossible to pick
         // archive files. Note, that picking files inside archives is not supported.
 
-        if(callingPackage.contains("com.android.gallery3d")){
-            Intent intent = getIntent();
-            ComponentName componentName2 = new ComponentName("com.android.gallery3d", "com.fde.gallery.ui.activity.PicturePreviewActivity");
-            intent.setComponent(componentName2);
-            intent.setData(doc.derivedUri);
-            intent.putExtra("documentId", doc.documentId);
-            startActivity(intent);
-            setResult(RESULT_OK, intent);
-            finish();
-            return;
-        }
+//        if(callingPackage.contains("com.android.gallery3d")){
+//            if(!doc.displayName.contains("//.")){
+//                Log.w(TAG,"u not select png ");
+//                return;
+//            }
+//            Intent intent = getIntent();
+//            ComponentName componentName2 = new ComponentName("com.android.gallery3d.debug", "com.fde.gallery.ui.activity.PicturePreviewActivity");
+//            intent.setComponent(componentName2);
+//            intent.setData(doc.derivedUri);
+//            startActivity(intent);
+//            setResult(RESULT_OK, intent);
+//            finish();
+//            return;
+//        }
 
 
         if (doc.isDirectory()) {
