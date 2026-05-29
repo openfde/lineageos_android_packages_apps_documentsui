@@ -222,16 +222,12 @@ final class GridDocumentHolder extends DocumentHolder {
                     TextPaint paint = mTitle.getPaint();
                     float width = mTitle.getWidth()- mTitle.getPaddingLeft() - mTitle.getPaddingRight();
                     int total = mTitle.getText().length();
-                    int end = mDoc.displayName.lastIndexOf(".");
-                    String text = mDoc.displayName;
-                    int count = paint.breakText(text,true, width, null );
-                    int start = count*2-7 ;
-                    if(start <= 0){
-                        start = count;
-                    }
-                    String strStart = mDoc.displayName.substring(0,start);
-                    String strEnd = mDoc.displayName.substring(end,total);
-                    mTitle.setText(strStart+ ".."+strEnd);
+                    int endX = total - mDoc.displayName.lastIndexOf(".") +1 ;
+                    String displayText = mDoc.displayName;
+                    int count = paint.breakText(displayText,true, width, null );
+                    String strStart = displayText.substring(0,count);
+                    String strEnd = displayText.substring(count,count+2)+"..."+displayText.substring(total-endX,total);
+                    mTitle.setText(strStart+ strEnd);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
