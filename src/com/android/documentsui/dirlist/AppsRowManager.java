@@ -151,7 +151,7 @@ public class AppsRowManager {
     }
 
     private List<UserId> getUserIds() {
-        if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
             return mUserManagerState.getUserIds();
         }
         return mUserIdManager.getUserIds();

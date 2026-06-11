@@ -69,7 +69,7 @@ final class DirectoryAddonsAdapter extends DocumentsAdapter {
         // TODO: We should not instantiate the messages here, but rather instantiate them
         // when we get an update event.
         mHeaderMessage = new HeaderMessage(environment, this::onDismissHeaderMessage, mConfigStore);
-        if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
             mInflateMessage = new InflateMessage(environment, this::onDismissHeaderMessage,
                     sourceUserId, selectedUserId, userIdLabelMap, userManager, mConfigStore);
         } else {

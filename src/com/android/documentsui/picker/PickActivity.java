@@ -246,12 +246,12 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
         moreApps.setComponent(null);
         moreApps.setPackage(null);
         if (mState.supportsCrossProfile) {
-            if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+            if (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
                 mState.canForwardToProfileIdMap = mUserManagerState.getCanForwardToProfileIdMap(
                         moreApps);
             } else if (CrossProfileUtils.getCrossProfileResolveInfo(UserId.CURRENT_USER,
                     getPackageManager(), moreApps, getApplicationContext(),
-                    mConfigStore.isPrivateSpaceInDocsUIEnabled()) != null) {
+                    false) != null) {
                 mState.canShareAcrossProfile = true;
             }
         }

@@ -150,7 +150,7 @@ final class ModelBackedDocumentsAdapter extends DocumentsAdapter {
         holder.setAction(mEnv.getDisplayState().action);
         holder.bindPreviewIcon(mEnv.getDisplayState().shouldShowPreview() && enabled,
                 view -> mEnv.getActionHandler().previewItem(holder.getItemDetails()));
-        if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
             holder.bindProfileIcon(mIconHelper.shouldShowBadge(userIdIdentifier), userIdIdentifier);
         } else {
             holder.bindBriefcaseIcon(mIconHelper.shouldShowBadge(userIdIdentifier));

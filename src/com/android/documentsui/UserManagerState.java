@@ -180,7 +180,7 @@ public interface UserManagerState {
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_MANAGED_PROFILE_ADDED);
             filter.addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED);
-            if (SdkLevel.isAtLeastV() && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+            if (SdkLevel.isAtLeastV() && mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
                 filter.addAction(Intent.ACTION_PROFILE_ADDED);
                 filter.addAction(Intent.ACTION_PROFILE_REMOVED);
             }
@@ -262,7 +262,7 @@ public interface UserManagerState {
                                 UserHandle.of(userId.getIdentifier()))
                                 || CrossProfileUtils.getCrossProfileResolveInfo(mCurrentUser,
                                 mContext.getPackageManager(), mCurrentStateIntent, mContext,
-                                mConfigStore.isPrivateSpaceInDocsUIEnabled()) != null) {
+                                (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())) != null) {
                             mCanFrowardToProfileIdMap.put(userId, true);
                         } else {
                             mCanFrowardToProfileIdMap.put(userId, false);
@@ -571,7 +571,7 @@ public interface UserManagerState {
 
             if (needToCheck != null && CrossProfileUtils.getCrossProfileResolveInfo(mCurrentUser,
                     mContext.getPackageManager(), intent, mContext,
-                    mConfigStore.isPrivateSpaceInDocsUIEnabled()) != null) {
+                   (mConfigStore!=null &&  mConfigStore.isPrivateSpaceInDocsUIEnabled())) != null) {
                 if (parentOrDelegatedFromParent.contains(needToCheck)) {
                     canForwardToProfileIds.addAll(parentOrDelegatedFromParent);
                 } else {
@@ -622,7 +622,7 @@ public interface UserManagerState {
                         mCanFrowardToProfileIdMap.put(userId,
                                 CrossProfileUtils.getCrossProfileResolveInfo(
                                         mCurrentUser, mContext.getPackageManager(), intent,
-                                        mContext, mConfigStore.isPrivateSpaceInDocsUIEnabled())
+                                        mContext, (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()))
                                         != null);
                     }
                 }

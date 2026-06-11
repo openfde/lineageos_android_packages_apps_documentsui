@@ -631,7 +631,7 @@ public abstract class BaseActivity
 
     private NavigationViewManager getNavigationViewManager(Breadcrumb breadcrumb,
                                                            View profileTabsContainer) {
-        if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
             return new NavigationViewManager(this, mDrawer, mState, this, breadcrumb,
                     profileTabsContainer, DocumentsApplication.getUserManagerState(this),
                     mConfigStore);

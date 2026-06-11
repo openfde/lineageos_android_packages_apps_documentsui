@@ -225,7 +225,7 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
     }
 
     private AppsRowManager getAppsRowManager() {
-        return mConfigStore.isPrivateSpaceInDocsUIEnabled()
+        return (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                 ? new AppsRowManager(mInjector.actions, mState.supportsCrossProfile(),
                 mUserManagerState, mConfigStore)
                 : new AppsRowManager(mInjector.actions, mState.supportsCrossProfile(),

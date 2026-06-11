@@ -73,7 +73,7 @@ final class GridPhotoHolder extends DocumentHolder {
 
         mIconHelper = iconHelper;
 
-        if (SdkLevel.isAtLeastT() && !mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (SdkLevel.isAtLeastT() ) {
             setUpdatableWorkProfileIcon(context);
         }
     }

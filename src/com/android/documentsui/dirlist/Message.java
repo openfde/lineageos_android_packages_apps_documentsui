@@ -241,7 +241,7 @@ abstract class Message {
         }
 
         private boolean setCanModifyQuietMode() {
-            if (SdkLevel.isAtLeastV() && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+            if (SdkLevel.isAtLeastV() ) {
                 if (mUserManager == null) {
                     Log.e(TAG, "can not obtain user manager class");
                     return false;
@@ -288,13 +288,13 @@ abstract class Message {
             String buttonText = null;
             Resources res = null;
             String selectedProfile = null;
-            if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+            if (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
                 res = mEnv.getContext().getResources();
                 assert mUserIdToLabelMap != null;
                 selectedProfile = mUserIdToLabelMap.get(userId);
             }
             if (mCanModifyQuietMode) {
-                buttonText = mConfigStore.isPrivateSpaceInDocsUIEnabled()
+                buttonText = (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                         ? res.getString(R.string.profile_quiet_mode_button,
                         selectedProfile.toLowerCase(Locale.getDefault()))
                         : getEnterpriseString(
@@ -303,7 +303,7 @@ abstract class Message {
                         mEnv.getDisplayState().stack.getRoot(), userId);
             }
 
-            update(mConfigStore.isPrivateSpaceInDocsUIEnabled()
+            update((mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                             ? res.getString(R.string.profile_quiet_mode_error_title,
                             selectedProfile)
                             : getEnterpriseString(
@@ -326,11 +326,11 @@ abstract class Message {
                 case State.ACTION_GET_CONTENT:
                 case State.ACTION_OPEN:
                 case State.ACTION_OPEN_TREE:
-                    return mConfigStore.isPrivateSpaceInDocsUIEnabled()
+                    return (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                             ? getErrorTitlePrivateSpaceEnabled(ACCESS_CROSS_PROFILE_FILES)
                             : getErrorTitlePrivateSpaceDisabled(ACCESS_CROSS_PROFILE_FILES);
                 case State.ACTION_CREATE:
-                    return mConfigStore.isPrivateSpaceInDocsUIEnabled()
+                    return (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                             ? getErrorTitlePrivateSpaceEnabled(State.ACTION_CREATE)
                             : getErrorTitlePrivateSpaceDisabled(State.ACTION_CREATE);
             }
@@ -380,11 +380,11 @@ abstract class Message {
                 case State.ACTION_GET_CONTENT:
                 case State.ACTION_OPEN:
                 case State.ACTION_OPEN_TREE:
-                    return mConfigStore.isPrivateSpaceInDocsUIEnabled()
+                    return (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                             ? getErrorMessagePrivateSpaceEnabled(ACCESS_CROSS_PROFILE_FILES)
                             : getErrorMessagePrivateSpaceDisabled(ACCESS_CROSS_PROFILE_FILES);
                 case State.ACTION_CREATE:
-                    return mConfigStore.isPrivateSpaceInDocsUIEnabled()
+                    return (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                             ? getErrorMessagePrivateSpaceEnabled(State.ACTION_CREATE)
                             : getErrorMessagePrivateSpaceDisabled(State.ACTION_CREATE);
 

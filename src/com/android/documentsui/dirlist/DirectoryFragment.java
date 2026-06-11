@@ -257,7 +257,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (SdkLevel.isAtLeastV()
-                    && mState.configStore.isPrivateSpaceInDocsUIEnabled()) {
+                    &&mState !=null && mState.configStore!=null && mState.configStore.isPrivateSpaceInDocsUIEnabled()) {
                 profileStatusReceiverPostV(intent, action);
             } else {
                 profileStatusReceiverPreV(intent, action);
@@ -668,7 +668,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     private DocumentsAdapter getModelBackedDocumentsAdapter() {
-        return mState.configStore.isPrivateSpaceInDocsUIEnabled()
+        return (mState!=null && mState.configStore!=null && mState.configStore.isPrivateSpaceInDocsUIEnabled())
                 ? new DirectoryAddonsAdapter(
                 mAdapterEnv, new ModelBackedDocumentsAdapter(mAdapterEnv, mIconHelper,
                 mInjector.fileTypeLookup, mState.configStore),
