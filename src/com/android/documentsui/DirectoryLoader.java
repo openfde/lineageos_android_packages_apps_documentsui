@@ -344,7 +344,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
     }
 
     private List<UserId> getUserIds() {
-        if (mState.configStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (mState!=null && mState.configStore!=null &&  mState.configStore.isPrivateSpaceInDocsUIEnabled()) {
             return DocumentsApplication.getUserManagerState(getContext()).getUserIds();
         }
         return DocumentsApplication.getUserIdManager(getContext()).getUserIds();

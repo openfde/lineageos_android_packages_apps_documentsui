@@ -86,7 +86,7 @@ public class ProfileTabs implements ProfileTabsAddons {
         mEnv = checkNotNull(env);
         mCommonAddons = checkNotNull(commonAddons);
         mConfigStore = configStore;
-        if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
             mUserIdManager = userIdManager;
             mUserManagerState = checkNotNull(userManagerState);
         } else {
@@ -180,7 +180,7 @@ public class ProfileTabs implements ProfileTabsAddons {
             mUserIds.addAll(userIds);
             mTabs.removeAllTabs();
             if (mUserIds.size() > 1) {
-                if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+                if (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
                     addTabsPrivateSpaceEnabled();
                 } else {
                     addTabsPrivateSpaceDisabled();
@@ -190,7 +190,7 @@ public class ProfileTabs implements ProfileTabsAddons {
     }
 
     private List<UserId> getUserIds() {
-        if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (mConfigStore!=null && mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
             assert mUserManagerState != null;
             return mUserManagerState.getUserIds();
         }

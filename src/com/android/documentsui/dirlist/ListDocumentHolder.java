@@ -101,7 +101,7 @@ final class ListDocumentHolder extends DocumentHolder {
         mFileTypeLookup = fileTypeLookup;
         mDoc = new DocumentInfo();
 
-        if (SdkLevel.isAtLeastT() && !mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (SdkLevel.isAtLeastT() ) {
             setUpdatableWorkProfileIcon(context);
         }
     }

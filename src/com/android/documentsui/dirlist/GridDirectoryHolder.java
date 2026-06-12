@@ -65,7 +65,7 @@ final class GridDirectoryHolder extends DocumentHolder {
         mIconMime.setImageDrawable(
                 IconUtils.loadMimeIcon(context, DocumentsContract.Document.MIME_TYPE_DIR));
 
-        if (SdkLevel.isAtLeastT() && !mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (SdkLevel.isAtLeastT() ) {
             setUpdatableWorkProfileIcon(context);
         }
     }

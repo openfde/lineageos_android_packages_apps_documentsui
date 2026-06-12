@@ -77,10 +77,8 @@ public class IconHelper {
      */
     public IconHelper(Context context, int mode, boolean maybeShowBadge, ConfigStore configStore) {
         this(context, mode, maybeShowBadge, DocumentsApplication.getThumbnailCache(context),
-                configStore.isPrivateSpaceInDocsUIEnabled() ? null
-                        : DocumentsApplication.getUserIdManager(context).getManagedUser(),
-                configStore.isPrivateSpaceInDocsUIEnabled()
-                        ? DocumentsApplication.getUserManagerState(context) : null,
+                DocumentsApplication.getUserIdManager(context).getManagedUser(),
+                null,
                 configStore);
     }
 
@@ -271,7 +269,11 @@ public class IconHelper {
      * Returns true if we should show a briefcase icon for the given user.
      */
     public boolean shouldShowBadge(int userIdIdentifier) {
-        if (mConfigStore.isPrivateSpaceInDocsUIEnabled()) {
+        boolean isPrivateSpaceInDocsUIEnabled = false ;
+        if(mConfigStore != null){
+            isPrivateSpaceInDocsUIEnabled = mConfigStore.isPrivateSpaceInDocsUIEnabled();
+        }
+        if (isPrivateSpaceInDocsUIEnabled) {
             return mMaybeShowBadge
                     && mUserManagerState.getUserIds().size() > 1
                     && ActivityManager.getCurrentUser() != userIdIdentifier;

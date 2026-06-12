@@ -279,7 +279,7 @@ public class RootsFragment extends Fragment {
                 ResolveInfo crossProfileResolveInfo = null;
                 UserManagerState userManagerState = null;
                 if (state.supportsCrossProfile() && handlerAppIntent != null) {
-                    if (state.configStore.isPrivateSpaceInDocsUIEnabled()) {
+                    if (state.configStore!=null && state.configStore.isPrivateSpaceInDocsUIEnabled()) {
                         userManagerState = DocumentsApplication.getUserManagerState(getContext());
                         Map<UserId, Boolean> canForwardToProfileIdMap =
                                 userManagerState.getCanForwardToProfileIdMap(handlerAppIntent);
@@ -288,13 +288,13 @@ public class RootsFragment extends Fragment {
                         crossProfileResolveInfo = CrossProfileUtils.getCrossProfileResolveInfo(
                                 UserId.CURRENT_USER, getContext().getPackageManager(),
                                 handlerAppIntent, getContext(),
-                                state.configStore.isPrivateSpaceInDocsUIEnabled());
+                                false);
                         updateCrossProfileStateAndMaybeRefresh(
                                 /* canShareAcrossProfile= */ crossProfileResolveInfo != null);
                     }
                 }
 
-                if (state.configStore.isPrivateSpaceInDocsUIEnabled()
+                if (state.configStore !=null && state.configStore.isPrivateSpaceInDocsUIEnabled()
                         && userManagerState == null) {
                     userManagerState = DocumentsApplication.getUserManagerState(getContext());
                 }
@@ -346,7 +346,7 @@ public class RootsFragment extends Fragment {
             }
 
             private List<UserId> getUserIds() {
-                if (state.configStore.isPrivateSpaceInDocsUIEnabled()) {
+                if (state.configStore!=null && state.configStore.isPrivateSpaceInDocsUIEnabled()) {
                     return DocumentsApplication.getUserManagerState(getContext()).getUserIds();
                 }
                 return DocumentsApplication.getUserIdManager(getContext()).getUserIds();
@@ -705,7 +705,7 @@ public class RootsFragment extends Fragment {
             rootListAllUsers.add(new ArrayList<>());
         }
 
-        if (state.configStore.isPrivateSpaceInDocsUIEnabled()) {
+        if (state.configStore!=null &&  state.configStore.isPrivateSpaceInDocsUIEnabled()) {
             addToApplicationItemListPrivateSpaceEnabled(userIds, rootListAllUsers, comp, state);
         } else {
             addToApplicationItemListPrivateSpaceDisabled(rootList, rootListOtherUser, comp, state);

@@ -162,7 +162,7 @@ public class NavigationViewManager implements AppBarLayout.OnOffsetChangedListen
 
     private ProfileTabs getProfileTabs(View tabLayoutContainer, UserIdManager userIdManager,
             UserManagerState userManagerState, BaseActivity activity) {
-        return mConfigStore.isPrivateSpaceInDocsUIEnabled()
+        return (mConfigStore !=null && mConfigStore.isPrivateSpaceInDocsUIEnabled())
                 ? new ProfileTabs(tabLayoutContainer, mState, userManagerState, mEnv, activity,
                 mConfigStore)
                 : new ProfileTabs(tabLayoutContainer, mState, userIdManager, mEnv, activity,
