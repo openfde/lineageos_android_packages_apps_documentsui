@@ -70,10 +70,11 @@ final class Config extends ActivityConfig {
                 }
             case ACTION_OPEN:
             case ACTION_GET_CONTENT:
-                final boolean isVirtual = (docFlags & Document.FLAG_VIRTUAL_DOCUMENT) != 0;
-                if (isVirtual && state.openableOnly) {
-                    return false;
-                }
+                return true;
+                // final boolean isVirtual = (docFlags & Document.FLAG_VIRTUAL_DOCUMENT) != 0;
+                // if (isVirtual && state.openableOnly) {
+                //     return false;
+                // }
         }
 
         return MimeTypes.mimeMatches(state.acceptMimes, mimeType);
