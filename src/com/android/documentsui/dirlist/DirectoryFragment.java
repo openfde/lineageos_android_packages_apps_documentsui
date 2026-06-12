@@ -29,9 +29,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.UserProperties;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
@@ -50,12 +52,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
-import android.content.res.Configuration;
+
 import androidx.annotation.DimenRes;
 import androidx.annotation.FractionRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -119,11 +121,14 @@ import com.android.documentsui.util.SPUtils;
 import com.android.documentsui.provider.FileUtils;
 import com.android.documentsui.IpcService;
 
+import com.android.documentsui.util.ZipUtils;
 import com.google.common.base.Objects;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import android.app.WallpaperManager;
@@ -729,11 +734,11 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             mInjector.menuManager.inflateContextMenuForContainer(
                     menu, inflater, mSelectionMetadata);
         } else {
-            if(modelId.endsWith(".png".toLowerCase())|| modelId.endsWith(".jpg".toLowerCase())){
+            if(modelId.toLowerCase().endsWith(".png")|| modelId.toLowerCase().endsWith(".jpg")){
                 menu.add(R.id.menu_open_group,SET_WALLPAPER,0,getString(R.string.menu_set_as_wallpaper));
             }
             
-            if(modelId.endsWith(".zip".toLowerCase())|| modelId.endsWith(".rar".toLowerCase())|| modelId.endsWith(".gz".toLowerCase())){
+            if(modelId.toLowerCase().endsWith(".zip")|| modelId.toLowerCase().endsWith(".rar")|| modelId.toLowerCase().endsWith(".gz")){
                 menu.add(R.id.menu_open_group,R.id.action_menu_extract_to,0,getString(R.string.menu_extract));
             }else{
                 menu.add(R.id.menu_open_group,R.id.action_menu_compress,0,getString(R.string.menu_compress));
@@ -818,6 +823,37 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private void onDisplayStateChanged() {
         updateLayout(mState.derivedMode);
         mRecView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(newConfig.screenWidthDp != lastScreenWidthDp  || newConfig.screenHeightDp != lastScreenHeightDp){
+            if (mRecView != null && mLayout != null) {
+                mRecView.setAlpha(0f);
+                int firstVisiblePosition = mLayout.findFirstVisibleItemPosition();
+                View firstVisibleView = mLayout.findViewByPosition(firstVisiblePosition);
+                final int  offset = firstVisibleView.getTop() - mRecView.getPaddingTop();
+
+                mHandler.post(() -> {
+                    updateLayout(mState.derivedMode);
+                    mAdapter.notifyDataSetChanged();
+
+                    if (firstVisiblePosition >= 0) {
+                        mRecView.scrollToPosition(firstVisiblePosition);
+                        mLayout.scrollToPositionWithOffset(firstVisiblePosition, offset);
+                    }
+
+                    mRecView.animate()
+                            .alpha(1f)
+                            .setDuration(50)
+                            .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
+                            .start();
+                });
+            }
+        }
+        lastScreenWidthDp = newConfig.screenWidthDp;
+        lastScreenHeightDp = newConfig.screenHeightDp;
     }
 
     /**
@@ -1490,41 +1526,6 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     public void stopScroll() {
         if (mRecView != null) {
             mRecView.stopScroll();
-        }
-    }
-
-        @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        try{
-            if(newConfig.screenWidthDp != lastScreenWidthDp  || newConfig.screenHeightDp != lastScreenHeightDp){
-                if (mRecView != null && mLayout != null) {
-                    mRecView.setAlpha(0f);
-                    int firstVisiblePosition = mLayout.findFirstVisibleItemPosition();
-                    View firstVisibleView = mLayout.findViewByPosition(firstVisiblePosition);
-                    final int  offset = firstVisibleView.getTop() - mRecView.getPaddingTop();
-
-                    mHandler.post(() -> {
-                        updateLayout(mState.derivedMode);
-                        mAdapter.notifyDataSetChanged();
-
-                        if (firstVisiblePosition >= 0) {
-                            mRecView.scrollToPosition(firstVisiblePosition);
-                            mLayout.scrollToPositionWithOffset(firstVisiblePosition, offset);
-                        }
-                        
-                        mRecView.animate()
-                                .alpha(1f)
-                                .setDuration(50)
-                                .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
-                                .start();
-                    });
-                }
-             }
-            lastScreenWidthDp = newConfig.screenWidthDp;
-            lastScreenHeightDp = newConfig.screenHeightDp;
-        }catch(Exception e){
-            e.printStackTrace();
         }
     }
 

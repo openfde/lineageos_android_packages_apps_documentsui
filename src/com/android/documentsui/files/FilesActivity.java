@@ -220,8 +220,17 @@ public class FilesActivity extends BaseActivity implements AbstractActionHandler
         // Set save container background to transparent for edge to edge nav bar.
         View saveContainer = findViewById(R.id.container_save);
         saveContainer.setBackgroundColor(Color.TRANSPARENT);
-
+        setupResizeHandle();
         presentFileErrors(icicle, intent);
+    }
+
+    private void setupResizeHandle() {
+        View resizeHandle = findViewById(R.id.resize_handle);
+        View rootsContainer = findViewById(R.id.container_roots);
+
+        if (resizeHandle != null && rootsContainer != null) {
+            new com.android.documentsui.util.ResizeHandleHelper(resizeHandle, rootsContainer);
+        }
     }
 
     private AppsRowManager getAppsRowManager() {

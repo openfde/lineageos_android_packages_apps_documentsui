@@ -28,7 +28,10 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.provider.DocumentsContract.Document;
+import android.text.Layout;
+import android.text.TextPaint;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -202,8 +205,34 @@ final class GridDocumentHolder extends DocumentHolder {
 
         mIconHelper.load(mDoc, mIconThumb, mIconMimeLg, mIconMimeSm);
 
-        mTitle.setText(mDoc.displayName, TextView.BufferType.SPANNABLE);
+//        mTitle.setText(mDoc.displayName, TextView.BufferType.SPANNABLE);
+
+        mTitle.setText(mDoc.displayName);
         mTitle.setVisibility(View.VISIBLE);
+
+        mTitle.post(() -> {
+            try {
+                Layout layout = mTitle.getLayout();
+                if (layout == null) {
+                    return;
+                }
+                int lastLine = layout.getLineCount() - 1;
+                boolean isEllipsized =layout.getEllipsisCount(lastLine) > 0;
+                if(isEllipsized){
+                    TextPaint paint = mTitle.getPaint();
+                    float width = mTitle.getWidth()- mTitle.getPaddingLeft() - mTitle.getPaddingRight();
+                    int total = mTitle.getText().length();
+                    int endX = total - mDoc.displayName.lastIndexOf(".") +1 ;
+                    String displayText = mDoc.displayName;
+                    int count = paint.breakText(displayText,true, width, null );
+                    String strStart = displayText.substring(0,count);
+                    String strEnd = displayText.substring(count,count+2)+"..."+displayText.substring(total-endX,total);
+                    mTitle.setText(strStart+ strEnd);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         // If file is partial, we want to show summary field as that's more relevant than fileSize
         // and date

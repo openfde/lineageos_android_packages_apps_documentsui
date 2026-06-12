@@ -26,8 +26,7 @@
     android:layout_height="@dimen/grid_bg_height"
     android:orientation="vertical"
     android:layout_margin="4dp"
-    android:elevation="@dimen/grid_item_elevation"
-    android:clickable="false"
+    android:clickable="true"
     android:focusable="true">
 
     <RelativeLayout
@@ -48,19 +47,19 @@
 
             <com.android.documentsui.GridItemThumbnail
                 android:id="@+id/icon_thumb"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="@dimen/grid_item_icon_size"
+                android:layout_height="@dimen/grid_item_icon_size"
                 android:scaleType="centerCrop"
                 android:clickable="true"
-                android:visibility="visible"
+
                 android:contentDescription="@null"
                 android:tint="?attr/gridItemTint"
                 android:tintMode="src_over"/>
 
             <com.android.documentsui.GridItemThumbnail
                 android:id="@+id/icon_mime_lg"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="@dimen/grid_item_icon_size"
+                android:layout_height="@dimen/grid_item_icon_size"
                 android:clickable="false"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
@@ -80,6 +79,7 @@
                 android:id="@+id/icon_check"
                 android:src="@drawable/ic_check_circle"
                 android:alpha="0"
+                android:visibility="gone"
                 android:layout_width="@dimen/check_icon_size"
                 android:layout_height="@dimen/check_icon_size"
                 android:clickable="false"

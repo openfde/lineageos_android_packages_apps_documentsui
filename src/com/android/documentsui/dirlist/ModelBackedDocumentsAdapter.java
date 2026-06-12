@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.documentsui.ConfigStore;
 import com.android.documentsui.Model;
 import com.android.documentsui.Model.Update;
+import com.android.documentsui.R;
 import com.android.documentsui.base.EventListener;
 import com.android.documentsui.base.Lookup;
 import com.android.documentsui.base.State;
@@ -39,7 +40,6 @@ import com.android.documentsui.roots.RootCursorWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.android.documentsui.R;
 
 /**
  * Adapts from dirlist.Model to something RecyclerView understands.
