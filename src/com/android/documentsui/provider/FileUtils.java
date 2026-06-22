@@ -1166,4 +1166,69 @@ public class FileUtils {
     public static boolean isChineseSystem() {
         return Locale.getDefault().getLanguage().equals("zh");
     }
+
+    public static boolean matchSearchQueryArguments(File file, Bundle queryArgs) {
+        if (file == null) {
+            return false;
+        }
+
+        final String fileMimeType;
+        final String fileName = file.getName();
+
+        if (file.isDirectory()) {
+            fileMimeType = DocumentsContract.Document.MIME_TYPE_DIR;
+        } else {
+            int dotPos = fileName.lastIndexOf('.');
+            if (dotPos < 0) {
+                return false;
+            }
+            final String extension = fileName.substring(dotPos + 1);
+            fileMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return matchSearchQueryArguments(queryArgs, fileName, fileMimeType,
+                file.lastModified(), file.length());
+    }
+
+public static final String QUERY_ARG_DISPLAY_NAME = "android:query-arg-display-name";
+public static final String QUERY_ARG_MIME_TYPES = "android:query-arg-mime-types";
+public static final String QUERY_ARG_FILE_SIZE_OVER = "android:query-arg-file-size-over";
+public static final String QUERY_ARG_LAST_MODIFIED_AFTER =
+    "android:query-arg-last-modified-after";
+    public static boolean matchSearchQueryArguments(Bundle queryArgs, String displayName,
+            String mimeType, long lastModified, long size) {
+        if (queryArgs == null) {
+            return true;
+        }
+
+        final String argDisplayName = queryArgs.getString(QUERY_ARG_DISPLAY_NAME, "");
+        if (!argDisplayName.isEmpty()) {
+            // TODO (118795812) : Enhance the search string handled in DocumentsProvider
+            if (!displayName.toLowerCase().contains(argDisplayName.toLowerCase())) {
+                return false;
+            }
+        }
+
+        final long argFileSize = queryArgs.getLong(QUERY_ARG_FILE_SIZE_OVER, -1 /* defaultValue */);
+        if (argFileSize != -1 && size < argFileSize) {
+            return false;
+        }
+
+        final long argLastModified = queryArgs.getLong(QUERY_ARG_LAST_MODIFIED_AFTER,
+                -1 /* defaultValue */);
+        if (argLastModified != -1 && lastModified < argLastModified) {
+            return false;
+        }
+
+        final String[] argMimeTypes = queryArgs.getStringArray(QUERY_ARG_MIME_TYPES);
+        if (argMimeTypes != null && argMimeTypes.length > 0) {
+            mimeType = Intent.normalizeMimeType(mimeType);
+            for (String type : argMimeTypes) {
+                if (MimeTypeFilter.matches(mimeType, Intent.normalizeMimeType(type))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
 }

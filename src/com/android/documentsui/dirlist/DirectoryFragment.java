@@ -464,6 +464,10 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         mModel = mInjector.getModel();
         mModel.reset();
 
+        if(mActivity !=null){
+            mActivity.cleanSearchText();
+        }
+
         mInjector.actions.registerDisplayStateChangedListener(mOnDisplayStateChanged);
 
         mClipper = DocumentsApplication.getDocumentClipper(getContext());

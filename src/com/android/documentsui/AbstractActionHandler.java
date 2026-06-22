@@ -994,14 +994,17 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
                                 authority,
                                 documentId);
 
-                final Bundle queryArgs = mSearchMgr.isSearching()
+                Bundle queryArgs = mSearchMgr.isSearching()
                         ? mSearchMgr.buildQueryArgs()
                         : null;
 
                 if (mInjector.config.managedModeEnabled(mState.stack)) {
                     contentsUri = DocumentsContract.setManageMode(contentsUri);
                 }
-
+                if(queryArgs == null){
+                    queryArgs = new Bundle();
+                }
+                queryArgs.putString("documentId",documentId);
                 if (DEBUG) {
                     Log.d(TAG,
                             "Creating new directory loader for: "

@@ -767,10 +767,15 @@ public abstract class BaseActivity
     }
 
     public void updateFocus(){
-        if(editSearch !=null){
+        if(editSearch != null){
             editSearch.clearFocus();
         }
+    }
 
+    public void cleanSearchText() {
+        if(editSearch != null){
+            editSearch.setText("");
+        }
     }
 
     private void setContainer() {
