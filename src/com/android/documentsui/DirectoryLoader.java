@@ -226,7 +226,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
                          DocumentsApplication.acquireUnstableProviderOrThrow(
                                  userId.getContentResolver(getContext()), authority)) {
                 String strUrl =  mUri.toString();
-                if(strUrl.contains("search?")){
+                if(strUrl.contains("search?") && !strUrl.contains("fusionvolume") && !strUrl.contains("linux.user")){
                     strUrl = HOME_URI;
                     Uri decodedUri = Uri.parse(Uri.decode(strUrl));
                     Cursor c = userClient.query(decodedUri, /* projection= */null, queryArgs, mSignal);

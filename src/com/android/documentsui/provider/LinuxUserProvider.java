@@ -14,6 +14,7 @@ import android.provider.DocumentsProvider;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
@@ -43,6 +44,7 @@ public class LinuxUserProvider extends DocumentsProvider {
     public static final String AUTHORITY = "com.android.documentsui.fusionvolume";
     public static final String DOC_ID_ROOT = "linux";
     public static final String DIR_ID_ROOT = "/volumes";
+    public static final String TAG = "LinuxUserProvider";
 
     @Override
     public Cursor queryRoots(final String[] projection) throws FileNotFoundException {
@@ -87,7 +89,36 @@ public class LinuxUserProvider extends DocumentsProvider {
         return result;
     }
 
+    @Nullable
+    @Override
+    public Cursor querySearchDocuments(@NonNull String rootId, @Nullable String[] projection, @NonNull Bundle queryArgs) throws FileNotFoundException {
+        Log.d(TAG, "Model update: accept querySearchDocuments "+ " ,time : "+System.currentTimeMillis() + " ，rootId： "+rootId  );
+        if (queryArgs != null) {
+            final MatrixCursor result = new MatrixCursor(projection != null ? projection : FileUtils.DEFAULT_DOCUMENT_PROJECTION);
+            String documentId = queryArgs.getString("documentId").replaceAll("primary:","");
+            final File parent = new File(documentId);
+            File[] files = parent.listFiles();
+            int len = files.length;
+            boolean isVolumesPath = documentId.contains("volumes");
+            Log.d(TAG, "Model update: accept querySearchDocuments   documentId "+documentId  +",isVolumesPath  "+isVolumesPath + " ,files "+files.length);
+            for (File file : files) {
+                // 不显示隐藏的文件或文件夹
 
+                if (FileUtils.matchSearchQueryArguments(file, queryArgs)) {
+                    if (isVolumesPath) {
+                        FileUtils.includeVolumesFile(result, file);
+                    } else if (!file.getName().startsWith(".")) {
+                        // 添加文件的名字, 类型, 大小等属性
+                        FileUtils.includeFile(result, file);
+                    }
+                }
+            }
+            return result;
+        }else{
+            Log.d(TAG, "Model update: accept querySearchDocuments   Bundle is null");
+        }
+        return super.querySearchDocuments(rootId, projection, queryArgs);
+    }
 
     @Override
     public String getDocumentType(final String documentId) throws FileNotFoundException {
