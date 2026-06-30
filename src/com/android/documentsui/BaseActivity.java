@@ -413,7 +413,8 @@ public abstract class BaseActivity
                 @Override
                 public void afterTextChanged(Editable s) {
                     String strSearch = s.toString().trim();
-    //                startLoading();
+                    DirectoryFragment dir = getDirectoryFragment();
+                    dir.startLoadding();
                     mSearchManager.onQueryTextChange(strSearch);
 
                 }
@@ -822,6 +823,7 @@ public abstract class BaseActivity
     @Override
     public void onRootPicked(RootInfo root) {
         // Clicking on the current root removes search
+        // mInjector.actions.cancelTask();
         mSearchManager.cancelSearch();
 
         // Skip refreshing if root nor directory didn't change

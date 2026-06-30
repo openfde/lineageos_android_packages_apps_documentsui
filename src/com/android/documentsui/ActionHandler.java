@@ -195,4 +195,6 @@ public interface ActionHandler {
      * @return this
      */
     <T extends ActionHandler> T reset(ContentLock contentLock);
+
+    void cancelTask();
 }

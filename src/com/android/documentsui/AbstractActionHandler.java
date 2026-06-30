@@ -119,6 +119,8 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
 
     private ContentLock mContentLock;
 
+    private  DirectoryLoader directoryLoader;
+
     @Override
     public void registerDisplayStateChangedListener(Runnable l) {
         mDisplayStateChangedListener = l;
@@ -835,9 +837,13 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
         // multiple consecutive calls to restartLoader() / onCreateLoader() will probably create
         // multiple active loaders, because restartLoader() does not interrupt previous loaders'
         // loading, therefore may block the UI thread and cause ANR.
-        if (mLoaderSemaphore.tryAcquire()) {
-            mActivity.getSupportLoaderManager().restartLoader(LOADER_ID, null, mBindings);
+        if (!mLoaderSemaphore.tryAcquire()) {
+            Log.d(TAG, "Model update: loadDocumentsForCurrentStack 11111111111111111");
+            mActivity.getSupportLoaderManager().destroyLoader(LOADER_ID);
+        }else {
+            Log.d(TAG, "Model update: loadDocumentsForCurrentStack 2222222222222222222");
         }
+        mActivity.getSupportLoaderManager().restartLoader(LOADER_ID, null, mBindings);
     }
 
     protected final boolean launchToDocument(Uri uri) {
@@ -937,6 +943,13 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
         return this;
     }
 
+    @Override
+    public void cancelTask(){
+        if(directoryLoader !=null){
+            directoryLoader.cancelLoadInBackground();
+        }
+    }
+
     private final class LoaderBindings implements LoaderCallbacks<DirectoryResult> {
 
         @Override
@@ -1011,7 +1024,7 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
                                     + DocumentInfo.debugString(mState.stack.peek()));
                 }
 
-                return new DirectoryLoader(
+                directoryLoader = new DirectoryLoader(
                         mInjector.features,
                         context,
                         mState,
@@ -1019,6 +1032,7 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
                         mInjector.fileTypeLookup,
                         mContentLock,
                         queryArgs);
+                return directoryLoader;        
             }
         }
 
