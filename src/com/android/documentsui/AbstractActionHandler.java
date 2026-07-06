@@ -837,13 +837,12 @@ public abstract class AbstractActionHandler<T extends FragmentActivity & CommonA
         // multiple consecutive calls to restartLoader() / onCreateLoader() will probably create
         // multiple active loaders, because restartLoader() does not interrupt previous loaders'
         // loading, therefore may block the UI thread and cause ANR.
-        if (!mLoaderSemaphore.tryAcquire()) {
-            Log.d(TAG, "Model update: loadDocumentsForCurrentStack 11111111111111111");
-            mActivity.getSupportLoaderManager().destroyLoader(LOADER_ID);
+        if (!mLoaderSemaphore.tryAcquire()) {            
+            // mActivity.getSupportLoaderManager().destroyLoader(LOADER_ID);
         }else {
-            Log.d(TAG, "Model update: loadDocumentsForCurrentStack 2222222222222222222");
+             mActivity.getSupportLoaderManager().restartLoader(LOADER_ID, null, mBindings);
         }
-        mActivity.getSupportLoaderManager().restartLoader(LOADER_ID, null, mBindings);
+       
     }
 
     protected final boolean launchToDocument(Uri uri) {
