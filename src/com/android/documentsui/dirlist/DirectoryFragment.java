@@ -134,6 +134,12 @@ import java.util.List;
 import android.app.WallpaperManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import com.fde.baselib.Animation.AnimDrawablePlayer;
+import com.fde.baselib.Animation.AnimFactory;
+import com.fde.baselib.view.CustomScrollBarView;
+import com.fde.baselib.view.RecyclerScrollBinder;
+
 /**
  * Display the documents inside a single directory.
  */
@@ -163,6 +169,10 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
     private static final String ACTION_MEDIA_EJECT = "android.intent.action.MEDIA_EJECT";
 
     private BaseActivity mActivity;
+
+    AnimDrawablePlayer animDrawablePlayer;
+    ImageView imgLoadding;
+    CustomScrollBarView customScrollBarView;
 
     private State mState;
     private Model mModel;
@@ -453,10 +463,14 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                     }
                 });
 
+        imgLoadding = (ImageView)mRootView.findViewById(R.id.imgLoadding);
+        mRecView = (RecyclerView) mRootView.findViewById(R.id.dir_list);
+        customScrollBarView = (CustomScrollBarView) mRootView.findViewById(R.id.customScrollBarView);
         mRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
         mRecView.setItemAnimator(new DirectoryItemAnimator());
 
+        RecyclerScrollBinder.bind(mRecView, customScrollBarView);
         mInjector = mActivity.getInjector();
         // Initially, this selection tracker (delegator) uses a stub implementation, so it must be
         // updated (reset) when necessary things are ready.
@@ -468,6 +482,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
             mActivity.cleanSearchText();
         }
 
+        animDrawablePlayer = AnimFactory.INSTANCE.loading(getActivity(), imgLoadding);
         mInjector.actions.registerDisplayStateChangedListener(mOnDisplayStateChanged);
 
         mClipper = DocumentsApplication.getDocumentClipper(getContext());
@@ -519,6 +534,24 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         setPreDrawListenerEnabled(false);
 
         super.onDestroyView();
+    }
+
+    public void startLoadding(){
+        if(imgLoadding !=null){
+            imgLoadding.setVisibility(View.VISIBLE);
+        }
+        if(animDrawablePlayer !=null){
+            animDrawablePlayer.start();
+        }
+    }
+
+    public void stopLoadding(){
+        if(animDrawablePlayer !=null){
+            animDrawablePlayer.stop();
+        }
+        if(imgLoadding !=null){
+            imgLoadding.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -1538,6 +1571,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
         // Remove thumbnail cache. We do this not because we're worried about stale thumbnails as it
         // should be covered by last modified value we store in thumbnail cache, but rather to give
         // the user a greater sense that contents are being reloaded.
+        startLoadding();
         ThumbnailCache cache = DocumentsApplication.getThumbnailCache(getContext());
         String[] ids = mModel.getModelIds();
         int numOfEvicts = Math.min(ids.length, CACHE_EVICT_LIMIT);
@@ -1649,6 +1683,7 @@ public class DirectoryFragment extends Fragment implements SwipeRefreshLayout.On
                     mActivity.updateHeaderTitle();
                 }
             }
+            stopLoadding();
         }
     }
 

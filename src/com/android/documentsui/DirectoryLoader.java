@@ -235,7 +235,11 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
                                 c, /* maxCount= */-1));
                     }
                 }else{
+                    long time1 = System.currentTimeMillis();
+                    Log.d(TAG, "Model update: accept queryChildDocuments "+ " ,time1 : "+time1 );
                     Cursor c = userClient.query(mUri, /* projection= */null, queryArgs, mSignal);
+                    long time2 = System.currentTimeMillis();
+                    Log.d(TAG, "Model update: accept queryChildDocuments "+ " ,time2 : "+time2 + " , time  "+(time2 - time1));
                     if (c != null) {
                         cursors.add(new RootCursorWrapper(userId, mUri.getAuthority(), mRoot.rootId,
                                 c, /* maxCount= */-1));

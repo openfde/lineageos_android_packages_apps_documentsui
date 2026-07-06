@@ -38,18 +38,40 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/dir_list"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:paddingTop="0dp"
-            android:paddingBottom="0dp"
-            android:clipToPadding="false"
-            android:scrollbars="none"
-            android:drawSelectorOnTop="true"
-            app:fastScrollEnabled="false"/>
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/dir_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:clipToPadding="false"
+                android:scrollbars="none"
+                android:drawSelectorOnTop="true"
+                app:fastScrollEnabled="false"/>
+
+            <com.fde.baselib.view.CustomScrollBarView
+                android:id="@+id/customScrollBarView"
+                android:layout_width="8dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:padding="4dp" />
+
+            <ImageView
+                android:id="@+id/imgLoadding"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </FrameLayout>
+
+
 
     </com.android.documentsui.dirlist.DocumentsSwipeRefreshLayout>
 
